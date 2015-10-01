@@ -7,6 +7,11 @@
 #define LOG_OPEN    1
 #define LOG_CLOSED  0
 
+#define ERROR   0
+#define SUCCESS 1
+
+#define ERR_FILE_NOT_FOUND  -1
+
 #define MSG_ERROR   "Error: "
 #define MSG_INFO    "Info: "
 
