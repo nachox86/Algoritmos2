@@ -32,6 +32,13 @@ int createHtmlFile(htmlFile *output, char *path) {
 }
 
 int closeHtmlFile(htmlFile *output) {
+	/* Before closing the file, we need to add some more code.. closing tags */
+	if (output->init) {
+		fprintf(output->file, "</div>\n</body>\n</html>");
+	} else {
+		return ERROR;
+	}
+	
     fclose(output->file);
     output->init = 0;
     return SUCCESS;
