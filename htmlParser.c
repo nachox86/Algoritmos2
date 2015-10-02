@@ -6,7 +6,7 @@
 
 int initHtmlFile(char *path) {
     /* Little hack, hope you guys don't mind... */
-    FILE *src = fopen("base.html", "rb");
+    FILE *src = fopen("./misc/base.html", "rb");
     FILE *dst = fopen(path, "wb");
     int i;
 
