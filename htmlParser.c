@@ -23,7 +23,7 @@ int initHtmlFile(char *path) {
 
 int createHtmlFile(htmlFile *output, char *path) {
     output->init = initHtmlFile(path);
-    output->file = fopen(path, "w");
+    output->file = fopen(path, "a+");
 
     if (output->init && output->file)
         return SUCCESS;
