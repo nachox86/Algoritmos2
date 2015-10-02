@@ -23,11 +23,11 @@ typedef struct {
     FILE *file;
 } htmlFile;
 
-int createHtmlFile(htmlFile *output, char *path);
+int createHtmlFile(htmlFile **output, char *path);
 
 int parseStringToHtml(htmlFile *output, char *line);
 
-int closeHtmlFile(htmlFile *output);
+int closeHtmlFile(htmlFile **output);
 
 
 #endif

@@ -21,32 +21,34 @@ int initHtmlFile(char *path) {
     return SUCCESS;
 }
 
-int createHtmlFile(htmlFile *output, char *path) {
-    output->init = initHtmlFile(path);
-    output->file = fopen(path, "a+");
+int createHtmlFile(htmlFile **output, char *path) {
 
-    if (output->init && output->file)
+    (*output) = malloc(sizeof(htmlFile));
+    (*output)->init = initHtmlFile(path);
+    (*output)->file = fopen(path, "a+");
+
+    if ((*output)->init && (*output)->file)
         return SUCCESS;
 
     return ERROR;
 }
 
-int closeHtmlFile(htmlFile *output) {
+int closeHtmlFile(htmlFile **output) {
 	/* Before closing the file, we need to add some more code.. closing tags */
-	if (output->init) {
-		fprintf(output->file, "</div>\n</body>\n</html>");
+	if ((*output)->init) {
+		fprintf((*output)->file, "</div>\n</body>\n</html>");
 	} else {
 		return ERROR;
 	}
-	
-    fclose(output->file);
-    output->init = 0;
+
+    fclose((*output)->file);
+    free(*output);
     return SUCCESS;
 }
 
 int writeHtmlTitle(htmlFile *output, char *title) {
     if (output->init) {
-        fprintf(output->file, "<h1> %s </h1>\n", title);
+        fprintf(output->file, "<h1>%s</h1>\n", title);
         return SUCCESS;
     }
     return ERROR;
@@ -54,7 +56,7 @@ int writeHtmlTitle(htmlFile *output, char *title) {
 
 int writeHtmlSubtitle(htmlFile *output, char *subtitle) {
     if (output->init) {
-        fprintf(output->file, "<h2> %s </h2>\n", subtitle);
+        fprintf(output->file, "<h2>%s</h2>\n", subtitle);
         return SUCCESS;
     }
     return ERROR;
@@ -62,7 +64,7 @@ int writeHtmlSubtitle(htmlFile *output, char *subtitle) {
 
 int writeHtmlFunction(htmlFile *output, char *name) {
     if (output->init) {
-        fprintf(output->file, "<h3>Funci&oacute;n: <a name=\"%s\"> %s </a></h3>\n", name, name);
+        fprintf(output->file, "<h3>Funci&oacute;n: <a name=\"%s\">%s</a></h3>\n", name, name);
         return  SUCCESS;
     }
     return ERROR;
@@ -70,7 +72,7 @@ int writeHtmlFunction(htmlFile *output, char *name) {
 
 int writeHtmlDescription(htmlFile *output, char *description) {
     if (output->init) {
-        fprintf(output->file, "<dl>\n<dt>Descripci&oacute;n</dt>\n<dd> %s </dd>\n</dl>", description);
+        fprintf(output->file, "<dl>\n<dt>Descripci&oacute;n</dt>\n<dd>%s</dd>\n</dl>", description);
         return SUCCESS;
     }
     return ERROR;
@@ -78,7 +80,7 @@ int writeHtmlDescription(htmlFile *output, char *description) {
 
 int writeHtmlAuthor(htmlFile *output, char *author) {
     if (output->init) {
-        fprintf(output->file, "<dl>\n<dt>Autor</dt>\n<dd> %s </dd>\n</dl>", author);
+        fprintf(output->file, "<dl>\n<dt>Autor</dt>\n<dd>%s</dd>\n</dl>", author);
         return SUCCESS;
     }
     return ERROR;
@@ -86,7 +88,7 @@ int writeHtmlAuthor(htmlFile *output, char *author) {
 
 int writeHtmlDate(htmlFile *output, char *date) {
     if (output->init) {
-        fprintf(output->file, "<dl>\n<dt>Fecha</dt>\n<dd> %s </dd>\n</dl>", date);
+        fprintf(output->file, "<dl>\n<dt>Fecha</dt>\n<dd>%s</dd>\n</dl>", date);
         return SUCCESS;
     }
     return ERROR;
@@ -94,7 +96,7 @@ int writeHtmlDate(htmlFile *output, char *date) {
 
 int writeHtmlVersion(htmlFile *output, char *version) {
     if (output->init) {
-        fprintf(output->file, "<dl>\n<dt>Version</dt>\n<dd> %s </dd>\n</dl>", version);
+        fprintf(output->file, "<dl>\n<dt>Version</dt>\n<dd>%s</dd>\n</dl>", version);
         return SUCCESS;
     }
     return ERROR;
@@ -102,7 +104,7 @@ int writeHtmlVersion(htmlFile *output, char *version) {
 
 int writeHtmlParam(htmlFile *output, char *paramName, char *paramInfo) {
     if (output->init) {
-        fprintf(output->file, "<dl>\n<dt>Par&aacute;metro: %s</dt>\n<dd> %s </dd>\n</dl>", paramName, paramInfo);
+        fprintf(output->file, "<dl>\n<dt>Par&aacute;metro: %s</dt>\n<dd>%s</dd>\n</dl>", paramName, paramInfo);
         return SUCCESS;
     }
     return ERROR;
@@ -110,7 +112,7 @@ int writeHtmlParam(htmlFile *output, char *paramName, char *paramInfo) {
 
 int writeHtmlReturn(htmlFile *output, char *returnInfo) {
     if (output->init) {
-        fprintf(output->file, "<dl>\n<dt>Return</dt>\n<dd> %s </dd>\n</dl>", returnInfo);
+        fprintf(output->file, "<dl>\n<dt>Return</dt>\n<dd>%s</dd>\n</dl>", returnInfo);
         return SUCCESS;
     }
     return ERROR;
@@ -118,7 +120,7 @@ int writeHtmlReturn(htmlFile *output, char *returnInfo) {
 
 int writeHtmlPreconditions(htmlFile *output, char *conditions) {
     if (output->init) {
-        fprintf(output->file, "<dl>\n<dt>Pre­Condici&oacute;n</dt>\n<dd> %s </dd>\n</dl>", conditions);
+        fprintf(output->file, "<dl>\n<dt>Pre­Condici&oacute;n</dt>\n<dd>%s</dd>\n</dl>", conditions);
         return SUCCESS;
     }
     return ERROR;
@@ -126,7 +128,7 @@ int writeHtmlPreconditions(htmlFile *output, char *conditions) {
 
 int writeHtmlPostconditions(htmlFile *output, char *conditions) {
     if (output->init) {
-        fprintf(output->file, "<dl>\n<dt>PostCondici&oacute;n</dt>\n<dd> %s </dd>\n</dl>", conditions);
+        fprintf(output->file, "<dl>\n<dt>PostCondici&oacute;n</dt>\n<dd>%s</dd>\n</dl>", conditions);
         return SUCCESS;
     }
     return ERROR;
@@ -151,7 +153,7 @@ int parseStringToHtml(htmlFile *output, char *line) {
     } else if (strcmp(KW_VERSION, keyword) == 0) {
         writeHtmlVersion(output, param);
     } else if (strcmp(KW_PARAM, keyword) == 0) {
-        writeHtmlParam(output, strtok(NULL, " "), strtok(NULL, ""));
+        writeHtmlParam(output, strtok(param, " "), strtok(NULL, ""));
     } else if (strcmp(KW_RETURN, keyword) == 0) {
         writeHtmlReturn(output, param);
     } else if (strcmp(KW_PRE, keyword) == 0) {
