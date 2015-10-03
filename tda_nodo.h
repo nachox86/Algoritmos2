@@ -1,8 +1,13 @@
 #ifndef tda_nodo
     #define tda_nodo
 
-    typedef TDA_Nodo {
+    #if !defined(NULL)
+    #define NULL 0
+    #endif
+
+    typedef struct TDA_Nodo {
         char** comments;
+        int commentsCount;
         struct TDA_Nodo* Siguiente;
     } TDA_Nodo;
 
@@ -55,7 +60,7 @@
     @pre Node debe estar creado
     @pos Devuelve la referencia a la matriz donde están los comentarios.
     */
-    int getCommentsNode(TDA_Nodo Node);
+    char** getCommentsNode(TDA_Nodo Node);
 
     /*
     @funcion getNextNode
@@ -67,7 +72,7 @@
     @pre Node debe estar creado
     @pos Devolverá la referencia al siguiente nodo.
     */
-    int getNextNode(TDA_Nodo Node);
+    TDA_Nodo* getNextNode(TDA_Nodo Node);
 
     /*
     @funcion destroyNode
@@ -80,6 +85,4 @@
     @pos Devolverá el código de éxito si pudo devolver los recursos al sistema sin problemas o devolverá el código de error en otro caso.
     */
     int destroyNode(TDA_Nodo* Node);
-
-
-#endif // tda_nodo
+#endif
