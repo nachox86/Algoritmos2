@@ -21,14 +21,16 @@ typedef struct {
     char *path;
 } Logger;
 
-int createLog(Logger log, char *path);
+int createLog(Logger **log, char *path);
 
-int Log(Logger log, char *level, char *msg);
+int Log(Logger *log, char *level, char *msg);
 
-int loge(Logger log, char *msg);
+int loge(Logger *log, char *msg);
 
-int logi(Logger log, char *msg);
+int logi(Logger *log, char *msg);
 
-int closeLog(Logger log);
+int getLogPath(Logger *log, char **buffer);
+
+int closeLog(Logger **log);
 
 #endif
