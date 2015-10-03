@@ -14,6 +14,18 @@
 #define TWO 2
 #define SEVEN 7
 
+#define KW_TITLE       "@titulo"
+#define KW_SUBTITLE    "@subtitulo"
+#define KW_FUNCTION    "@funcion"
+#define KW_DESCRIPTION "@descr"
+#define KW_AUTHOR      "@autor"
+#define KW_DATE        "@fecha"
+#define KW_VERSION     "@version"
+#define KW_PARAM       "@param"
+#define KW_RETURN      "@return"
+#define KW_PRE         "@pre"
+#define KW_POST        "@pos"
+
 void showHelp()
 {
     print("Este programa permite obtener en formato html, la documentación provista de un archivo de texto.\n");
@@ -63,4 +75,28 @@ int validateInput(int carg, char *varg[])
         }
 
     }
+}
+
+
+int checkForKW(char* linea)
+{
+    if(strstr(linea,KW_TITLE)||
+       strstr(linea,KW_SUBTITLE)||
+       strstr(linea,KW_FUNCTION)||
+       strstr(linea,KW_DESCRIPTION)||
+       strstr(linea,KW_AUTHOR)||
+       strstr(linea,KW_DATE)||
+       strstr(linea,KW_VERSION)||
+       strstr(linea,KW_PARAM)||
+       strstr(linea,KW_RETURN)||
+       strstr(linea,KW_PRE)||
+       strstr(linea,KW_POST))
+        /*encontró un parametro*/
+    {
+        return 0;
+    }
+    return 1;
+
+
+
 }
