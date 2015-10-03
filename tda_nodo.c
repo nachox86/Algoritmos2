@@ -1,5 +1,11 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "tda_nodo.h"
 #define MAX_STR 200
+#define RES_MEM_ERROR 2
+#define RES_OK 0
+
 
 int createNode(TDA_Nodo* Node,int commentCount)
 {
@@ -7,6 +13,7 @@ int createNode(TDA_Nodo* Node,int commentCount)
     int k;
     int j = 0;
     Node->Siguiente = NULL;
+    Node->commentsCount = commentCount;
     Node->comments = (char**) malloc(sizeof(int)*commentCount);
     if(!Node->comments) return RES_MEM_ERROR;
 
@@ -45,14 +52,14 @@ int setCommentsNode(TDA_Nodo* Node,char** Comments)
     return RES_OK;
 }
 
-int getCommentsNode(TDA_Nodo Node)
+char** getCommentsNode(TDA_Nodo Node)
 {
-    return Node->comments;
+    return Node.comments;
 }
 
-int getNextNode(TDA_Nodo Node)
+TDA_Nodo* getNextNode(TDA_Nodo Node)
 {
-    return Node->Siguiente;
+    return Node.Siguiente;
 }
 
 int destroyNode(TDA_Nodo* Node)
@@ -61,7 +68,8 @@ int destroyNode(TDA_Nodo* Node)
     int pcomLen = 0;
 
     Node->Siguiente = NULL;
-    pcomLen = strlen(Node->comments);
+
+    pcomLen = Node->commentsCount;
 
     if(pcomLen==0)
     {
@@ -75,6 +83,7 @@ int destroyNode(TDA_Nodo* Node)
         }
         free(Node->comments);
     }
+    Node->commentsCount = 0;
     return RES_OK;
 }
 
