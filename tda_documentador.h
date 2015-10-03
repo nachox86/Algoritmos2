@@ -5,51 +5,65 @@
 #define RES_ERROR   1
 
 typedef struct {
-    /* TODO: Define TDA */
+    char* inputFile;
+    char* outputFile;
+    Logger* logFile;
+    T_List* listado;
 } TDA_Doc;
 
-/*
+    /*
+    @funcion createDoc
+    @descr Esta es una primitiva del TDA_Doc que crea el documentador.
+    @autor Ignacio
+    @fecha 02/10/2015
+    @version "1.0"
+    @param *docu documentador a ser creado
+    @param Log objeto que permite el logueo
+    @pre ninguna condición necesaria
+    @pos devolverá el código de éxito si pudo crear y solicitar los recursos necesarios para el documentador, en caso contrario devolverá el código de error.
+    */
+    int createDoc(TDA_Doc *docu, Logger log);
 
-    PRE:    Documentador no creado
-    POST:   Devuelve RES_OK si pudo crear el documentador, y lo registra en el log en modo INFO.
-            Devuelve RES_ERROR en otro caso, o la constante que se defina pertinentemente y lo registra en el log en modo ERROR.
-    PARAMS: docu: Documentador a usar.
-            log:  Logger a usar.
-*/
+    /*
+    @funcion extractDocumentation
+    @descr Esta es una primitiva del TDA_Doc que toma los comentarios del archivo de texto de entrada y los vuelca en formato html en el archivo de salida.
+    @autor Ignacio
+    @fecha 02/10/2015
+    @version "1.0"
+    @param *docu es el documentador.
+    @param *inputFile es el archivo de entrada del que se toman los comentarios.
+    @param *outputFile es el archivo de salida donde estará toda la información en formato html.
+    @pre el documentador debe estar creado e inicializado
+    @pos Devuelve RES_OK si pudo extraer la información a documentar del archivo_entrada, escribiéndola en el archivo_salida y lo registra en el log.
+         Devuelve RES_ERROR en otro caso, o la constante que se defina pertinentemente y lo registra en el log en modo ERROR.
+    */
+    int extractDocumentation(TDA_Doc *docu, char *inputFile, char *outputFile);
 
-int createDoc(TDA_Doc *docu, Logger log);
+    /*
+    @funcion createIndex
+    @descr Esta es una primitiva del TDA_Doc que toma la información guardada en la estructura del documentador, y vuelca en una archivo en formato html un índice de las funciones existentes del que fue el archivo de entrada.
+    @autor Ignacio
+    @fecha 02/10/2015
+    @version "1.0"
+    @param *docu es el documentador.
+    @param *indexFile es el archivo de índices.
+    @pre Documentador creado e inicializado.
+    @pos El archivo de salida “arch_indice” contiene el índice construido en formato html.
+         Devuelve RES_OK en caso de que todo haya funcionado correctamente.
+         Decuelve RES_ERROR en otro caso.
+    */
+    int createIndex(TDA_Doc *docu, char *indexFile);
 
-
-/*
-    PRE:    Documentador creado e inicializado.
-    POST:   Devuelve RES_OK si pudo extraer la información a documentar del archivo_entrada, escribiéndola en el archivo_salida y lo registra en el log.
-            Devuelve RES_ERROR en otro caso, o la constante que se defina pertinentemente y lo registra en el log en modo ERROR.
-    PARAMS: docu:       Documentador a usar.
-            inputFile:  Archivo del cual extraer la documentacion.
-            outputFile: Archivo al cual guardar la documentacion en el formato preestablecido.
-*/
-
-int extractDocumentation(TDA_Doc *docu, char *inputFile, char *outputFile);
-
-/*
-    PRE:    Documentador creado e inicializado.
-    POST:   El archivo de salida “arch_indice” contiene el índice construido en formato html.
-            Devuelve RES_OK en caso de que todo haya funcionado correctamente.
-            Decuelve RES_ERROR en otro caso.
-    PARAMS: docu:       Documentador a usar.
-            indexFile:  Archivo de salida para el inidice generado.
-*/
-
-int createIndex(TDA_Doc *docu, char *indexFile);
-
-/*
-    PRE:    Documentador creado en inicializado.
-    POST:   Devuelve RES_ERROR en otro caso, o la constante que se defina pertinentemente y lo registra en el log en modo ERROR.
-            En ambos casos registra la actividad en el log según corresponda
-    PARAMS: docu: Documentador a usar.
-*/
-
-int destroyDoc(TDA_Doc *docu);
-
-
+    /*
+    @funcion destroyDoc
+    @descr Esta es una primitiva del TDA_Doc que destruye el documentador credo anteriormente, devolviendo los recursos utilizados al sistema.
+    @autor Ignacio
+    @fecha 02/10/2015
+    @version "1.0"
+    @param *docu es el documentador.
+    @pre Documentador creado e inicializado.
+    @pos Devuelve RES_ERROR en otro caso, o la constante que se defina pertinentemente y lo registra en el log en modo ERROR.
+         En ambos casos registra la actividad en el log según corresponda
+    */
+    int destroyDoc(TDA_Doc *docu);
 #endif // DOCU_TDA_H_INCLUDED
