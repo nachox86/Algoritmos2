@@ -1,3 +1,5 @@
+#include "list_tda.h"
+
 #define RES_OK 0
 #define RES_ERROR 1
 #define RES_HELP 2
@@ -26,6 +28,17 @@
 #define KW_PRE         "@pre"
 #define KW_POST        "@pos"
 
+
+/*
+@funcion showHelp
+@descr Muestra la ayuda del programa.
+@autor Ignacio
+@fecha 03/10/2015
+@version "1.0"
+@param ninguno
+@pre ninguna condición necesaria
+@pos devuelve en pantalla la ayuda del programa.
+*/
 void showHelp()
 {
     print("Este programa permite obtener en formato html, la documentación provista de un archivo de texto.\n");
@@ -40,6 +53,20 @@ void showHelp()
     print("-h o --help: muestra esta ayuda.\n");
 }
 
+/*
+@funcion validateInput
+@descr Valida que los argumentos de entrada sean válidos al igual que la cantidad.
+@autor Ignacio
+@fecha 30/09/2015
+@version "1.0"
+@param carg cantidad de argumentos
+@param varg[] array con los argumentos de entrada
+@pre ninguna condición necesaria
+@pos Devolverá RES_NOT_ENOUGH_ARGS si no están la cantidad apropiada de argumentos.
+     Devolverá RES_HELP si se pide la ayuda.
+     Devolverá RES_WRONG_ARGS si se ingresaron mal los argumentos.
+     Devolverá RES_CORRECT_ARGS si se ingresaron correctamente los argumentos.
+*/
 int validateInput(int carg, char *varg[])
 {
     if(carg!=TWO && carg!= SEVEN)
@@ -77,7 +104,16 @@ int validateInput(int carg, char *varg[])
     }
 }
 
-
+/*
+@funcion checkForKW
+@descr Dado un string de caracteres se fija si se encuentra alguna de las palabras claves definidas.
+@autor Ignacio
+@fecha 01/10/2015
+@version "1.0"
+@param linea array de caracteres
+@pre ninguna condición necesaria
+@pos Devolverá RES_OK si encontró alguna palabra clave o RES_ERROR si no.
+*/
 int checkForKW(char* linea)
 {
     if(strstr(linea,KW_TITLE)||
@@ -93,10 +129,32 @@ int checkForKW(char* linea)
        strstr(linea,KW_POST))
         /*encontró un parametro*/
     {
-        return 0;
+        return RES_OK;
     }
-    return 1;
+    return RES_ERROR;
+}
 
+/*
+@funcion countFunctions
+@descr Cuenta la cantidad de nodos en un lista. El corriente de la lista puede estar en cualquier lado de la lista.
+@autor Ignacio
+@fecha 01/10/2015
+@version "1.0"
+@param listed referencia a la lista
+@pre la lista debe estar creada
+@pos Devolverá la cantidad de nodos que encontró en la lista.
+*/
+int countFunctions(T_List* listed)
+{
+    int i = 0;
 
-
+    if(EmptyList(*listed)!=FALSE)
+    {
+        MoveC(listed,M_First);
+        do{
+            i++;
+        }while(MoveC(docu->lsitado,M_Next)!=FALSE);
+    }
+    MoveC(listed,M_First);
+    return i;
 }
