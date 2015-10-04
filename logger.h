@@ -21,14 +21,52 @@ typedef struct {
     char *path;
 } Logger;
 
-int createLog(Logger log, char *path);
+/*
+    createLogger: Crea e inicializa el Logger
+    PARAMS:     log: logger a ser inicializado
+                path: directorio donde crear el log
+    En caso de error devuelve ERROR (0), SUCCESS (1) en caso contrario.
+*/
 
-int Log(Logger log, char *level, char *msg);
+int createLog(Logger **log, char *path);
 
-int loge(Logger log, char *msg);
+/*
+    loge: Escribe errores en el log
+    PARAMS:     log: logger en el cual escribir el error
+                msg: mensaje a guardar
+    PRE:        log debe haber sido inicializado previamente
+    En caso de error devuelve ERROR (0), SUCCESS (1) en caso contrario.
+*/
 
-int logi(Logger log, char *msg);
+int loge(Logger *log, char *msg);
 
-int closeLog(Logger log);
+/*
+    logi: Escribe informacion en el log
+    PARAMS:     log: logger en el cual escribir la informacion
+                msg: mensaje a guardar
+    PRE:        log debe haber sido inicializado previamente
+    En caso de error devuelve ERROR (0), SUCCESS (1) en caso contrario.
+*/
+
+int logi(Logger *log, char *msg);
+
+/*
+    getLogPath: Guarda el path del logger en el buffer
+    PARAMS:     log: logger del cual obtener la direccion
+                buffer: buffer en el cual guardar la direccion
+    PRE:        log debe haber sido inicializado previamente
+    En caso de error devuelve ERROR (0), SUCCESS (1) en caso contrario.
+*/
+
+int getLogPath(Logger *log, char **buffer);
+
+/*
+    closeLog: Cierra y destruye el logger
+    PARAMS:     log: logger a destruir
+    PRE:        log debe haber sido inicializado previamente
+    En caso de error devuelve ERROR (0), SUCCESS (1) en caso contrario.
+*/
+
+int closeLog(Logger **log);
 
 #endif
