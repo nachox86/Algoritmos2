@@ -7,7 +7,6 @@
 
     typedef struct TDA_Nodo {
         char** comments;
-        int commentsCount;
         struct TDA_Nodo* Siguiente;
     } TDA_Nodo;
 
