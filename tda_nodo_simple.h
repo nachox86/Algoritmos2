@@ -1,32 +1,32 @@
-#ifndef tda_nodo
-    #define tda_nodo
+#ifndef tda_nodo_simple
+    #define tda_nodo_simple
 
     #if !defined(NULL)
     #define NULL 0
     #endif
 
-    typedef struct TDA_Nodo {
-        char** comments;
-        int commentsCount;
-        struct TDA_Nodo* Siguiente;
-    } TDA_Nodo;
+    typedef struct TDA_Nodo_Simple
+    {
+        char* tname;
+        char* outputFile;
+        struct TDA_Nodo_Simple* Siguiente;
+    } TDA_Nodo_Simple;
 
     /*
-    @funcion createNode
-    @descr Esta es una primitiva del TDA_Nodo que crea un nuevo nodo y pide los recursos necesarios para ello.
+    @funcion createSimpleNode
+    @descr Esta es una primitiva del TDA_Nodo_Simple que crea un nuevo nodo y pide los recursos necesarios para ello.
     @autor Ignacio
     @fecha algundia
     @version "1.0"
     @param *Node nodo a ser creado
-    @param commentCount cantidad de palabras claves a ingresar al nodo
     @pre ninguna condición necesaria
     @pos devolverá el código de éxito si pudo crear y solicitar los recursos necesarios para el nodo, en caso contrario devolverá el código de error.
     */
-    int createNode(TDA_Nodo* Node,int commentCount);
+    int createSimpleNode(TDA_Nodo_Simple* Node);
 
     /*
-    @funcion setNextNode
-    @descr Esta es una primitiva del TDA_Nodo que inicializa la referencia al siguiente nodo.
+    @funcion setNextSNode
+    @descr Esta es una primitiva del TDA_Nodo_Simple que inicializa la referencia al siguiente nodo.
     @autor Ignacio
     @fecha algundia
     @version "1.0"
@@ -35,11 +35,24 @@
     @pre Node debe estar creado
     @pos Inicializará Node con la referencia del siguiente nodo.
     */
-    int setNextNode(TDA_Nodo* Node,TDA_Nodo* nextNode);
+    int setNextSNode(TDA_Nodo_Simple* Node,TDA_Nodo_Simple* nextNode);
 
     /*
-    @funcion setCommentsNode
-    @descr Esta es una primitiva del TDA_Nodo que inicializa dándole un valor a los elementos de la matriz del TDA.
+    @funcion setNameSNode
+    @descr Esta es una primitiva del TDA_Nodo_Simple que inicializa el nombre del nodo.
+    @autor Ignacio
+    @fecha algundia
+    @version "1.0"
+    @param *Node nodo a ser inicializado
+    @param nextNode referencia al siguiente nodo
+    @pre Node debe estar creado
+    @pos Inicializará Node con el nombre de la función.
+    */
+    int setNameSNode(TDA_Nodo_Simple* Node,char* namet);
+
+    /*
+    @funcion setOutputFileSNode
+    @descr Esta es una primitiva del TDA_Nodo_Simple que inicializa el campo de archivo de salida.
     @autor Ignacio
     @fecha algundia
     @version "1.0"
@@ -48,11 +61,11 @@
     @pre *Node debe estar creado
     @pos Inicializará Node con los comentarios de la función correspondiente al nodo.
     */
-    int setCommentsNode(TDA_Nodo* Node,char** Comments);
+    int setOutputFileSNode(TDA_Nodo_Simple* Node,char* output);
 
     /*
-    @funcion getCommentsNode
-    @descr Esta es una primitiva del TDA_Nodo que devuelve una referencia a los comentarios del nodo.
+    @funcion getNameSNode
+    @descr Esta es una primitiva del TDA_Nodo_Simple que devuelve el nombre del nodo.
     @autor Ignacio
     @fecha algundia
     @version "1.0"
@@ -60,11 +73,23 @@
     @pre Node debe estar creado
     @pos Devuelve la referencia a la matriz donde están los comentarios.
     */
-    char** getCommentsNode(TDA_Nodo Node);
+    char* getNameSNode(TDA_Nodo_Simple* Node);
+
+    /*
+    @funcion getOutputFileSNode
+    @descr Esta es una primitiva del TDA_Nodo_Simple que devuelve el nombre del archivo de salida.
+    @autor Ignacio
+    @fecha algundia
+    @version "1.0"
+    @param Node nodo
+    @pre Node debe estar creado
+    @pos Devuelve la referencia a la matriz donde están los comentarios.
+    */
+    char* getOutputFileSNode(TDA_Nodo_Simple* Node);
 
     /*
     @funcion getNextNode
-    @descr Esta es una primitiva del TDA_Nodo que devuelve la referencia al siguiente nodo.
+    @descr Esta es una primitiva del TDA_Nodo_Simple que devuelve la referencia al siguiente nodo.
     @autor Ignacio
     @fecha algundia
     @version "1.0"
@@ -72,11 +97,11 @@
     @pre Node debe estar creado
     @pos Devolverá la referencia al siguiente nodo.
     */
-    TDA_Nodo* getNextNode(TDA_Nodo Node);
+    TDA_Nodo_Simple* getNextSNode(TDA_Nodo_Simple* Node);
 
     /*
     @funcion destroyNode
-    @descr Esta es una primitiva del TDA_Nodo que destruye el nodo devolviendo al sistema los recursos utilizados.
+    @descr Esta es una primitiva del TDA_Nodo_Simple que destruye el nodo devolviendo al sistema los recursos utilizados.
     @autor Ignacio
     @fecha algundia
     @version "1.0"
@@ -84,6 +109,6 @@
     @pre *Node debe estar creado
     @pos Devolverá el código de éxito si pudo devolver los recursos al sistema sin problemas o devolverá el código de error en otro caso.
     */
-    int destroyNode(TDA_Nodo* Node);
+    int destroySNode(TDA_Nodo_Simple* Node);
 #endif
 
