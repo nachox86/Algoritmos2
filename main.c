@@ -1,19 +1,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "tda_documentador.h"
+#include "tda_nodo.h"
+#include "list_tda.h"
+#include "htmlParser.h"
+#include "functions_tools.c"
 
-/* TODO: Show help here... */
-void showHelp() {}
-
+/*
+@funcion main
+@descr Función principal del programa. Dado los argumentos de entrada toma los comentarios de funciones de un archivo de entrada y los vuelca en un archivo de salida en formato html. También genera un índice en html y un Log de eventos.
+@autor Ignacio
+@fecha 03/10/2015
+@version "2.0"
+@param argc cantidad de argumentos de entrada
+@param argv[] array de argumentos de entrada
+@pre Se debe ejecutar el modo de ayuda antes de usarlo para saber qué argumentos pasarle: tp2.exe -h o tp2.exe --help
+@pos Devolverá en un archivo de salida, el índice con todas las funciones documentadas, en otro la documentación de esas funciones.
+*/
 int main(int argc, char *argv[]) {
 	int i, nargs = 0;
     char *inputDir = NULL, *outputFile = NULL, *logfile = NULL;
-    
+
     if (argc < 7) {
     	printf("Not enough args\n"); /* TODO: Do something else with this */
         return -1; /* NOT ENOUGH ARGS */
     }
-    
+
     for (i = 1; i < argc; i++) {
         if ((strcmp(argv[i], "-h") == 0) || (strcmp(argv[i], "--help") == 0)) {
             showHelp();
@@ -32,15 +45,15 @@ int main(int argc, char *argv[]) {
             nargs++;
         }
     }
-    
+
     if (nargs == 3) {
     	/* We got enough arguments to proceed */
     	/* TODO: Next step, process input */
     }
-    
+
     free(inputDir);
     free(outputFile);
     free(logfile);
-    
+
     return 0;
 }
