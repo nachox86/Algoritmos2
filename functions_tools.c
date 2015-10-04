@@ -1,4 +1,6 @@
 #include "list_tda.h"
+#include "tda_documentador.h"
+#include <string.h>
 
 #define RES_OK 0
 #define RES_ERROR 1
@@ -42,16 +44,16 @@
 */
 void showHelp()
 {
-    print("Este programa permite obtener en formato html, la documentación provista de un archivo de texto.\n");
-    print("Uso:\n");
-    print("C:\>Documentador.exe -i archivo_a_documentar.c -l archivo_log.txt -o archivo_documentado.html\n");
-    print("C:\>Documentador.exe -h\n");
-    print("C:\>Documentador.exe --help\n");
-    print("Descripción de los parámetros:\n");
-    print("-i: indica el nombre del archivo de entrada del que se toma la documentación.\n");
-    print("-l: indica el nombre del archivo de loggeo de eventos.\n");
-    print("-o: indica el nombre del archivo de salida de la documentación en formato html.\n");
-    print("-h o --help: muestra esta ayuda.\n");
+    printf("Este programa permite obtener en formato html, la documentación provista de un archivo de texto.\n");
+    printf("Uso:\n");
+    printf("Documentador.exe -i archivo_a_documentar.c -l archivo_log.txt -o archivo_documentado.html\n");
+    printf("Documentador.exe -h\n");
+    printf("Documentador.exe --help\n");
+    printf("Descripción de los parámetros:\n");
+    printf("-i: indica el nombre del archivo de entrada del que se toma la documentación.\n");
+    printf("-l: indica el nombre del archivo de loggeo de eventos.\n");
+    printf("-o: indica el nombre del archivo de salida de la documentación en formato html.\n");
+    printf("-h o --help: muestra esta ayuda.\n");
 }
 
 /*
@@ -68,6 +70,8 @@ void showHelp()
      Devolverá RES_WRONG_ARGS si se ingresaron mal los argumentos.
      Devolverá RES_CORRECT_ARGS si se ingresaron correctamente los argumentos.
 */
+
+/*
 int validateInput(int carg, char *varg[])
 {
     if(carg!=TWO && carg!= SEVEN)
@@ -104,6 +108,7 @@ int validateInput(int carg, char *varg[])
 
     }
 }
+*/
 
 /*
 @funcion checkForKW
@@ -145,7 +150,7 @@ int checkForKW(char* linea)
 @pre la lista debe estar creada
 @pos Devolverá la cantidad de nodos que encontró en la lista.
 */
-int countFunctions(T_List* listed)
+int countFunctions(T_List* listed, TDA_Doc *docu)
 {
     int i = 0;
 
@@ -154,7 +159,7 @@ int countFunctions(T_List* listed)
         MoveC(listed,M_First);
         do{
             i++;
-        }while(MoveC(docu->lsitado,M_Next)!=FALSE);
+        }while(MoveC(docu->listado,M_Next)!=FALSE);
     }
     MoveC(listed,M_First);
     return i;

@@ -4,6 +4,8 @@
 #include "tda_nodo.h"
 #include "htmlParser.h"
 #include "functions_tools.c"
+#include <string.h>
+
 #define MAX_LINE 300
 
 #define MAX_KW 11
@@ -21,20 +23,25 @@
 #define KW_PRE         "@pre"
 #define KW_POST        "@pos"
 
-#define HTML_INDEX_HEADER <h1>Indice</h1>\n<hl/>\n<ul>
-#define HTML_INDEX_FOOTER </ul>
+#define HTML_INDEX_HEADER "<h1>Indice</h1>\n<hl/>\n<ul>"
+#define HTML_INDEX_FOOTER "</ul>"
 
 #define MSG_ERROR_IN_FILE "Ocurrió un error al abrir el archivo de entrada de datos."
 #define MSG_ERROR_INDEX_FILE "Ocurrió un error al abrir el archivo de índices."
 #define MSG_ERROR_MEMORY "Error al pedir recursos para variable auxiliar."
 #define MSG_ERROR_OUT_FILE "Ocurrió un error al abrir el archivo de salida de datos."
 
-int createDoc(TDA_Doc *docu, Logger* log)
+/* TODO: Check this declaration (done in situ for debug purposes */
+#define RES_MEM_ERROR   -1
+
+int createDoc(TDA_Doc **docu, Logger *log)
 {
-    docu->inputFile = NULL;
-    docu->outputFile = NULL;
-    docu->logFile = log;
-    docu->listado = NULL;
+	(*docu) = malloc(sizeof(TDA_Doc));
+
+    (*docu)->inputFile = NULL;
+    (*docu)->outputFile = NULL;
+    (*docu)->logFile = log;
+    (*docu)->listado = NULL;
     return RES_OK;
 }
 
@@ -45,10 +52,10 @@ int extractDocumentation(TDA_Doc *docu, char *iFile, char *oFile)
     int commentsEnd = 0;
     int commentsFound = 0; /* 0 significa que no encontró, 1 que si*/
     int count = 0;
-    int j;
+    int i,j;
     int lenElem = 0;
     char **comms;
-    htmlFile** outPut;
+    htmlFile *outPut;
 
 
     inputFile = fopen(iFile,"r");
@@ -62,7 +69,7 @@ int extractDocumentation(TDA_Doc *docu, char *iFile, char *oFile)
     comms = (char **) malloc(sizeof(char*)*MAX_KW);
     if(!comms)
     {
-        loge(docu->log,MSG_ERROR_MEMORY);
+        loge(docu->logFile,MSG_ERROR_MEMORY);
         return RES_MEM_ERROR;
     }
     /*El archivo se abrió correctamente por lo que ahora paso a recopilar la información*/
@@ -127,7 +134,7 @@ int extractDocumentation(TDA_Doc *docu, char *iFile, char *oFile)
                 comms = (char **) malloc(sizeof(char*)*MAX_KW);
                 if(!comms)
                 {
-                    loge(docu->log,MSG_ERROR_MEMORY);
+                    loge(docu->logFile,MSG_ERROR_MEMORY);
                     return RES_MEM_ERROR;
                 }
             }
@@ -136,7 +143,7 @@ int extractDocumentation(TDA_Doc *docu, char *iFile, char *oFile)
                 /*encontró un KW*/
                 /*lo tengo que agregar a comms*/
 
-                comms[count] = (char *) malloc(size_t(char)*strlen(linea)+1);
+                comms[count] = (char *) malloc(sizeof(char)*strlen(linea)+1);
                 if(!comms[count])
                 {
                     loge(docu->logFile,MSG_ERROR_MEMORY);
@@ -169,18 +176,18 @@ int extractDocumentation(TDA_Doc *docu, char *iFile, char *oFile)
     /*vamos a recorrer la lista, nodo por nodo, tomando cada uno de los comentarios e insertándolos en el archivo de salida*/
 
     /*creo la lista de nodos; los nodos son los comentarios de cada función*/
-    CreateList(docu.listado,sizeof(char**));
+    CreateList(docu->listado,sizeof(char**));
 
     /*Muevo al primero el corriente*/
-    MoveC(docu.listado,M_First);
+    MoveC(docu->listado,M_First);
 
     /*Creo el archivo de salida*/
-    createHtmlFile(outPut,oFile);
+    createHtmlFile(&outPut,oFile);
 
     do
     {
-        ChangeC(docu.listado,comms);
-        lenElem = strlen(comms);
+        ChangeC(docu->listado,comms);
+        lenElem = strlen(*comms);
         for(i=0;i<lenElem;i++)
         {
             if(parseStringToHtml(outPut,comms[i])==RES_ERROR)
@@ -189,8 +196,9 @@ int extractDocumentation(TDA_Doc *docu, char *iFile, char *oFile)
                 return RES_ERROR;
             }
         }
-    }while(MoveC(docu.listado,M_Next)!=FALSE)
-        closeHtmlFile(outPut);
+    } while(MoveC(docu->listado,M_Next)!=FALSE);
+
+    closeHtmlFile(&outPut);
 
     ClearList(docu->listado);
 
@@ -204,17 +212,18 @@ int createIndex(TDA_Doc *docu, char *indexFile)
     char** dato;
     char* token;
     char** sorted;
-    char sorted_aux[MAX_LINE]:
+    char sorted_aux[MAX_LINE];
     char htmlLine[MAX_LINE];
     int cantElem = 0; /*revisar cómo se asigna*/
     int i = 0;
+    int j = 0;
     int k = 0;
     int countNames = 0;
     int countFunc = 0;
 
 
     /*ahora tengo que ir insertando en orden alfabetico en el archivo*/
-    countFunc = countFunctions(docu->listado);
+    countFunc = countFunctions(docu->listado, docu);
 
     MoveC(docu->listado,M_First); /*muevo el corriente al primero*/
 
@@ -231,7 +240,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
         cantElem = sizeof(dato)/sizeof(char*); /*quería sacar la cantidad de subelementos que tiene el elemento del corriente*/
         for(i=0;i<cantElem;i++) /*para cada subelemento*/
         {
-            token = strtok(dato[i],KW_FUNCTION); /*busco referencias de la keyword @function*/
+            token = strtok(dato[i], KW_FUNCTION); /*busco referencias de la keyword @function*/
             while(token != NULL)
             {
                 if(strlen(token)>0) /*si no está vacío el token es que encontró el nombre o más*/
@@ -258,7 +267,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
                 token = strtok(dato[i],KW_FUNCTION);
             }
         }
-    }while(MoveC(docu->lsitado,M_Next)!=FALSE); /*muevo el corriente y empiezo de vuelta*/
+    }while(MoveC(docu->listado,M_Next)!=FALSE); /*muevo el corriente y empiezo de vuelta*/
 
     /*ordeno alfabeticamente*/
     for(j=1;j<countNames;j++)
@@ -286,7 +295,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
 
     for(i=0;i<countFunc;i++)
     {
-        sprintf(htmlLine,"<li><a href=”doc.html#%s”>%s</a></li>",sorted[i],sorted[i])
+        sprintf(htmlLine,"<li><a href=”doc.html#%s”>%s</a></li>",sorted[i],sorted[i]);
         fwrite(htmlLine,sizeof(char),strlen(htmlLine),index);
     }
 
@@ -302,14 +311,10 @@ int createIndex(TDA_Doc *docu, char *indexFile)
     return RES_OK;
 }
 
-int destroyDoc(TDA_Doc *docu)
+int destroyDoc(TDA_Doc **docu)
 {
-  docu->inputFile = NULL;
-  docu->outputFile = NULL;
-  docu->logFile = NULL;
-  if(ClearList(listado)!=RES_OK)
-  {
-      return RES_ERROR;
-  }
+  closeLog(&(*docu)->logFile);
+  free(*docu);
+  ClearList((*docu)->listado);
   return RES_OK;
 }
