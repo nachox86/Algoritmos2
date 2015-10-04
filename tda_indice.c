@@ -1,6 +1,8 @@
 #include "tda_indice.h"
 #include <malloc.h>
 #include <memory.h>
+#include <string.h>
+#include <stdlib.h>
 
 
 
@@ -105,3 +107,43 @@ void DeleteCIndex (TListaIndex *Lp){
     free(Np->elem);
     free(Np);
 }
+
+int cmpfunc(const void *name1, const void *name2)
+    {
+        const char *name1_ = *(const char **)name1;
+        const char *name2_ = *(const char **)name2;
+        return strcmp(name1_, name2_);
+    }
+    
+int ls_ordenar(TListaSimple *pLs){
+
+    TNodoSimple *pNa;
+    int i,cont=1;
+    char** vec;
+
+    pNa=pLs->Primero;
+    while(pNa->Siguiente!=NULL){
+        cont++;
+        pNa=pNa->Siguiente;
+    }
+    pNa=pLs->Primero;
+
+    vec=(char**)malloc(cont*sizeof(char*));
+    if(!vec)
+        return FALSE;
+
+    for(i=0;i=cont-1;i++){
+        vec[i]=pNa->name;
+        pNa=pNa->Siguiente;
+    }
+
+    qsort(vec,cont,sizeof(char*),cmpfunc);    
+
+    pLs->Corriente=pLs->Primero;
+    for(i=0;i=cont-1,i++){
+        pLs->Corriente->name=vec[i];
+        pLs->Corriente=pLs->Corriente->Siguiente;
+    }
+    return TRUE;
+}
+
