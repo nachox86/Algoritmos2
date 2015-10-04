@@ -1,9 +1,9 @@
 #include "tda_documentador.h"
 #include "logger.h"
 #include "list_tda.h"
-#include "tda_nodo.h"
+#include "tda_nodo_simple.h"
 #include "htmlParser.h"
-#include "functions_tools.c"
+#include "function_tools.h"
 #include <string.h>
 
 #include <sys/types.h>
@@ -36,6 +36,8 @@
 
 /* TODO: Check this declaration (done in situ for debug purposes */
 #define RES_MEM_ERROR   -1
+
+int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile);
 
 int createDoc(TDA_Doc **docu, Logger *log)
 {

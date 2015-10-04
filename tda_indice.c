@@ -21,7 +21,9 @@ void ls_Vaciar(TListaSimple *pLs)
     for(pNodo = pLs->Primero;(pNodo);pNodo=siguiente)
     {
         siguiente = pNodo->Siguiente;
-        free(pNodo->Elem);
+        /* TODO!!! */
+        /* pNodo doesn't have a member named Elem.. ??
+        free(pNodo->Elem); */
         free(pNodo);
     }
     pLs->Primero=pLs->Corriente=NULL;
@@ -38,9 +40,12 @@ int ls_Vacia(TListaSimple Ls)
 /* ls_ElemCorriente
 Pre: Ls creada y no vacía.
 Post: Se devuelve en E el elemento corriente de la lista.*/
+
+
+/* TODO: pNodo no tiene elemento llamado Elem... ??? */
 void ls_ElemCorriente(TListaSimple Ls, void *pE)
 {
-    memcpy(pE, Ls.Corriente->Elem, Ls.TamanioDato);
+    /* memcpy(pE, Ls.Corriente->Elem, Ls.TamanioDato); */
 }
 
 /* ls_ModifCorriente
@@ -48,7 +53,7 @@ Pre: Ls creada y no vacía.
 Post: El contenido del elemento actual quedo actualizado con E. */
 void ls_ModifCorriente(TListaSimple *pLs, void* pE)
 {
-    memcpy(pLs->Corriente->Elem, pE, pLs->TamanioDato);
+    /* memcpy(pLs->Corriente->Elem, pE, pLs->TamanioDato); */
 }
 
 /* ls_MoverCorriente
@@ -92,13 +97,13 @@ void ls_BorrarCorriente(TListaSimple *pLs)
         while (PAux->Siguiente!=pLs->Corriente)
             PAux = PAux->Siguiente;
         PAux->Siguiente=pLs->Corriente->Siguiente;
-        if (PAux->Siguiente) //Si no es el último
+        if (PAux->Siguiente) /* Si no es el último */
             pLs->Corriente = PAux->Siguiente;
         else
-            pLs->Corriente = PAux; //Si es el último queda en el anterior al
-        //borrado
+            pLs->Corriente = PAux; /* Si es el último queda en el anterior al */
     }
-    free(PNodo->Elem);
+    /* TODO: PNodo no tiene elemento Elem!!!??
+    free(PNodo->Elem); */
     free(PNodo);
 }
 /* ls_Insertar
@@ -112,12 +117,12 @@ int ls_Insertar(TListaSimple *pLs, TMovimiento_Ls M, void* pE)
 {
     TNodoSimple *pNodo = (TNodoSimple*) malloc(sizeof(TNodoSimple));
     if (!pNodo)
-        return FALSE; //No hay memoria disponible
+        return FALSE; /* No hay memoria disponible */
     if ((pLs->Primero == NULL) || (M==LS_PRIMERO) ||
     ((M==LS_ANTERIOR) && (pLs->Primero==pLs->Corriente)))
     {
-    //Si está vacía o hay que insertar en el primero o
-    //hay que insertar en el anterior y el actual es el primero
+    /* Si está vacía o hay que insertar en el primero o
+    /* hay que insertar en el anterior y el actual es el primero */
         pNodo->Siguiente = pLs->Primero;
         pLs->Primero = pLs->Corriente = pNodo;
     }
@@ -128,7 +133,7 @@ int ls_Insertar(TListaSimple *pLs, TMovimiento_Ls M, void* pE)
             pNodo->Siguiente = pLs->Corriente->Siguiente;
             pLs->Corriente->Siguiente = pNodo;
         }
-        else //LS_ANTERIOR
+        else /* LS_ANTERIOR */
         {
             TNodoSimple *pAux=pLs->Primero;
             while (pAux->Siguiente!=pLs->Corriente)
@@ -137,8 +142,9 @@ int ls_Insertar(TListaSimple *pLs, TMovimiento_Ls M, void* pE)
             pNodo->Siguiente = pLs->Corriente;
         }
     }
+    /* TODO: pNodo no tiene elemento llamado Elem!!?? damn it!!
     pNodo->Elem = malloc (pLs->TamanioDato);
-    memcpy(pNodo->Elem, pE, pLs->TamanioDato);
+    memcpy(pNodo->Elem, pE, pLs->TamanioDato); */
     pLs->Corriente=pNodo;
     return TRUE;
 }

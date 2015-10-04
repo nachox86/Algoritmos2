@@ -21,9 +21,9 @@ void ClearList (T_List *Lp){
     for (Np=Lp->First; Np; Np=Next){
         Next=Np->Next;
         free(Np->elem);
-        free(Np)
+        free(Np);
         }
-    Lp->First=Lp->C=NULL
+    Lp->First=Lp->C=NULL;
     }
 
 int InsertE (T_List *Lp, T_Move M, void* E){
@@ -61,7 +61,7 @@ int InsertE (T_List *Lp, T_Move M, void* E){
 
 
 void GetC(T_List L, void* E){
-    memcpy(E,L.C->elem,L.SizeE)
+    memcpy(E,L.C->elem,L.SizeE);
 }
 
 
@@ -78,9 +78,9 @@ int MoveC (T_List *Lp, T_Move M){
                      else
                         Lp->C=Lp->C->Next;
                      break;
-        case M_Ant: return FALSE
+        case M_Prev: return FALSE;
     }
-    return TRUE
+    return TRUE;
 }
 
 
@@ -92,7 +92,7 @@ void DeleteC (T_List *Lp){
         Lp->C=Lp->First;
     }
     else{
-        T_Nodo *Auxp;
+        T_Node *Auxp;
         Auxp=Lp->First;
         while(Auxp->Next != Lp->C)
             Auxp=Auxp->Next;

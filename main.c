@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "tda_documentador.h"
-#include "tda_nodo.h"
+#include "tda_nodo_simple.h"
 #include "list_tda.h"
 #include "htmlParser.h"
-#include "functions_tools.c"
+#include "function_tools.h"
 
 /*
 @funcion main
@@ -20,7 +20,7 @@
 int main(int argc, char *argv[]) {
 	int i, nargs = 0;
     char *inputDir, *outputFile, *logfile;
-    
+
     Logger *log;
     TDA_Doc *docu;
 
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
 
     if (nargs == 3) {
     	/* We got enough arguments to proceed */
-    	
+
     	createLog(&log, logfile);
     	createDoc(&docu, log);
     	extractDocumentation(docu, inputDir, outputFile);
