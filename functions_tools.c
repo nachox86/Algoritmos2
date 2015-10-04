@@ -151,7 +151,7 @@ int checkForKW(char* linea)
 @pre la lista debe estar creada
 @pos Devolverá la cantidad de nodos que encontró en la lista.
 */
-int countFunctions(T_List* listed, TDA_Doc *docu)
+int countFunctions(T_List* listed)
 {
     int i = 0;
 
@@ -160,7 +160,7 @@ int countFunctions(T_List* listed, TDA_Doc *docu)
         MoveC(listed,M_First);
         do{
             i++;
-        }while(MoveC(docu->listado,M_Next)!=FALSE);
+        }while(MoveC(listed,M_Next)!=FALSE);
     }
     MoveC(listed,M_First);
     return i;
