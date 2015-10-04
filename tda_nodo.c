@@ -13,7 +13,6 @@ int createNode(TDA_Nodo* Node,int commentCount)
     int k;
     int j = 0;
     Node->Siguiente = NULL;
-    Node->commentsCount = commentCount;
     Node->comments = (char**) malloc(sizeof(int)*commentCount);
     if(!Node->comments) return RES_MEM_ERROR;
 
@@ -61,6 +60,7 @@ TDA_Nodo* getNextNode(TDA_Nodo Node)
 {
     return Node.Siguiente;
 }
+
 
 int destroyNode(TDA_Nodo* Node)
 {
