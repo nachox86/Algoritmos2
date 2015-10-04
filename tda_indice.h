@@ -140,5 +140,16 @@
         @post Se elimino C y el corriente pasa a ser al siguiente a menos q este sea el ultimo, en este caso pasa a ser el anterior
     */
     void DeleteCIndex (TListaIndex *Lp);
+    
+    /*
+        @function ls_ordenar
+        @autor Joaquin
+        @fecha 04/10/2015
+        @version 1.0
+        @param pLs puntero a la lista a ordenar
+        @pre pLs creada y no vacia
+        @post pLs ordenada y devuelve TRUE o si no se pudo ordenar devuelve FALSE
+    */
+    int ls_ordenar(TListaSimple *pLs);
 
 #endif
