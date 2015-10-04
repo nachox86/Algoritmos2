@@ -18,11 +18,11 @@
     LS_ANTERIOR
     } TMovimiento_Ls;
 
-    typedef struct
+    typedef struct TListaIndex
     {
     TDA_Nodo_Simple *Primero, *Corriente;
     int TamanioDato;
-    } TListaSimple;
+    } TListaIndex;
 
 
     /*
@@ -36,7 +36,7 @@
         @pre L no fue creada
         @post L creada y vacia
     */
-    void CreateList (TListaSimple *Lp, int SizeE);
+    void CreateListIndex (TListaIndex *Lp, int SizeE);
 
 
     /*
@@ -49,7 +49,7 @@
         @pre L creada
         @post devuelve FALSE si L esta vacia, devuelve TRUE si L tiene elementos
     */
-    int EmptyList (TListaSimple L);
+    int EmptyListIndex (TListaIndex L);
 
 
     /*
@@ -62,7 +62,7 @@
         @pre L esta creada
         @post L vacia
     */
-    void ClearList (TListaSimple *Lp);
+    void ClearListIndex (TListaIndex *Lp);
 
 
     /*
@@ -81,7 +81,7 @@
               Si M=M_Prev, se inserta antes del corriente
               Si no se pudo insertar, se devuele FALSE
     */
-    int InsertE (TListaSimple *Lp, T_Move M, void* E);
+    int InsertEIndex (TListaIndex *Lp, T_Move M, void* E);
 
 
     /*
@@ -95,7 +95,7 @@
         @pre L creada y con al menos un elemento
         @post Se devuelve el corriente en C
     */
-    void GetC (TListaSimple L, void* E);
+    void GetCIndex (TListaIndex L, void* E);
 
 
     /*
@@ -109,7 +109,7 @@
         @pre creada y no vacia
         @post E pasa a ser el elemento del corriente
     */
-    void ChangeC (TListaSimple *Lp, void* E);
+    void ChangeCIndex (TListaIndex *Lp, void* E);
 
 
     /*
@@ -126,7 +126,7 @@
               Si M=M_Prev, se devuelve FALSE.
               Si L esta vacia, devuelvo FALSE.
     */
-    int MoveC (TListaSimple *Lp, T_Move M);
+    int MoveCIndex (TListaIndex *Lp, T_Move M);
 
 
     /*
@@ -139,6 +139,6 @@
         @pre L creada y no vacia
         @post Se elimino C y el corriente pasa a ser al siguiente a menos q este sea el ultimo, en este caso pasa a ser el anterior
     */
-    void DeleteC (TListaSimple *Lp);
+    void DeleteCIndex (TListaIndex *Lp);
 
 #endif
