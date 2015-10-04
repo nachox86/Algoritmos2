@@ -7,83 +7,59 @@
 #define RES_OK 0
 
 
-int createNode(TDA_Nodo* Node,int commentCount)
+int createSimpleNode(TDA_Nodo_Simple* Node)
 {
-    int i;
-    int k;
-    int j = 0;
+    printf("entre a create\n");
     Node->Siguiente = NULL;
-    Node->commentsCount = commentCount;
-    Node->comments = (char**) malloc(sizeof(int)*commentCount);
-    if(!Node->comments) return RES_MEM_ERROR;
-
-    for(i=0;i<commentCount;i++)
-    {
-        if(j==0) Node->comments[i]=(char*) malloc(sizeof(char)*MAX_STR+1); /*es + 1 por el \0*/
-        if(!Node->comments[i])
-        {
-            j = i;
-        }
-    }
-
-    if(j!=0)
-    {
-        for(k=j;k>=0;--k)
-        {
-            free(Node->comments[k]);
-        }
-        free(Node->comments);
-        return RES_MEM_ERROR;
-    }
-
+    /*Node->tname = NULL;
+    Node->outputFile = NULL;*/
     return RES_OK;
-
 }
 
-int setNextNode(TDA_Nodo* Node,TDA_Nodo* nextNode)
+int setNextSNode(TDA_Nodo_Simple* Node,TDA_Nodo_Simple* nextNode)
 {
     Node->Siguiente = nextNode;
     return RES_OK;
 }
 
-int setCommentsNode(TDA_Nodo* Node,char** Comments)
+int setNameSNode(TDA_Nodo_Simple* Node,char* namet)
 {
-    Node->comments = Comments;
+    Node->tname = (char*)malloc((sizeof(char)*strlen(namet))+1);
+    if(!Node->tname)
+        return RES_MEM_ERROR;
+    Node->tname = namet;
     return RES_OK;
 }
 
-char** getCommentsNode(TDA_Nodo Node)
+int setOutputFileSNode(TDA_Nodo_Simple* Node,char* output)
 {
-    return Node.comments;
+    Node->outputFile = (char*)malloc(sizeof(char)*strlen(output)+1);
+    if(!Node->outputFile)
+        return RES_MEM_ERROR;
+    Node->outputFile = output;
+    return RES_OK;
 }
 
-TDA_Nodo* getNextNode(TDA_Nodo Node)
+char* getNameSNode(TDA_Nodo_Simple* Node)
 {
-    return Node.Siguiente;
+    return Node->tname;
 }
 
-int destroyNode(TDA_Nodo* Node)
+char* getOutputFileSNode(TDA_Nodo_Simple* Node)
 {
-    int i = 0;
-    int pcomLen = 0;
+    return Node->outputFile;
+}
 
+TDA_Nodo_Simple* getNextSNode(TDA_Nodo_Simple* Node)
+{
+    return Node->Siguiente;
+}
+
+int destroySNode(TDA_Nodo_Simple* Node)
+{
     Node->Siguiente = NULL;
-
-    pcomLen = Node->commentsCount;
-
-    if(pcomLen==0)
-    {
-        free(Node->comments);
-    }
-    else
-    {
-        for(i=pcomLen;i>=0;--i)
-        {
-            free(Node->comments[i]);
-        }
-        free(Node->comments);
-    }
-    Node->commentsCount = 0;
+    free(Node->tname);
+    free(Node->outputFile);
     return RES_OK;
 }
 
