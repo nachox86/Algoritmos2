@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
     	
     	createLog(&log, logfile);
     	createDoc(&docu, log);
-    	extraerDocumentation(docu, inputDir, outputFile);
+    	extractDocumentation(docu, inputDir, outputFile);
     	/* Create Index? */
     	destroyDoc(&docu);
     	closeLog(&log);
