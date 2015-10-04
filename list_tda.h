@@ -20,9 +20,9 @@
         } T_List;
 
     typedef enum {
-        M_First;
-        M_Next;
-        M_Prev;
+        M_First,
+        M_Next,
+        M_Prev
         } T_Move;
 
 
