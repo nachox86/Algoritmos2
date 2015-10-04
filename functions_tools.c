@@ -7,11 +7,12 @@
 #define RES_WRONG_ARGS 4
 #define RES_CORRECT_ARGS 5
 
-#define HELP1 -h
-#define HELP2 --help
-#define INPUT_FILE -i
-#define LOG_FILE -l
-#define OUPUT_FILE -o
+#define ARG_HELP1 -h
+#define ARG_HELP2 --help
+#define ARG_INPUT_FILE -i
+#define ARG_LOG_FILE -l
+#define ARG_OUPUT_FILE -o
+#define ARG_INDEX ->
 
 #define TWO 2
 #define SEVEN 7
@@ -88,12 +89,12 @@ int validateInput(int carg, char *varg[])
         }
         else if(carg==SEVEN)
         {
-            if((strcmp(varg[1],INPUT_FILE)==0&&strcmp(varg[3],LOG_FILE)==0&&strcmp(varg[5],OUTPUT_FILE)==0)||
-               (strcmp(varg[1],INPUT_FILE)==0&&strcmp(varg[3],OUTPUT_FILE)==0&&strcmp(varg[5],LOG_FILE)==0)||
-               (strcmp(varg[1],LOG_FILE)==0&&strcmp(varg[3],INPUT_FILE)==0&&strcmp(varg[5],OUTPUT_FILE)==0)||
-               (strcmp(varg[1],LOG_FILE)==0&&strcmp(varg[3],OUTPUT_FILE)==0&&strcmp(varg[5],INPUT_FILE)==0)||
-               (strcmp(varg[1],OUTPUT_FILE)==0&&strcmp(varg[3],INPUT_FILE)==0&&strcmp(varg[5],LOG_FILE)==0)||
-               (strcmp(varg[1],OUTPUT_FILE)==0&&strcmp(varg[3],LOG_FILE)==0&&strcmp(varg[5],INPUT_FILE)==0)||)
+            if((strcmp(varg[1],ARG_INPUT_FILE)==0&&strcmp(varg[3],ARG_LOG_FILE)==0&&strcmp(varg[5],ARG_OUTPUT_FILE)==0)||
+               (strcmp(varg[1],ARG_INPUT_FILE)==0&&strcmp(varg[3],ARG_OUTPUT_FILE)==0&&strcmp(varg[5],ARG_LOG_FILE)==0)||
+               (strcmp(varg[1],ARG_LOG_FILE)==0&&strcmp(varg[3],ARG_INPUT_FILE)==0&&strcmp(varg[5],ARG_OUTPUT_FILE)==0)||
+               (strcmp(varg[1],ARG_LOG_FILE)==0&&strcmp(varg[3],ARG_OUTPUT_FILE)==0&&strcmp(varg[5],ARG_INPUT_FILE)==0)||
+               (strcmp(varg[1],ARG_OUTPUT_FILE)==0&&strcmp(varg[3],ARG_INPUT_FILE)==0&&strcmp(varg[5],ARG_LOG_FILE)==0)||
+               (strcmp(varg[1],ARG_OUTPUT_FILE)==0&&strcmp(varg[3],ARG_LOG_FILE)==0&&strcmp(varg[5],ARG_INPUT_FILE)==0)||)
                {
                    return RES_CORRECT_ARGS;
                }
