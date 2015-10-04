@@ -265,9 +265,9 @@ int createIndex(TDA_Doc *docu, char *indexFile)
     int k = 0;
     int countNames = 0;
     int countFunc = 0;
-    TListaSimple indexList;
+    TListaIndex indexList;
 
-    countFunc = countFunctions(docu->listado, docu);
+    countFunc = countFunctions(docu->listado);
 
     MoveC(docu->listado,M_First); /*muevo el corriente al primero*/
 
