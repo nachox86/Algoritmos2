@@ -4,19 +4,19 @@
 
 
 
-void CreateList (T_List *Lp, int Se){
+void CreateListIndex (TListaIndex *Lp, int Se){
     Lp->C = NULL;
     Lp->First = NULL;
     Lp->SizeE = Se;
     }
 
 
-int EmptyList (T_List L){
+int EmptyListIndex (TListaIndex L){
     return (L.First == NULL);
     }
 
 
-void ClearList (T_List *Lp){
+void ClearListIndex (TListaIndex *Lp){
     T_Node *Np, *Next;
     for (Np=Lp->First; Np; Np=Next){
         Next=Np->Next;
@@ -26,7 +26,7 @@ void ClearList (T_List *Lp){
     Lp->First=Lp->C=NULL;
     }
 
-int InsertE (T_List *Lp, T_Move M, void* E){
+int InsertEIndex (TListaIndex *Lp, T_Move M, void* E){
     T_Node *Np;
     Np=(T_Node*)malloc(sizeof(T_Node));
     if (!Np)
@@ -60,17 +60,17 @@ int InsertE (T_List *Lp, T_Move M, void* E){
 }
 
 
-void GetC(T_List L, void* E){
+void GetCIndex(TListaIndex L, void* E){
     memcpy(E,L.C->elem,L.SizeE);
 }
 
 
-void ChangeC (T_List *Lp, void* E){
+void ChangeCIndex (TListaIndex *Lp, void* E){
     memcpy(Lp->C->elem, E, Lp->SizeE);
 }
 
 
-int MoveC (T_List *Lp, T_Move M){
+int MoveCIndex (TListaIndex *Lp, T_Move M){
     switch(M){
         case M_First: Lp->C=Lp->First;break;
         case M_Next: if(Lp->C->Next==NULL)
@@ -84,7 +84,7 @@ int MoveC (T_List *Lp, T_Move M){
 }
 
 
-void DeleteC (T_List *Lp){
+void DeleteCIndex (TListaIndex *Lp){
     T_Node *Np;
     Np=Lp->C;
     if (Lp->C == Lp->First){
