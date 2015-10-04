@@ -1,5 +1,6 @@
 #ifndef __ListaSimple_h__
     #define __ListaSimple_h__
+    #include "tda_nodo_simple.h"
     #if !defined(NULL)
     #define NULL 0
     #endif
@@ -17,67 +18,127 @@
     LS_ANTERIOR
     } TMovimiento_Ls;
 
-    typedef struct TNodoSimple
-    {
-    char* name;
-    char* outputFile;
-    struct TNodoSimple *Siguiente;
-    } TNodoSimple;
-
     typedef struct
     {
-    TNodoSimple *Primero, *Corriente;
+    TDA_Nodo_Simple *Primero, *Corriente;
     int TamanioDato;
     } TListaSimple;
 
-    /* ls_Crear
-    Pre: Ls no fue creada.
-    Post: Ls creada y vacía */
-    void ls_Crear(TListaSimple *pLs, int TamanioDato);
 
-    /* ls_Vaciar
-    Pre: Ls creada.
-    Post: Ls vacía.*/
-    void ls_Vaciar(TListaSimple *pLs);
+    /*
+        @funcion CreateList
+        @descr Primitiva del TDA_LISTA que crea una nueva lista vacia
+        @autor Joaquin
+        @fecha 02/10/2015
+        @version 1.0
+        @param *Lp puntero a la lista a crear
+        @param SizeE tamanio del elemento q manejaremos
+        @pre L no fue creada
+        @post L creada y vacia
+    */
+    void CreateList (TListaSimple *Lp, int SizeE);
 
-    /* ls_Vacia
-    Pre: Ls creada.
-    Post: Si Ls tiene elementos devuelve FALSE sino TRUE.*/
-    int ls_Vacia(TListaSimple Ls);
 
-    /* ls_ElemCorriente
-    Pre: Ls creada y no vacía.
-    Post: Se devuelve en E el elemento corriente de la lista.*/
-    void ls_ElemCorriente(TListaSimple Ls, void* pE);
+    /*
+        @funcion EmptyList
+        @descr primitiva del TDA_LISTA que devuelve si una lista esta vacia o tiene elementos
+        @autor Joaquin
+        @fecha 02/10/2015
+        @version 1.0
+        @param L lista que queremos saber si esta vacia
+        @pre L creada
+        @post devuelve FALSE si L esta vacia, devuelve TRUE si L tiene elementos
+    */
+    int EmptyList (TListaSimple L);
 
-    /* ls_ModifCorriente
-    Pre: Ls creada y no vacía.
-    Post: El contenido del elemento actual quedo actualizado con E. */
-    void ls_ModifCorriente(TListaSimple *pLs, void* pE);
 
-    /* ls_MoverCorriente
-    Pre: Ls creada y no vacía.
-    Post: Si Ls está vacía, devuelve FALSE. Sino:
-    Si M = LS_PRIMERO, el nuevo elemento corriente es el primero. Devuelve TRUE
-    Si M = LS_SIGUIENTE, el nuevo elemento corriente es el siguiente al
-    anterior. Si estaba en el último elemento, devuelve FALSE, sino TRUE.
-    Si M = LS_ANTERIOR, devuelve FALSE. */
-    int ls_MoverCorriente(TListaSimple *pLs, TMovimiento_Ls M);
+    /*
+        @funcion ClearList
+        @descr Primitiva del TDA_LISTA que borra todos los elementos de la lista dejandola vacia
+        @autor Joaquin
+        @fecha 02/10/2015
+        @version 1.0
+        @param *Lp puntero a la lista a vaciar
+        @pre L esta creada
+        @post L vacia
+    */
+    void ClearList (TListaSimple *Lp);
 
-    /* ls_BorrarCorriente
-    Pre: Ls creada y no vacía.
-    Post: Se eliminó el elemento corriente, El nuevo elemento es el siguiente o
-    el anterior si el corriente era el último elemento.*/
-    void ls_BorrarCorriente(TListaSimple *pLs);
 
-    /* ls_Insertar
-    Pre: Ls creada.
-    Post: E se agregó a la lista y es el actual elemento corriente.
-    Si M=LS_PRIMERO: se insertó como primero de la lista.
-    Si M=LS_SIGUIENTE: se insertó después del elemento corriente.
-    Si M=LS_ANTERIOR: se insertó antes del elemento corriente.
-    Si pudo insertar el elemento devuelve TRUE, sino FALSE.*/
-    int ls_Insertar(TListaSimple *pLs, TMovimiento_Ls M, void* E);
+    /*
+        @funcion InsertE
+        @descr Primitiva del TDA_LISTA que inserta un elemento en la lista en la primer posicion de la lista,a continuacion o previo al corriente
+        @autor Joaquin
+        @fecha 02/10/2015
+        @version 1.0
+        @param *Lp Lista en la cual insertar el elemento
+        @param M indica donde insertar el elemento, al principio, despues del corriente o antes del mismo
+        @param E puntero al elemento a insertar
+        @pre L creada
+        @post Se agrega E, pasa a ser el corriente y se devuelve TRUE
+              Si M=M_First, se inserta primero en la lista
+              Si M=M_Next, se inserta despues del corriente
+              Si M=M_Prev, se inserta antes del corriente
+              Si no se pudo insertar, se devuele FALSE
+    */
+    int InsertE (TListaSimple *Lp, T_Move M, void* E);
+
+
+    /*
+        @funcion GetC
+        @descr Primitiva del TDA_LISTA que obtiene el contenido del corriente de una lista
+        @autor Joaquin
+        @fecha 02/10/2015
+        @version 1.0
+        @param L lista de la cual queremos obtener el corriente
+        @param E puntero al elemento donde se guardara el contenido del corriente
+        @pre L creada y con al menos un elemento
+        @post Se devuelve el corriente en C
+    */
+    void GetC (TListaSimple L, void* E);
+
+
+    /*
+        @funcion ChangeC
+        @descr Primitiva del TDA_LISTA que modifica el elemento del corriente de una lista
+        @autor Joaquin
+        @fecha 02/10/2015
+        @version 1.0
+        @param *Lp puntero a la lista a la que se le modificara el elemento del corriente
+        @param E puntero al elemento con el cual se modificara el corriente de la lista
+        @pre creada y no vacia
+        @post E pasa a ser el elemento del corriente
+    */
+    void ChangeC (TListaSimple *Lp, void* E);
+
+
+    /*
+        @funcion MoveC
+        @descr Primitiva del TDA_LISTA que mueve el corriente a la siguiente o primer posicion
+        @autor Joaquin
+        @fecha 02/10/2015
+        @version 1.0
+        @param *Lp puntero a la lista a la que se le cambiara la posicion del corriente
+        @param M movimiento a efectuar, mover al siguiente o a la primer posicion
+        @pre L creada y no vacia
+        @post Si M=M_First, el corriente es el primero y devuelvo TRUE.
+              Si M=M_Next, y hay elemento despes del corriente, este pasa a ser el corriente y se devuelve TRUE, si no se devuelve FALSE.
+              Si M=M_Prev, se devuelve FALSE.
+              Si L esta vacia, devuelvo FALSE.
+    */
+    int MoveC (TListaSimple *Lp, T_Move M);
+
+
+    /*
+        @funcion DeleteC
+        @descr Primitiva del TDA_LISTA que borra el corriente de una lista
+        @autor Joaquin
+        @fecha 02/10/2015
+        @version 1.0
+        @param *Lp puntero a la lista a la que se le borrara el corriente
+        @pre L creada y no vacia
+        @post Se elimino C y el corriente pasa a ser al siguiente a menos q este sea el ultimo, en este caso pasa a ser el anterior
+    */
+    void DeleteC (TListaSimple *Lp);
 
 #endif
-
