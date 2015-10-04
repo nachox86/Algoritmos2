@@ -1,9 +1,10 @@
 #include "tda_documentador.h"
 #include "logger.h"
 #include "list_tda.h"
-#include "tda_nodo_simple.h"
+#include "tda_nodo.h"
 #include "htmlParser.h"
 #include "function_tools.h"
+#include "tda_indice.h"
 #include <string.h>
 
 #include <sys/types.h>
@@ -264,9 +265,8 @@ int createIndex(TDA_Doc *docu, char *indexFile)
     int k = 0;
     int countNames = 0;
     int countFunc = 0;
+    TListaSimple indexList;
 
-
-    /*ahora tengo que ir insertando en orden alfabetico en el archivo*/
     countFunc = countFunctions(docu->listado, docu);
 
     MoveC(docu->listado,M_First); /*muevo el corriente al primero*/
@@ -281,7 +281,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
 
     do{
         GetC(*(docu->listado),dato); /*tomo el elemento del corriente*/
-        cantElem = sizeof(dato)/sizeof(char*); /*quería sacar la cantidad de subelementos que tiene el elemento del corriente*/
+        cantElem = getCommentsCount(dato); /*veo cuanto elementos tiene*/
         for(i=0;i<cantElem;i++) /*para cada subelemento*/
         {
             token = strtok(dato[i], KW_FUNCTION); /*busco referencias de la keyword @function*/
