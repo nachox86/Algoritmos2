@@ -6,6 +6,9 @@
 #include "functions_tools.c"
 #include <string.h>
 
+#include <sys/types.h>
+#include <dirent.h>
+
 #define MAX_LINE 300
 
 #define MAX_KW 11
@@ -45,7 +48,46 @@ int createDoc(TDA_Doc **docu, Logger *log)
     return RES_OK;
 }
 
-int extractDocumentation(TDA_Doc *docu, char *iFile, char *oFile)
+int extractDocumentation(TDA_Doc *docu, char *inputDir, char *outputFile) {
+    DIR *dir;
+    struct dirent *dp;
+    char **buffer;
+    htmlFile *html;
+    int i, n = 0;
+
+    dir = opendir(inputDir);
+
+    if (dir) {
+        buffer = malloc(sizeof(char**));
+        while (dp = readdir(dir)) {
+            if ((strcmp(dp->d_name, ".") != 0) && (strcmp(dp->d_name, "..") != 0)) {
+                buffer = realloc(buffer, sizeof(char**) * (n+2));
+                buffer[n] = malloc(strlen(dp->d_name) + 1);
+                strcpy(buffer[n], dp->d_name);
+                n++;
+            }
+        }
+        closedir(dir);
+    } else {
+        n = -1;
+    }
+
+    if ( n >= 0) {
+        createHtmlFile(&html, outputFile);
+        for (i = 0; i < n; i++) {
+            extractDocumentationFromFile(docu, html, buffer[i]);
+            free(buffer[i]);
+        }
+        free(buffer);
+        closeHtmlFile(&html);
+        return RES_OK;
+    } else {
+        return RES_ERROR;
+    }
+}
+
+
+int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
 {
     FILE* inputFile;
     int commentsInit = 0;
@@ -182,7 +224,7 @@ int extractDocumentation(TDA_Doc *docu, char *iFile, char *oFile)
     MoveC(docu->listado,M_First);
 
     /*Creo el archivo de salida*/
-    createHtmlFile(&outPut,oFile);
+    /* createHtmlFile(&outPut,oFile); */
 
     do
     {
@@ -198,7 +240,7 @@ int extractDocumentation(TDA_Doc *docu, char *iFile, char *oFile)
         }
     } while(MoveC(docu->listado,M_Next)!=FALSE);
 
-    closeHtmlFile(&outPut);
+    /* closeHtmlFile(&outPut); */
 
     ClearList(docu->listado);
 
