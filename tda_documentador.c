@@ -29,10 +29,10 @@
 #define HTML_INDEX_HEADER "<h1>Indice</h1>\n<hl/>\n<ul>"
 #define HTML_INDEX_FOOTER "</ul>"
 
-#define MSG_ERROR_IN_FILE "Ocurrió un error al abrir el archivo de entrada de datos."
-#define MSG_ERROR_INDEX_FILE "Ocurrió un error al abrir el archivo de índices."
+#define MSG_ERROR_IN_FILE "OcurriÃ³ un error al abrir el archivo de entrada de datos."
+#define MSG_ERROR_INDEX_FILE "OcurriÃ³ un error al abrir el archivo de Ã­ndices."
 #define MSG_ERROR_MEMORY "Error al pedir recursos para variable auxiliar."
-#define MSG_ERROR_OUT_FILE "Ocurrió un error al abrir el archivo de salida de datos."
+#define MSG_ERROR_OUT_FILE "OcurriÃ³ un error al abrir el archivo de salida de datos."
 
 /* TODO: Check this declaration (done in situ for debug purposes */
 #define RES_MEM_ERROR   -1
@@ -94,7 +94,7 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
     FILE* inputFile;
     int commentsInit = 0;
     int commentsEnd = 0;
-    int commentsFound = 0; /* 0 significa que no encontró, 1 que si*/
+    int commentsFound = 0; /* 0 significa que no encontrÃ³, 1 que si*/
     int count = 0;
     int i,j;
     int lenElem = 0;
@@ -116,8 +116,8 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
         loge(docu->logFile,MSG_ERROR_MEMORY);
         return RES_MEM_ERROR;
     }
-    /*El archivo se abrió correctamente por lo que ahora paso a recopilar la información*/
-    /*Recorro línea por línea*/
+    /*El archivo se abriÃ³ correctamente por lo que ahora paso a recopilar la informaciÃ³n*/
+    /*Recorro lÃ­nea por lÃ­nea*/
 
     while(!feof(inputFile))
     {
@@ -131,7 +131,7 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
             token2 = strstr(linea,KW_END);
             if(token && !token2)
             {
-                /*Encontramos el inicio de los comentarios de la función*/
+                /*Encontramos el inicio de los comentarios de la funciÃ³n*/
                 commentsInit = 1;
             }
             else if(!token && token2)
@@ -143,7 +143,7 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
                 /* else es un comentario trivial */
 
             if(commentsFound==1)
-            /* a esta altura ya se cerraron los comentarios para una función y los guardé en comms */
+            /* a esta altura ya se cerraron los comentarios para una funciÃ³n y los guardÃ© en comms */
             {
                 if(count==0)
                 {
@@ -154,7 +154,7 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
                     /*inserto los comentarios en la lista*/
                     if(EmptyList(*(docu->listado)))
                     {
-                        /* está vacía la lista, entonces debe ser el primero*/
+                        /* estÃ¡ vacÃ­a la lista, entonces debe ser el primero*/
                         InsertE(docu->listado,M_First,comms);
                     }
                     else
@@ -184,7 +184,7 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
             }
             else if(commentsInit==1 && commentsEnd==0 && checkForKW(linea)==0)
             {
-                /*encontró un KW*/
+                /*encontrÃ³ un KW*/
                 /*lo tengo que agregar a comms*/
 
                 comms[count] = (char *) malloc(sizeof(char)*strlen(linea)+1);
@@ -217,9 +217,9 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
     fclose(inputFile);
 
     /*Ahora lo pasamos al archivo en formato HTML*/
-    /*vamos a recorrer la lista, nodo por nodo, tomando cada uno de los comentarios e insertándolos en el archivo de salida*/
+    /*vamos a recorrer la lista, nodo por nodo, tomando cada uno de los comentarios e insertÃ¡ndolos en el archivo de salida*/
 
-    /*creo la lista de nodos; los nodos son los comentarios de cada función*/
+    /*creo la lista de nodos; los nodos son los comentarios de cada funciÃ³n*/
     CreateList(docu->listado,sizeof(char**));
 
     /*Muevo al primero el corriente*/
@@ -258,7 +258,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
     char** sorted;
     char sorted_aux[MAX_LINE];
     char htmlLine[MAX_LINE];
-    int cantElem = 0; /*revisar cómo se asigna*/
+    int cantElem = 0; /*revisar cÃ³mo se asigna*/
     int i = 0;
     int j = 0;
     int k = 0;
@@ -296,7 +296,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
             token = strtok(dato[i], KW_FUNCTION); /*busco referencias de la keyword @function*/
             while(token != NULL)
             {
-                if(strlen(token)>0) /*si no está vacío el token es que encontró el nombre o más*/
+                if(strlen(token)>0) /*si no estÃ¡ vacÃ­o el token es que encontrÃ³ el nombre o mÃ¡s*/
                 {
                     /*me guardo los nombres de todas las funciones en sorted*/
                     /*sorted[countNames] = (char*) malloc(sizeof(char)*strlen(token));
@@ -329,7 +329,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
     }while(MoveC(docu->listado,M_Next)!=FALSE); /*muevo el corriente y empiezo de vuelta*/
 
     /*ordeno alfabeticamente*/
-    /*ordenarLista(&listaindex)*/
+    ls_ordenar(indexList);
     /*for(j=1;j<countNames;j++)
     {
         for(i=1;i<countNames;i++)
@@ -372,7 +372,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
         GetC1Index(*indexList,&param1);
         GetC2Index(*indexList,&param2);
 
-        sprintf(htmlLine,"<li><a href=”doc.html#%s”>%s</a></li>",param1,param1);
+        sprintf(htmlLine,"<li><a href=Â”doc.html#%sÂ”>%s</a></li>",param1,param1);
         fwrite(htmlLine,sizeof(char),strlen(htmlLine),index);
 
         free(param2);
@@ -382,7 +382,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
 
     /*for(i=0;i<countFunc;i++)
     {
-        sprintf(htmlLine,"<li><a href=”doc.html#%s”>%s</a></li>",sorted[i],sorted[i]);
+        sprintf(htmlLine,"<li><a href=Â”doc.html#%sÂ”>%s</a></li>",sorted[i],sorted[i]);
         fwrite(htmlLine,sizeof(char),strlen(htmlLine),index);
     }*/
 
