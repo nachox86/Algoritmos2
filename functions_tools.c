@@ -16,9 +16,9 @@
 #define ARG_LOG_FILE -l
 #define ARG_OUPUT_FILE -o
 #define ARG_INDEX ->
-
-#define TWO 2
-#define SEVEN 7
+#define ARG_TWO 2
+#define ARG_SEVEN 7
+#define ARG_MAX 3
 
 #define KW_TITLE       "@titulo"
 #define KW_SUBTITLE    "@subtitulo"
@@ -32,6 +32,9 @@
 #define KW_PRE         "@pre"
 #define KW_POST        "@pos"
 
+#define INDEX_PREFFIX ".idx.html"
+#define INDEX_PREFFIX_NO_EXT "idx."
+#define HTML_EXT ".html"
 
 /*
 @funcion showHelp
@@ -50,66 +53,12 @@ void showHelp()
     printf("Documentador.exe -i archivo_a_documentar.c -l archivo_log.txt -o archivo_documentado.html\n");
     printf("Documentador.exe -h\n");
     printf("Documentador.exe --help\n");
-    printf("Descripción de los parámetros:\n");
+    printf("Descripcion de los parámetros:\n");
     printf("-i: indica el nombre del archivo de entrada del que se toma la documentación.\n");
     printf("-l: indica el nombre del archivo de loggeo de eventos.\n");
     printf("-o: indica el nombre del archivo de salida de la documentación en formato html.\n");
     printf("-h o --help: muestra esta ayuda.\n");
 }
-
-/*
-@funcion validateInput
-@descr Valida que los argumentos de entrada sean válidos al igual que la cantidad.
-@autor Ignacio
-@fecha 30/09/2015
-@version "1.0"
-@param carg cantidad de argumentos
-@param varg[] array con los argumentos de entrada
-@pre ninguna condición necesaria
-@pos Devolverá RES_NOT_ENOUGH_ARGS si no están la cantidad apropiada de argumentos.
-     Devolverá RES_HELP si se pide la ayuda.
-     Devolverá RES_WRONG_ARGS si se ingresaron mal los argumentos.
-     Devolverá RES_CORRECT_ARGS si se ingresaron correctamente los argumentos.
-*/
-
-/*
-int validateInput(int carg, char *varg[])
-{
-    if(carg!=TWO && carg!= SEVEN)
-    {
-        showHelp();
-        return RES_NOT_ENOUGH_ARGS;
-    }
-    else
-    {
-        if(carg==TWO)
-        {
-            if(strcmp(varg[1],HELP1)==0||strcmp(varg[1],HELP2)==0)
-            {
-                showHelp();
-                return RES_HELP;
-            }
-            else
-                return RES_WRONG_ARGS;
-        }
-        else if(carg==SEVEN)
-        {
-            if((strcmp(varg[1],ARG_INPUT_FILE)==0&&strcmp(varg[3],ARG_LOG_FILE)==0&&strcmp(varg[5],ARG_OUTPUT_FILE)==0)||
-               (strcmp(varg[1],ARG_INPUT_FILE)==0&&strcmp(varg[3],ARG_OUTPUT_FILE)==0&&strcmp(varg[5],ARG_LOG_FILE)==0)||
-               (strcmp(varg[1],ARG_LOG_FILE)==0&&strcmp(varg[3],ARG_INPUT_FILE)==0&&strcmp(varg[5],ARG_OUTPUT_FILE)==0)||
-               (strcmp(varg[1],ARG_LOG_FILE)==0&&strcmp(varg[3],ARG_OUTPUT_FILE)==0&&strcmp(varg[5],ARG_INPUT_FILE)==0)||
-               (strcmp(varg[1],ARG_OUTPUT_FILE)==0&&strcmp(varg[3],ARG_INPUT_FILE)==0&&strcmp(varg[5],ARG_LOG_FILE)==0)||
-               (strcmp(varg[1],ARG_OUTPUT_FILE)==0&&strcmp(varg[3],ARG_LOG_FILE)==0&&strcmp(varg[5],ARG_INPUT_FILE)==0)||)
-               {
-                   return RES_CORRECT_ARGS;
-               }
-               else
-                return RES_WRONG_ARGS;
-        }
-
-    }
-}
-*/
 
 /*
 @funcion checkForKW
@@ -180,7 +129,7 @@ int getCommentsCount(char** dato)
 {
     int count = 0;
 
-    while(!dato[count])
+    while(dato[count]!='\0')
         count++;
 
     return count;
