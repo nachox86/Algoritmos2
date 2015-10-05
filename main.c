@@ -3,9 +3,13 @@
 #include <string.h>
 #include "tda_documentador.h"
 #include "tda_nodo_simple.h"
+#include "tda_nodo.h"
+#include "tda_indice.h"
 #include "list_tda.h"
 #include "htmlParser.h"
-#include "function_tools.h"
+#include "function_tools.c"
+#include "logger.h"
+
 
 /*
 @funcion main
@@ -19,49 +23,63 @@
 */
 int main(int argc, char *argv[]) {
 	int i, nargs = 0;
-    char *inputDir, *outputFile, *logfile;
+    char *inputDir, *outputFile, *logFile, *indexFile;
+    char* token;
+    int checkForHTML = 0;
 
     Logger *log;
     TDA_Doc *docu;
 
-    if (argc < 7) {
-    	printf("Not enough args\n"); /* TODO: Do something else with this */
-        return -1; /* NOT ENOUGH ARGS */
+    if(argc!=ARG_TWO && argc!=ARG_SEVEN)
+    {
+        showHelp();
+        return RES_NOT_ENOUGH_ARGS;
     }
 
     for (i = 1; i < argc; i=i+2) {
-        if ((strcmp(argv[i], "-h") == 0) || (strcmp(argv[i], "--help") == 0)) {
+        if ((strcmp(argv[i],ARG_HELP1) == 0) || (strcmp(argv[i],ARG_HELP2) == 0)) {
             showHelp();
-            break;
-        } else if (strcmp(argv[i], "-i") == 0) {
+            return RES_HELP;
+        } else if (strcmp(argv[i],ARG_INPUT_FILE) == 0) {
             inputDir = malloc(sizeof(char) * strlen(argv[i+1]) + 1);
             strcpy(inputDir, argv[i+1]);
             nargs++;
-        } else if (strcmp(argv[i], "-l") == 0) {
-            logfile = malloc(sizeof(char) * strlen(argv[i+1]) + 1);
+        } else if (strcmp(argv[i],ARG_LOG_FILE) == 0) {
+            logFile = malloc(sizeof(char) * strlen(argv[i+1]) + 1);
             strcpy(logfile, argv[i+1]);
             nargs++;
-        } else if (strcmp(argv[i], "-o") == 0) {
+        } else if (strcmp(argv[i],ARG_OUPUT_FILE) == 0) {
             outputFile = malloc(sizeof(char) * strlen(argv[i+1]) + 1);
             strcpy(outputFile, argv[i+1]);
             nargs++;
         }
     }
 
-    if (nargs == 3) {
+    if (nargs == ARG_MAX) {
     	/* We got enough arguments to proceed */
 
-    	createLog(&log, logfile);
+    	createLog(&log, logFile);
     	createDoc(&docu, log);
     	extractDocumentation(docu, inputDir, outputFile);
-    	/* Create Index? */
+    	/*armo el nombre del archivo de indice*/
+        /*token = strtok(outputFile,HTML_EXT);
+        if(!token)
+            indexFile = sprintf("%s%s",INDEX_PREFFIX_NO_EXT,token);
+        else
+            indexFile = sprintf("%s%s",token,INDEX_PREFFIX);
+    	 createIndex(TDA_Doc *docu, char *indexFile); */
     	destroyDoc(&docu);
     	closeLog(&log);
+    }
+    else
+    {
+        showHelp();
+        return RES_WRONG_ARGS;
     }
 
     free(inputDir);
     free(outputFile);
     free(logfile);
 
-    return 0;
+    return RES_OK;
 }
