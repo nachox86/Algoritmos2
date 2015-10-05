@@ -13,7 +13,7 @@ int createNode(TDA_Nodo* Node,int commentCount)
     int k;
     int j = 0;
     Node->Siguiente = NULL;
-    Node->comments = (char**) malloc(sizeof(int)*commentCount);
+    Node->comments = (char**) malloc(sizeof(int)*(commentCount+1));
     if(!Node->comments) return RES_MEM_ERROR;
 
     for(i=0;i<commentCount;i++)
@@ -34,7 +34,7 @@ int createNode(TDA_Nodo* Node,int commentCount)
         free(Node->comments);
         return RES_MEM_ERROR;
     }
-
+    Node->comments[commentCount] = '\0';
     return RES_OK;
 
 }
@@ -69,7 +69,7 @@ int destroyNode(TDA_Nodo* Node)
 
     Node->Siguiente = NULL;
 
-    pcomLen = Node->commentsCount;
+    pcomLen = getCommentsCount(Node->comments);
 
     if(pcomLen==0)
     {
