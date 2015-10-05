@@ -11,7 +11,6 @@
 #include <dirent.h>
 
 #define MAX_LINE 300
-
 #define MAX_KW 11
 #define KW_INIT        "/*"
 #define KW_END         "*/"
@@ -265,19 +264,29 @@ int createIndex(TDA_Doc *docu, char *indexFile)
     int k = 0;
     int countNames = 0;
     int countFunc = 0;
-    TListaIndex indexList;
+    TListaIndex* indexList;
+    char* param1;
+    char* param2;
 
     countFunc = countFunctions(docu->listado);
 
     MoveC(docu->listado,M_First); /*muevo el corriente al primero*/
 
     /*le reservo memoria a sorted para cada funcion*/
-    sorted = (char**) malloc(sizeof(char*)*countFunc);
+    /*sorted = (char**) malloc(sizeof(char*)*countFunc);
     if(!sorted)
     {
         loge(docu->logFile,MSG_ERROR_MEMORY);
         return RES_MEM_ERROR;
+    }*/
+    indexList = (TListaIndex*)malloc(sizeof(TListaIndex));
+    if(!indexList)
+    {
+        loge(docu->logFile,MSG_ERROR_MEMORY);
+        return RES_MEM_ERROR;
     }
+    CreateListIndex(indexList,sizeof(TDA_Nodo_Simple));
+    MoveCIndex(indexList,M_First);
 
     do{
         GetC(*(docu->listado),dato); /*tomo el elemento del corriente*/
@@ -290,11 +299,10 @@ int createIndex(TDA_Doc *docu, char *indexFile)
                 if(strlen(token)>0) /*si no está vacío el token es que encontró el nombre o más*/
                 {
                     /*me guardo los nombres de todas las funciones en sorted*/
-                    sorted[countNames] = (char*) malloc(sizeof(char)*strlen(token));
+                    /*sorted[countNames] = (char*) malloc(sizeof(char)*strlen(token));
                     if(!sorted[countNames])
                     {
                         loge(docu->logFile,MSG_ERROR_MEMORY);
-                        /*libero la memoria utilizada*/
                         if(countNames>0)
                         {
                             for(k=countNames;k>=0;--k)
@@ -306,7 +314,14 @@ int createIndex(TDA_Doc *docu, char *indexFile)
                         return RES_MEM_ERROR;
                     }
                     sorted[countNames] = token;
-                    countNames++;
+                    countNames++;*/
+                    if(EmptyListIndex(*indexList)==FALSE)
+                        InsertEIndex(indexList,M_First,token,docu->inputFile);
+                    else
+                    {
+                        InsertEIndex(indexList,M_Next,token,docu->inputFile);
+                        MoveCIndex(indexList,M_Next);
+                    }
                 }
                 token = strtok(dato[i],KW_FUNCTION);
             }
@@ -314,7 +329,8 @@ int createIndex(TDA_Doc *docu, char *indexFile)
     }while(MoveC(docu->listado,M_Next)!=FALSE); /*muevo el corriente y empiezo de vuelta*/
 
     /*ordeno alfabeticamente*/
-    for(j=1;j<countNames;j++)
+    /*ordenarLista(&listaindex)*/
+    /*for(j=1;j<countNames;j++)
     {
         for(i=1;i<countNames;i++)
         {
@@ -325,7 +341,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
                 strcpy(sorted[i],sorted_aux);
             }
         }
-    }
+    }*/
 
     /*doy formato y agrego al archivo de indices*/
     index = fopen(indexFile,"wa");
@@ -337,20 +353,49 @@ int createIndex(TDA_Doc *docu, char *indexFile)
 
     fwrite(HTML_INDEX_HEADER,sizeof(char),strlen(HTML_INDEX_HEADER),index); /*agrego header del indice*/
 
-    for(i=0;i<countFunc;i++)
+    /*Me muevo por la lista del indice desde el principio*/
+    MoveCIndex(indexList,M_First);
+    do{
+        param1 = (char*)malloc(sizeof(char)*MAX_LINE);
+        if(!param1)
+        {
+            loge(docu->logFile,MSG_ERROR_MEMORY);
+            return RES_MEM_ERROR;
+        }
+        param2 = (char*)malloc(sizeof(char)*MAX_LINE);
+        if(!param2)
+        {
+            free(param1);
+            loge(docu->logFile,MSG_ERROR_MEMORY);
+            return RES_MEM_ERROR;
+        }
+        GetC1Index(*indexList,&param1);
+        GetC2Index(*indexList,&param2);
+
+        sprintf(htmlLine,"<li><a href=”doc.html#%s”>%s</a></li>",param1,param1);
+        fwrite(htmlLine,sizeof(char),strlen(htmlLine),index);
+
+        free(param2);
+        free(param1);
+
+    }while(MoveCIndex(indexList,M_Next)!=FALSE);
+
+    /*for(i=0;i<countFunc;i++)
     {
         sprintf(htmlLine,"<li><a href=”doc.html#%s”>%s</a></li>",sorted[i],sorted[i]);
         fwrite(htmlLine,sizeof(char),strlen(htmlLine),index);
-    }
+    }*/
 
     fwrite(HTML_INDEX_FOOTER,sizeof(char),strlen(HTML_INDEX_FOOTER),index);/*agrego footer del indice*/
 
     fclose(index);
 
     /*libero recursos usados*/
-    for(i=countNames;i>=0;i--)
+    /*for(i=countNames;i>=0;i--)
         free(sorted[i]);
-    free(sorted);
+    free(sorted);*/
+    DeleteCIndex(indexList);
+    free(indexList);
 
     return RES_OK;
 }
