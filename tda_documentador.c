@@ -1,3 +1,7 @@
+#define _XOPEN_SOURCE 700
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "tda_documentador.h"
 #include "logger.h"
 #include "list_tda.h"
@@ -121,14 +125,16 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
 
     while(!feof(inputFile))
     {
-        char linea[MAX_LINE];
+        char **linea;
         char *token;
         char *token2;
 
-        if(fgets(linea,MAX_LINE,inputFile)!=NULL)
+        ssize_t read;
+
+        if((read = getline(linea, 0, inputFile)) != -1)
         {
-            token = strstr(linea,KW_INIT);
-            token2 = strstr(linea,KW_END);
+            token = strstr(*linea,KW_INIT);
+            token2 = strstr(*linea,KW_END);
             if(token && !token2)
             {
                 /*Encontramos el inicio de los comentarios de la función*/
@@ -182,12 +188,12 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
                     return RES_MEM_ERROR;
                 }
             }
-            else if(commentsInit==1 && commentsEnd==0 && checkForKW(linea)==0)
+            else if(commentsInit==1 && commentsEnd==0 && checkForKW(*linea)==0)
             {
                 /*encontró un KW*/
                 /*lo tengo que agregar a comms*/
 
-                comms[count] = (char *) malloc(sizeof(char)*strlen(linea)+1);
+                comms[count] = (char *) malloc(sizeof(char)*strlen(*linea)+1);
                 if(!comms[count])
                 {
                     loge(docu->logFile,MSG_ERROR_MEMORY);
@@ -206,7 +212,7 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
                     }
                     return RES_MEM_ERROR;
                 }
-                comms[count] = linea;
+                comms[count] = *linea;
                 count++;
             }
         }
@@ -225,9 +231,6 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
     /*Muevo al primero el corriente*/
     MoveC(docu->listado,M_First);
 
-    /*Creo el archivo de salida*/
-    /* createHtmlFile(&outPut,oFile); */
-
     do
     {
         ChangeC(docu->listado,comms);
@@ -241,8 +244,6 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
             }
         }
     } while(MoveC(docu->listado,M_Next)!=FALSE);
-
-    /* closeHtmlFile(&outPut); */
 
     ClearList(docu->listado);
 
