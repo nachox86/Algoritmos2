@@ -68,8 +68,8 @@ int main(int argc, char *argv[]) {
         else
             indexFile = sprintf("%s%s",token,INDEX_PREFFIX);
     	 createIndex(TDA_Doc *docu, char *indexFile); */
-    	destroyDoc(&docu);
-    	closeLog(&log);
+		closeLog(&log);
+    	destroyDoc(&docu);    	
     }
     else
     {

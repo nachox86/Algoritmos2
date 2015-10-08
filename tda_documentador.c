@@ -403,7 +403,6 @@ int createIndex(TDA_Doc *docu, char *indexFile)
 
 int destroyDoc(TDA_Doc **docu)
 {
-  closeLog(&(*docu)->logFile);
   free(*docu);
   ClearList((*docu)->listado);
   return RES_OK;
