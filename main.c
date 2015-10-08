@@ -7,9 +7,12 @@
 #include "tda_indice.h"
 #include "list_tda.h"
 #include "htmlParser.h"
-#include "function_tools.c"
+#include "functions_tools.h"
 #include "logger.h"
 
+#define RES_NOT_ENOUGH_ARGS -1
+#define RES_HELP -2
+#define RES_WRONG_ARGS -3
 
 /*
 @funcion main
@@ -30,32 +33,32 @@ int main(int argc, char *argv[]) {
     Logger *log;
     TDA_Doc *docu;
 
-    if(argc!=ARG_TWO && argc!=ARG_SEVEN)
+    if(argc!=2 && argc!=7)
     {
         showHelp();
         return RES_NOT_ENOUGH_ARGS;
     }
 
     for (i = 1; i < argc; i=i+2) {
-        if ((strcmp(argv[i],ARG_HELP1) == 0) || (strcmp(argv[i],ARG_HELP2) == 0)) {
+        if ((strcmp(argv[i],"-h") == 0) || (strcmp(argv[i],"--help") == 0)) {
             showHelp();
             return RES_HELP;
-        } else if (strcmp(argv[i],ARG_INPUT_FILE) == 0) {
+        } else if (strcmp(argv[i],"-i") == 0) {
             inputDir = malloc(sizeof(char) * strlen(argv[i+1]) + 1);
             strcpy(inputDir, argv[i+1]);
             nargs++;
-        } else if (strcmp(argv[i],ARG_LOG_FILE) == 0) {
+        } else if (strcmp(argv[i],"-l") == 0) {
             logFile = malloc(sizeof(char) * strlen(argv[i+1]) + 1);
-            strcpy(logfile, argv[i+1]);
+            strcpy(logFile, argv[i+1]);
             nargs++;
-        } else if (strcmp(argv[i],ARG_OUPUT_FILE) == 0) {
+        } else if (strcmp(argv[i],"-o") == 0) {
             outputFile = malloc(sizeof(char) * strlen(argv[i+1]) + 1);
             strcpy(outputFile, argv[i+1]);
             nargs++;
         }
     }
 
-    if (nargs == ARG_MAX) {
+    if (nargs == 7) {
     	/* We got enough arguments to proceed */
 
     	createLog(&log, logFile);
@@ -69,7 +72,7 @@ int main(int argc, char *argv[]) {
             indexFile = sprintf("%s%s",token,INDEX_PREFFIX);
     	 createIndex(TDA_Doc *docu, char *indexFile); */
 		closeLog(&log);
-    	destroyDoc(&docu);    	
+    	destroyDoc(&docu);
     }
     else
     {
@@ -79,7 +82,7 @@ int main(int argc, char *argv[]) {
 
     free(inputDir);
     free(outputFile);
-    free(logfile);
+    free(logFile);
 
     return RES_OK;
 }

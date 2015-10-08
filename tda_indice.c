@@ -114,8 +114,8 @@ int cmpfunc(const void *name1, const void *name2)
         const char *name2_ = *(const char **)name2;
         return strcmp(name1_, name2_);
     }
-    
-int ls_ordenar(TListaSimple *pLs){
+
+int ls_ordenar(TListaIndex *pLs){
 
     TNodoSimple *pNa;
     int i,cont=1;
@@ -137,7 +137,7 @@ int ls_ordenar(TListaSimple *pLs){
         pNa=pNa->Siguiente;
     }
 
-    qsort(vec,cont,sizeof(char*),cmpfunc);    
+    qsort(vec,cont,sizeof(char*),cmpfunc);
 
     pLs->Corriente=pLs->Primero;
     for(i=0;i=cont-1,i++){

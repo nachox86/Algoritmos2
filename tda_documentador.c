@@ -7,7 +7,7 @@
 #include "list_tda.h"
 #include "tda_nodo.h"
 #include "htmlParser.h"
-#include "function_tools.h"
+#include "functions_tools.h"
 #include "tda_indice.h"
 #include <string.h>
 
@@ -317,10 +317,10 @@ int createIndex(TDA_Doc *docu, char *indexFile)
                     sorted[countNames] = token;
                     countNames++;*/
                     if(EmptyListIndex(*indexList)==FALSE)
-                        InsertEIndex(indexList,M_First,token,docu->inputFile);
+                        InsertEIndex(indexList,M_First,token);
                     else
                     {
-                        InsertEIndex(indexList,M_Next,token,docu->inputFile);
+                        InsertEIndex(indexList,M_Next,token);
                         MoveCIndex(indexList,M_Next);
                     }
                 }
