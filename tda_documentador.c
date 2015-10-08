@@ -4,7 +4,7 @@
 
 #include "tda_documentador.h"
 #include "logger.h"
-#include "list_tda.h"
+#include "straight_list.h"
 #include "tda_nodo.h"
 #include "htmlParser.h"
 #include "functions_tools.h"
@@ -158,14 +158,14 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
                 else
                 {
                     /*inserto los comentarios en la lista*/
-                    if(EmptyList(*(docu->listado)))
+                    if(straight_list_is_empty(*(docu->listado)))
                     {
                         /* está vacía la lista, entonces debe ser el primero*/
-                        InsertE(docu->listado,M_First,comms);
+                        straight_list_insert(docu->listado,straight_list_first,comms);
                     }
                     else
                     {
-                        InsertE(docu->listado,M_Next,comms);
+                        straight_list_insert(docu->listado,straight_list_next,comms);
                     }
 
                     /* reinicializo las variabls auxiliares locales */
@@ -226,14 +226,14 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
     /*vamos a recorrer la lista, nodo por nodo, tomando cada uno de los comentarios e insertándolos en el archivo de salida*/
 
     /*creo la lista de nodos; los nodos son los comentarios de cada función*/
-    CreateList(docu->listado,sizeof(char**));
+    straight_list_create(docu->listado,sizeof(char**),copy,destroy);                         /*ver copy y del*/
 
     /*Muevo al primero el corriente*/
-    MoveC(docu->listado,M_First);
+    straight_list_move(docu->listado,straight_list_first);
 
     do
     {
-        ChangeC(docu->listado,comms);
+        ChangeC(docu->listado,comms);                                                        /*ver changeC*/
         lenElem = strlen(*comms);
         for(i=0;i<lenElem;i++)
         {
@@ -243,9 +243,9 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
                 return RES_ERROR;
             }
         }
-    } while(MoveC(docu->listado,M_Next)!=FALSE);
+    } while(straight_list_move(docu->listado,straight_list_next)!=FALSE);
 
-    ClearList(docu->listado);
+    straight_list_clear(docu->listado);
 
     return RES_OK;
 }
@@ -271,7 +271,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
 
     countFunc = countFunctions(docu->listado);
 
-    MoveC(docu->listado,M_First); /*muevo el corriente al primero*/
+    straight_list_move(docu->listado,straight_list_first); /*muevo el corriente al primero*/
 
     /*le reservo memoria a sorted para cada funcion*/
     /*sorted = (char**) malloc(sizeof(char*)*countFunc);
@@ -290,7 +290,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
     MoveCIndex(indexList,M_First);
 
     do{
-        GetC(*(docu->listado),dato); /*tomo el elemento del corriente*/
+        straight_list_get(*(docu->listado),dato); /*tomo el elemento del corriente*/
         cantElem = getCommentsCount(dato); /*veo cuanto elementos tiene*/
         for(i=0;i<cantElem;i++) /*para cada subelemento*/
         {
@@ -327,7 +327,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
                 token = strtok(dato[i],KW_FUNCTION);
             }
         }
-    }while(MoveC(docu->listado,M_Next)!=FALSE); /*muevo el corriente y empiezo de vuelta*/
+    }while(straight_list_move(docu->listado,straight_list_next)!=FALSE); /*muevo el corriente y empiezo de vuelta*/
 
     /*ordeno alfabeticamente*/
     ls_ordenar(indexList);
@@ -404,6 +404,6 @@ int createIndex(TDA_Doc *docu, char *indexFile)
 int destroyDoc(TDA_Doc **docu)
 {
   free(*docu);
-  ClearList((*docu)->listado);
+  straight_list_clear((*docu)->listado);
   return RES_OK;
 }
