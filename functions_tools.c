@@ -2,39 +2,7 @@
 #include "tda_nodo.h"
 #include "tda_documentador.h"
 #include <string.h>
-
-#define RES_OK 0
-#define RES_ERROR 1
-#define RES_HELP 2
-#define RES_NOT_ENOUGH_ARGS 3
-#define RES_WRONG_ARGS 4
-#define RES_CORRECT_ARGS 5
-
-#define ARG_HELP1 -h
-#define ARG_HELP2 --help
-#define ARG_INPUT_FILE -i
-#define ARG_LOG_FILE -l
-#define ARG_OUPUT_FILE -o
-#define ARG_INDEX ->
-#define ARG_TWO 2
-#define ARG_SEVEN 7
-#define ARG_MAX 3
-
-#define KW_TITLE       "@titulo"
-#define KW_SUBTITLE    "@subtitulo"
-#define KW_FUNCTION    "@funcion"
-#define KW_DESCRIPTION "@descr"
-#define KW_AUTHOR      "@autor"
-#define KW_DATE        "@fecha"
-#define KW_VERSION     "@version"
-#define KW_PARAM       "@param"
-#define KW_RETURN      "@return"
-#define KW_PRE         "@pre"
-#define KW_POST        "@pos"
-
-#define INDEX_PREFFIX ".idx.html"
-#define INDEX_PREFFIX_NO_EXT "idx."
-#define HTML_EXT ".html"
+#include "functions_tools.h"
 
 /*
 @funcion showHelp
