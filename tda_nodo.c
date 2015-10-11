@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "tda_nodo.h"
+#include "functions_tools.h"
 #define MAX_STR 200
 #define RES_MEM_ERROR 2
 #define RES_OK 0
