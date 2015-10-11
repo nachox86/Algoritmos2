@@ -2,7 +2,7 @@
 #define DOCU_TDA_H_INCLUDED
 
 #include "logger.h"
-#include "straight_list.h"
+#include "list_tda.h"
 
 #define RES_OK      0
 #define RES_ERROR   1
@@ -11,7 +11,7 @@ typedef struct {
     char *inputFile;
     char *outputFile;
     Logger *logFile;
-    straight_list_t *listado;
+    T_List *listado;
 } TDA_Doc;
 
     /*
