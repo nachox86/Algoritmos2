@@ -1,13 +1,19 @@
 #include "logger.h"
 #include <string.h>
+#include <time.h>
 
 int createLog(Logger **log, char *path) {
+    time_t ltime = time(NULL);
+
     (*log) = malloc(sizeof(Logger));
+
     (*log)->file = fopen(path, "a");
+
     if (!(*log)->file) {
         free(*log);
         return ERR_FILE_NOT_FOUND;
     } else {
+        fprintf((*log)->file, "%s\n", asctime(localtime(&ltime)));
         (*log)->open = LOG_OPEN;
     }
     return SUCCESS;
