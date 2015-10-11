@@ -242,17 +242,9 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
         }
     } while(MoveC(docu->listado,M_Next)!=FALSE);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    straight_list_clear(docu->listado);
-=======
     /* closeHtmlFile(&outPut); */
 
     ClearList(docu->listado);
->>>>>>> parent of 7abb782... Docu: Use dynamic memory for reading lines
-=======
-    ClearList(docu->listado);
->>>>>>> parent of 39ced84... Update tda_documentador.c
 
     return RES_OK;
 }
