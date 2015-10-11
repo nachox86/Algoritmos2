@@ -15,7 +15,7 @@
 #define ARGS_HELP2 "--help"
 #define ARGS_INPUT_FILE "-i"
 #define ARGS_LOG_FILE "-l"
-#define ARGS_OUPUT_FILE "-o"
+#define ARGS_OUTPUT_FILE "-o"
 #define ARGS_INDEX ->
 #define ARGS_TWO 2
 #define ARGS_SEVEN 7
