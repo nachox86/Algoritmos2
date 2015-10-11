@@ -21,8 +21,8 @@
 
     typedef struct TListaIndex
     {
-    TDA_Nodo_Simple *Primero, *Corriente;
-    int TamanioDato;
+    TDA_Nodo_Simple *First, *C;
+    int SizeE;
     } TListaIndex;
 
 
