@@ -1,6 +1,6 @@
 #include "tda_documentador.h"
 #include "logger.h"
-#include "straight_list.h"
+#include "list_tda.h"
 #include "tda_nodo.h"
 #include "htmlParser.h"
 #include "functions_tools.h"
@@ -152,14 +152,14 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
                 else
                 {
                     /*inserto los comentarios en la lista*/
-                    if(straight_list_is_empty(*(docu->listado)))
+                    if(EmptyList(*(docu->listado)))
                     {
                         /* está vacía la lista, entonces debe ser el primero*/
-                        straight_list_insert(docu->listado,straight_list_first,comms);
+                        InsertE(docu->listado,M_First,comms);
                     }
                     else
                     {
-                        straight_list_insert(docu->listado,straight_list_next,comms);
+                        InsertE(docu->listado,M_Next,comms);
                     }
 
                     /* reinicializo las variabls auxiliares locales */
@@ -220,17 +220,17 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
     /*vamos a recorrer la lista, nodo por nodo, tomando cada uno de los comentarios e insertándolos en el archivo de salida*/
 
     /*creo la lista de nodos; los nodos son los comentarios de cada función*/
-    straight_list_create(docu->listado,sizeof(char**),copy,destroy);                         /*ver copy y del*/
+    CreateList(docu->listado,sizeof(char**));
 
     /*Muevo al primero el corriente*/
-    straight_list_move(docu->listado,straight_list_first);
+    MoveC(docu->listado,M_First);
 
     /*Creo el archivo de salida*/
     /* createHtmlFile(&outPut,oFile); */
 
     do
     {
-        ChangeC(docu->listado,comms);                                                        /*ver changeC*/
+        ChangeC(docu->listado,comms);
         lenElem = strlen(*comms);
         for(i=0;i<lenElem;i++)
         {
@@ -240,8 +240,9 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
                 return RES_ERROR;
             }
         }
-    } while(straight_list_move(docu->listado,straight_list_next)!=FALSE);
+    } while(MoveC(docu->listado,M_Next)!=FALSE);
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     straight_list_clear(docu->listado);
 =======
@@ -249,6 +250,9 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
 
     ClearList(docu->listado);
 >>>>>>> parent of 7abb782... Docu: Use dynamic memory for reading lines
+=======
+    ClearList(docu->listado);
+>>>>>>> parent of 39ced84... Update tda_documentador.c
 
     return RES_OK;
 }
@@ -274,7 +278,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
 
     countFunc = countFunctions(docu->listado);
 
-    straight_list_move(docu->listado,straight_list_first); /*muevo el corriente al primero*/
+    MoveC(docu->listado,M_First); /*muevo el corriente al primero*/
 
     /*le reservo memoria a sorted para cada funcion*/
     /*sorted = (char**) malloc(sizeof(char*)*countFunc);
@@ -293,7 +297,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
     MoveCIndex(indexList,M_First);
 
     do{
-        straight_list_get(*(docu->listado),dato); /*tomo el elemento del corriente*/
+        GetC(*(docu->listado),dato); /*tomo el elemento del corriente*/
         cantElem = getCommentsCount(dato); /*veo cuanto elementos tiene*/
         for(i=0;i<cantElem;i++) /*para cada subelemento*/
         {
@@ -330,7 +334,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
                 token = strtok(dato[i],KW_FUNCTION);
             }
         }
-    }while(straight_list_move(docu->listado,straight_list_next)!=FALSE); /*muevo el corriente y empiezo de vuelta*/
+    }while(MoveC(docu->listado,M_Next)!=FALSE); /*muevo el corriente y empiezo de vuelta*/
 
     /*ordeno alfabeticamente*/
     ls_ordenar(indexList);
@@ -407,6 +411,6 @@ int createIndex(TDA_Doc *docu, char *indexFile)
 int destroyDoc(TDA_Doc **docu)
 {
   free(*docu);
-  straight_list_clear((*docu)->listado);
+  ClearList((*docu)->listado);
   return RES_OK;
 }
