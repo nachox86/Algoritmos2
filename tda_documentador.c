@@ -100,7 +100,6 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
     int i,j;
     int lenElem = 0;
     char **comms;
-    htmlFile *outPut;
 
 
     inputFile = fopen(iFile,"r");
@@ -229,29 +228,22 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
     /*Ahora lo pasamos al archivo en formato HTML*/
     /*vamos a recorrer la lista, nodo por nodo, tomando cada uno de los comentarios e insertándolos en el archivo de salida*/
 
-    /*creo la lista de nodos; los nodos son los comentarios de cada función*/
-
     /*Muevo al primero el corriente*/
     MoveC(&(docu->listado),M_First);
-
-    /*Creo el archivo de salida*/
-    /* createHtmlFile(&outPut,oFile); */
-
+    
     do
     {
         GetC(docu->listado,comms);
         lenElem = strlen(*comms);
         for( i = 0; i < lenElem; i++)
         {
-            if((comms[i] == NULL) || (!parseStringToHtml(outPut,comms[i])))
+            if((comms[i] == NULL) || (!parseStringToHtml(html,comms[i])))
             {
                 loge(docu->logFile,MSG_ERROR_OUT_FILE);
                 return RES_ERROR;
             }
         }
     } while(MoveC(&(docu->listado),M_Next)!=FALSE);
-
-    /* closeHtmlFile(&outPut); */
 
     ClearList((&docu->listado));
 
