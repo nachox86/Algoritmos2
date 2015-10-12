@@ -167,10 +167,13 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
 
                     /* reinicializo las variabls auxiliares locales */
                     /* libero los recursos de comms */
+                    /* Not the time, not the place.. */
+                    /*
                     for(j=count;j>=0;--j)
                     {
                         free(comms[j]);
                     }
+                    */
                     free(comms);
                 }
                 commentsInit = 0;
@@ -246,6 +249,12 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
             }
         }
     } while(MoveC(&(docu->listado),M_Next)!=FALSE);
+    
+    /* Now we free every element of comms */
+	for(j = (sizeof(comms)/sizeof(comms[0])); j >= 0; j--) {
+        free(comms[j]);
+    }
+    free(comms);
 
     ClearList((&docu->listado));
 
