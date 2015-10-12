@@ -186,32 +186,38 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
                     return RES_MEM_ERROR;
                 }
             }
-            else if(commentsInit==1 && commentsEnd==0 && checkForKW(linea)==0)
+            else if((commentsInit == 1) && (commentsEnd == 0))
             {
-                /*encontró un KW*/
-                /*lo tengo que agregar a comms*/
-
-                comms[count] = (char *) malloc(sizeof(char)*strlen(linea)+1);
-                if(!comms[count])
-                {
-                    loge(docu->logFile,MSG_ERROR_MEMORY);
-                    /*tengo que liberar los recursos*/
-                    if(count==0)
-                    {
-                        free(comms);
-                    }
-                    else
-                    {
-                        for(j=count;j>=0;--j)
-                        {
-                            free(comms[j]);
-                        }
-                        free(comms);
-                    }
-                    return RES_MEM_ERROR;
-                }
-                strcpy(comms[count], linea);
-                count++;
+            	if (checkForKW(linea) == 0) {
+            		/* Found new KeyWord */
+		            comms[count] = (char *) malloc(sizeof(char)*strlen(linea)+1);
+		            if(!comms[count])
+		            {
+		                loge(docu->logFile,MSG_ERROR_MEMORY);
+		                /*tengo que liberar los recursos*/
+		                if(count==0)
+		                {
+		                    free(comms);
+		                }
+		                else
+		                {
+		                    for(j=count;j>=0;--j)
+		                    {
+		                        free(comms[j]);
+		                    }
+		                    free(comms);
+		                }
+		                return RES_MEM_ERROR;
+		            }
+		            strcpy(comms[count], linea);
+		            count++;
+           		} else {
+           			/* Assume it's part of the last keyword, separated by \n */
+           			count--;
+           			comms[count] = realloc(comms[count], strlen(comms[count]) + strlen(linea) + 1);
+           			strcat(comms[count], linea);
+           			count++;
+           		}
             }
         }
 
