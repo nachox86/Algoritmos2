@@ -137,6 +137,9 @@ int writeHtmlPostconditions(htmlFile *output, char *conditions) {
 int parseStringToHtml(htmlFile *output, char *line) {
     char *keyword = strtok(line, " ");
     char *param = strtok(NULL, "");
+    
+    char *paramName;
+    char *paramInfo;
 
     if (strcmp(KW_TITLE, keyword) == 0) {
         writeHtmlTitle(output, param);
@@ -153,7 +156,9 @@ int parseStringToHtml(htmlFile *output, char *line) {
     } else if (strcmp(KW_VERSION, keyword) == 0) {
         writeHtmlVersion(output, param);
     } else if (strcmp(KW_PARAM, keyword) == 0) {
-        writeHtmlParam(output, strtok(param, " "), strtok(NULL, ""));
+    	paramName = strtok(param, " ");
+    	paramInfo = strtok(NULL, "");
+        writeHtmlParam(output, paramName, paramInfo);
     } else if (strcmp(KW_RETURN, keyword) == 0) {
         writeHtmlReturn(output, param);
     } else if (strcmp(KW_PRE, keyword) == 0) {
