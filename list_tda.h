@@ -38,7 +38,7 @@
         @pre L no fue creada
         @post L creada y vacia
     */
-    void CreateList (T_List *Lp, int SizeE);
+    void CreateList (T_List **Lp, int SizeE);
 
 
     /*
@@ -51,7 +51,7 @@
         @pre L creada
         @post devuelve FALSE si L esta vacia, devuelve TRUE si L tiene elementos
     */
-    int EmptyList (T_List L);
+    int EmptyList (T_List *L);
 
 
     /*
@@ -64,7 +64,7 @@
         @pre L esta creada
         @post L vacia
     */
-    void ClearList (T_List *Lp);
+    void ClearList (T_List **Lp);
 
 
     /*
@@ -83,7 +83,7 @@
               Si M=M_Prev, se inserta antes del corriente
               Si no se pudo insertar, se devuele FALSE
     */
-    int InsertE (T_List *Lp, T_Move M, void* E);
+    int InsertE (T_List **Lp, T_Move M, void* E);
 
 
     /*
@@ -97,7 +97,7 @@
         @pre L creada y con al menos un elemento
         @post Se devuelve el corriente en C
     */
-    void GetC (T_List L, void* E);
+    void GetC (T_List *L, void* E);
 
 
     /*
@@ -111,7 +111,7 @@
         @pre creada y no vacia
         @post E pasa a ser el elemento del corriente
     */
-    void ChangeC (T_List *Lp, void* E);
+    void ChangeC (T_List **Lp, void* E);
 
 
     /*
@@ -128,7 +128,7 @@
               Si M=M_Prev, se devuelve FALSE.
               Si L esta vacia, devuelvo FALSE.
     */
-    int MoveC (T_List *Lp, T_Move M);
+    int MoveC (T_List **Lp, T_Move M);
 
 
     /*
@@ -141,7 +141,7 @@
         @pre L creada y no vacia
         @post Se elimino C y el corriente pasa a ser al siguiente a menos q este sea el ultimo, en este caso pasa a ser el anterior
     */
-    void DeleteC (T_List *Lp);
+    void DeleteC (T_List **Lp);
 
 
 
