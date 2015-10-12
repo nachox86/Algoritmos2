@@ -56,6 +56,9 @@ int extractDocumentation(TDA_Doc *docu, char *inputDir, char *outputFile) {
     char **buffer;
     htmlFile *html;
     int i, n = 0;
+    
+    if (inputDir[strlen(inputDir)] != '/')
+    	strcat(inputDir, "/");
 
     dir = opendir(inputDir);
 
