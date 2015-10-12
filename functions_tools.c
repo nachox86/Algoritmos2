@@ -72,14 +72,14 @@ int countFunctions(T_List* listed)
 {
     int i = 0;
 
-    if(EmptyList(*listed)!=FALSE)
+    if(EmptyList(listed)!=FALSE)
     {
-        MoveC(listed,M_First);
+        MoveC(&listed,M_First);
         do{
             i++;
-        }while(MoveC(listed,M_Next)!=FALSE);
+        }while(MoveC(&listed,M_Next)!=FALSE);
     }
-    MoveC(listed,M_First);
+    MoveC(&listed,M_First);
     return i;
 }
 

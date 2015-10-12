@@ -13,7 +13,7 @@ void CreateList (T_List **Lp, int Se){
 
 
 int EmptyList (T_List *L){
-    return (L.First == NULL);
+    return (L->First == NULL);
 }
 
 
@@ -44,7 +44,7 @@ int InsertE (T_List **Lp, T_Move M, void* E){
         }
         else /*M==M_Prev*/ {
             T_Node *Auxp;
-            Auxp=Lp->First;
+            Auxp=(*Lp)->First;
             while (Auxp->Next != (*Lp)->C)
                 Auxp=Auxp->Next;
             Auxp->Next=Np;
@@ -64,7 +64,7 @@ int InsertE (T_List **Lp, T_Move M, void* E){
 
 
 void GetC(T_List *Lp, void* E){
-    memcpy(E,Lp.C->elem,Lp.SizeE);
+    memcpy(E,(*Lp).C->elem,(*Lp).SizeE);
 }
 
 

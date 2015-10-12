@@ -84,7 +84,9 @@ int destroyNode(TDA_Nodo* Node)
         }
         free(Node->comments);
     }
+    /*
     Node->commentsCount = 0;
+    */
     return RES_OK;
 }
 
