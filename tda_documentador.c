@@ -212,10 +212,12 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
 		            count++;
            		} else {
            			/* Assume it's part of the last keyword, separated by \n */
-           			count--;
-           			comms[count] = realloc(comms[count], strlen(comms[count]) + strlen(linea) + 1);
-           			strcat(comms[count], linea);
-           			count++;
+           			if (count > 0) {
+		       			count--;
+		       			comms[count] = realloc(comms[count], strlen(comms[count]) + strlen(linea) + 1);
+		       			strcat(comms[count], linea);
+		       			count++;
+		       		}
            		}
             }
         }
