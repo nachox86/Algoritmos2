@@ -210,7 +210,7 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
                     }
                     return RES_MEM_ERROR;
                 }
-                comms[count] = linea;
+                strcpy(comms[count], linea);
                 count++;
             }
         }
@@ -226,18 +226,18 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
     /*creo la lista de nodos; los nodos son los comentarios de cada función*/
 
     /*Muevo al primero el corriente*/
-    MoveC(docu->listado,M_First);
+    MoveC(&(docu->listado),M_First);
 
     /*Creo el archivo de salida*/
     /* createHtmlFile(&outPut,oFile); */
 
     do
     {
-        ChangeC(&(docu->listado),comms);
+        GetC(docu->listado,comms);
         lenElem = strlen(*comms);
-        for(i=0;i<lenElem;i++)
+        for( i = 0; i < lenElem; i++)
         {
-            if(parseStringToHtml(outPut,comms[i])==RES_ERROR)
+            if((comms[i] == NULL) || (!parseStringToHtml(outPut,comms[i])))
             {
                 loge(docu->logFile,MSG_ERROR_OUT_FILE);
                 return RES_ERROR;
@@ -405,7 +405,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
 
 int destroyDoc(TDA_Doc **docu)
 {
-	ClearList(&(docu->listado));
+	ClearList(&((*docu)->listado));
 	free(*docu);
 	return RES_OK;
 }
