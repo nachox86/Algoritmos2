@@ -104,7 +104,7 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
 
 
     inputFile = fopen(iFile,"r");
-    if(inputFile)
+    if(!inputFile)
     {
         loge(docu->logFile,MSG_ERROR_IN_FILE);
         return RES_ERROR;
