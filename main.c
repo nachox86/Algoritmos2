@@ -10,6 +10,15 @@
 #include "functions_tools.h"
 #include "logger.h"
 
+#define ARGS_HELP1 "-h"
+#define ARGS_HELP2 "--help"
+#define ARGS_INPUT_FILE "-i"
+#define ARGS_LOG_FILE "-l"
+#define ARGS_OUTPUT_FILE "-o"
+#define ARGS_TWO 2
+#define ARGS_SEVEN 7
+#define ARGS_REQ 3
+
 /*
 @funcion main
 @descr Función principal del programa. Dado los argumentos de entrada toma los comentarios de funciones de un archivo de entrada y los vuelca en un archivo de salida en formato html. También genera un índice en html y un Log de eventos.

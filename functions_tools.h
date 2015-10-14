@@ -11,15 +11,7 @@
 #define RES_WRONG_ARGS 4
 #define RES_CORRECT_ARGS 5
 
-#define ARGS_HELP1 "-h"
-#define ARGS_HELP2 "--help"
-#define ARGS_INPUT_FILE "-i"
-#define ARGS_LOG_FILE "-l"
-#define ARGS_OUTPUT_FILE "-o"
 #define ARGS_INDEX ->
-#define ARGS_TWO 2
-#define ARGS_SEVEN 7
-#define ARGS_REQ 3
 
 #define KW_TITLE       "@titulo"
 #define KW_SUBTITLE    "@subtitulo"
