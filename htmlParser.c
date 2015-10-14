@@ -37,13 +37,12 @@ int closeHtmlFile(htmlFile **output) {
 	/* Before closing the file, we need to add some more code.. closing tags */
 	if ((*output)->init) {
 		fprintf((*output)->file, "</div>\n</body>\n</html>");
-	} else {
-		return ERROR;
-	}
+		fclose((*output)->file);
+	    free(*output);
+	    return SUCCESS;
+   	}
 
-    fclose((*output)->file);
-    free(*output);
-    return SUCCESS;
+	return ERROR;
 }
 
 int writeHtmlTitle(htmlFile *output, char *title) {
