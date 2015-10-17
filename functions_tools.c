@@ -124,27 +124,31 @@ int straight_list_order_insert(straight_list_t *lp,const void* data)
 }
 
 
-int search_site(straight_list_t *lp,const void* data,straight_list_movement_t* mov)
+int search_site(straight_list_t *lp, const void* data, straight_list_movement_t* mov)
 {
+	void *current_data; /*referencia de donde se va a guardar el dato/elemento del corriente de la lista*/
+	char **cdata, **rdata;
+
 	if(straight_list_is_empty(lp))
 		return FALSE;
 
-	void* current_data; /*referencia de donde se va a guardar el dato/elemento del corriente de la lista*/
-
 	straight_list_get(lp,current_data);
+
+	cdata = ((char**)current_data);
+	rdata = ((char**)data);
 	/*validar que pudo hacer el get porque usa la función de copy*/
     /*data: sería un char**, con data[0]="nombre de la funcion", data[1]="nombre del archivo"*/
 
-   	if(strcmp(current_data[0],data[0])>0)
+   	if (strcmp( cdata[0], rdata[0]) > 0)
 	{
 		straight_list_move(lp,straight_list_first);
 		straight_list_get(lp,current_data);
 	}
-    while(strcmp(data[0],current_data[0])>0 && straight_list_move(lp,straight_list_next))
+    while(strcmp(data,cdata[0])>0 && straight_list_move(lp,straight_list_next))
 	{
 		straight_list_get(lp,current_data);
 	}
-	if(strcmp(data[0],current_data[0])<0)
+	if(strcmp(rdata[0],cdata[0])<0)
 	{
 		*mov = straight_list_previous;
 	}
