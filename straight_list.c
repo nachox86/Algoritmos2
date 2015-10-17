@@ -1,28 +1,27 @@
 #include "straight_list.h"
-#define MAX_STR 100
 
-int (*straight_list_copy_t) (void* dst, const void* src)
+int (*straight_list_copy_t) (const void* src,void* dst)
 {
-    /*copia data en src*/
-    /*a priori src va a ser un char***/
-    src = malloc(sizeof(char*)*2);
-    if(!src)
+    /*copia data en dst*/
+    /*a priori dst va a ser un char***/
+    dst = (char**)malloc(sizeof(char*)*2);
+    if(!dst)
         return FALSE;
-    src[0] = (char*)malloc((sizeof(char)*strlen(dst[0]))+1);
-    if(!src[0])
+    dst[0] = (char*)malloc((sizeof(char)*strlen(src[0]))+1);
+    if(!dst[0])
     {
-        free(src);
+        free(dst);
         return FALSE;
     }
-    src[1] = (char*)malloc((sizeof(char)*strlen(dst[1]))+1);
-    if(!src[1])
+    dst[1] = (char*)malloc((sizeof(char)*strlen(src[1]))+1);
+    if(!dst[1])
     {
-        free(src[0]);
-        free(src);
+        free(dst[0]);
+        free(dst);
         return FALSE;
     }
-    memcpy(src[0],dst[0],strlen(src[0])+1);
-    memcpy(src[1],dst[1],strlen(src[1])+1);
+    memcpy(dst[0],src[0],strlen(src[0])+1);
+    memcpy(dst[1],src[1],strlen(src[1])+1);
     return OK;
 }
 
