@@ -3,15 +3,15 @@
 
 	#include <stdlib.h>
 	#include <memory.h>
-	
+
 	#if !defined(NULL)
 		#define NULL 0x0
 	#endif
-	
+
 	#if !defined(FALSE)
 		#define FALSE 0
 	#endif
-	
+
 	#if !defined(TRUE)
 		#define TRUE 1
 	#endif
@@ -30,14 +30,14 @@
 		straight_list_next,
 		straight_list_previous
 	} straight_list_movement_t;
-	
+
 	/**
 	 * Tipo puntero a funcion de copia de los elementos de la lista. Esta es la
 	 * funcion que se invocara al recibir un elemento para almacenar en la
 	 * estructura, de manera que se admita la posibilidad de almacenar copias
 	 * profundas de los elementos en la lista.
 	 */
-	typedef int (*straight_list_copy_t) (void* dst, const void* src);
+	typedef int (*straight_list_copy_t) (const void* src,void* dst);
 
 	/**
 	 * Tipo puntero a funcion de destruccion de los elementos de la lista. Esta
@@ -56,7 +56,7 @@
 		void* data;
 		struct straight_list_node_t *next;
 	} straight_list_node_t;
-	
+
 	/**
 	 * Estructura cabecera, este es el tipo que se debera instanciar, aunque
 	 * nunca acceder a sus campos.
@@ -68,7 +68,7 @@
 		straight_list_copy_t copy;
 		straight_list_destroy_t destroy;
 	} straight_list_t;
-	
+
 	/**
 	 * CREAR
 	 * Pre: Ls no fue creada.
@@ -82,28 +82,28 @@
 	 * Post: Ls destruida. Todos los recursos utilizados liberados
 	 */
 	void straight_list_destroy(straight_list_t*);
-	
+
 	/**
 	 * VACIAR
 	 * Pre: Ls creada.
 	 * Post: Ls vacia.
 	 */
 	void straight_list_clear(straight_list_t*);
-	
+
 	/**
 	 * VACIA?
 	 * Pre: Ls creada.
 	 * Post: Si Ls tiene elementos devuelve FALSE sino TRUE.
 	 */
 	int straight_list_is_empty(const straight_list_t*);
-	
+
 	/**
 	 * OBTENER CORRIENTE
 	 * Pre: Ls creada y no vacia.
 	 * Post: Se devuelve en E el elemento Corriente de la lista.
 	 */
 	void straight_list_get(const straight_list_t*, void*);
-	
+
 	/**
 	 * MOVER
 	 * Pre: Ls creada y no vacia.
@@ -114,7 +114,7 @@
 	 * Si M = LS_Anterior, devuelve FALSE.
 	 */
 	int straight_list_move(straight_list_t*, straight_list_movement_t);
-	
+
 	/**
 	 * BORRAR
 	 * Pre: Ls creada y no vacia.
@@ -122,7 +122,7 @@
 	 * el Anterior si el Corriente era el ultimo elemento.
 	 */
 	void straight_list_delete(straight_list_t*);
-	
+
 	/**
 	 * INSERTAR (respecto al elemento corriente)
 	 * Pre: Ls creada.
