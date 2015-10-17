@@ -1,4 +1,39 @@
 #include "straight_list.h"
+#define MAX_STR 100
+
+int (*straight_list_copy_t) (void* dst, const void* src)
+{
+    /*copia data en src*/
+    /*a priori src va a ser un char***/
+    src = malloc(sizeof(char*)*2);
+    if(!src)
+        return FALSE;
+    src[0] = (char*)malloc((sizeof(char)*strlen(dst[0]))+1);
+    if(!src[0])
+    {
+        free(src);
+        return FALSE;
+    }
+    src[1] = (char*)malloc((sizeof(char)*strlen(dst[1]))+1);
+    if(!src[1])
+    {
+        free(src[0]);
+        free(src);
+        return FALSE;
+    }
+    memcpy(src[0],dst[0],strlen(src[0])+1);
+    memcpy(src[1],dst[1],strlen(src[1])+1);
+    return OK;
+}
+
+void (*straight_list_destroy_t) (void* elem)
+{
+  /*borra el elemento pasado*/
+  /*sabemos que es un char** de dos elementos*/
+  free(elem[0]);
+  free(elem[1]);
+  free(elem);
+}
 
 int straight_list_create(straight_list_t* lp, size_t size, straight_list_copy_t copy, straight_list_destroy_t destroy)
 {
@@ -124,4 +159,3 @@ int straight_list_insert(straight_list_t *lp, straight_list_movement_t m, const 
 	lp->current=new_node;
 	return TRUE;
 }
-
