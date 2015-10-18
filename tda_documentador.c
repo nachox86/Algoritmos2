@@ -106,7 +106,7 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
     int i,j;
     int lenElem = 0;
     char **comms;
-
+    char **temp = NULL;
 
     inputFile = fopen(iFile,"r");
     if(!inputFile)
@@ -253,6 +253,19 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
                 loge(docu->logFile,MSG_ERROR_OUT_FILE);
                 return RES_ERROR;
             }
+
+            if (strcmp(strtok(comms[i], " "), KW_FUNCTION) == 0) {
+                if (!temp)
+                    temp = malloc(sizeof(char**)*2);
+
+                temp[0] = realloc(temp[0], strlen(comms[i]));
+                temp[1] = realloc(temp[1], strlen(iFile));
+
+                strcpy(temp[0], strtok(NULL, ""));
+                strcpy(temp[1], iFile);
+
+                straight_list_order_insert(docu->slist, temp);
+            }
         }
     } while(MoveC(&(docu->listado),M_Next)!=FALSE);
 
@@ -261,6 +274,12 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
         free(comms[j]);
     }
     free(comms);
+
+    if (temp) {
+        free(temp[0]);
+        free(temp[1]);
+        free(temp);
+    }
 
     ClearList((&docu->listado));
 
