@@ -33,7 +33,6 @@ int main(int argc, char *argv[]) {
 	int i, nargs = 0;
     char *inputDir, *outputFile, *logFile, *indexFile;
     char* token;
-    int checkForHTML = 0;
 
     Logger *log;
     TDA_Doc *docu;
@@ -69,13 +68,18 @@ int main(int argc, char *argv[]) {
     	createLog(&log, logFile);
     	createDoc(&docu, log);
     	extractDocumentation(docu, inputDir, outputFile);
+
     	/*armo el nombre del archivo de indice*/
-        /*token = strtok(outputFile,HTML_EXT);
-        if(!token)
-            indexFile = sprintf("%s%s",INDEX_PREFFIX_NO_EXT,token);
-        else
-            indexFile = sprintf("%s%s",token,INDEX_PREFFIX);
-    	 createIndex(TDA_Doc *docu, char *indexFile); */
+        token = strtok(outputFile,HTML_EXT);
+
+        if(!token) {
+            indexFile = malloc(strlen(INDEX_PREFFIX_NO_EXT) + strlen(token));
+            sprintf(indexFile, "%s%s",INDEX_PREFFIX_NO_EXT,token);
+        } else {
+            indexFile = malloc(strlen(INDEX_PREFFIX) + strlen(token));
+            sprintf(indexFile, "%s%s",token,INDEX_PREFFIX);
+        }
+        createIndex(docu, indexFile);
 		closeLog(&log);
     	destroyDoc(&docu);
     }
