@@ -65,7 +65,7 @@ int extractDocumentation(TDA_Doc *docu, char *inputDir, char *outputFile) {
 
     if (dir) {
         buffer = malloc(sizeof(char**));
-        while (dp == readdir(dir)) {
+        while (dp = readdir(dir)) {
             if ((strcmp(dp->d_name, ".") != 0) && (strcmp(dp->d_name, "..") != 0)) {
                 buffer = realloc(buffer, sizeof(char**) * (n+2));
                 buffer[n] = malloc(strlen(inputDir) + strlen(dp->d_name) + 1);
