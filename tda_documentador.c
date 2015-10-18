@@ -1,10 +1,10 @@
+#include <string.h>
 #include "tda_documentador.h"
 #include "logger.h"
 #include "list_tda.h"
 #include "tda_nodo.h"
 #include "htmlParser.h"
 #include "functions_tools.h"
-#include <string.h>
 #include "straight_list.h"
 
 #include <sys/types.h>
@@ -65,7 +65,7 @@ int extractDocumentation(TDA_Doc *docu, char *inputDir, char *outputFile) {
 
     if (dir) {
         buffer = malloc(sizeof(char**));
-        while (dp = readdir(dir)) {
+        while (dp == readdir(dir)) {
             if ((strcmp(dp->d_name, ".") != 0) && (strcmp(dp->d_name, "..") != 0)) {
                 buffer = realloc(buffer, sizeof(char**) * (n+2));
                 buffer[n] = malloc(strlen(inputDir) + strlen(dp->d_name) + 1);
@@ -328,7 +328,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
 int destroyDoc(TDA_Doc **docu)
 {
 	ClearList(&((*docu)->listado));
-	straight_list_delete(&((*docu)->slist));
+	straight_list_delete((*docu)->slist);
 	free(*docu);
 	return RES_OK;
 }
