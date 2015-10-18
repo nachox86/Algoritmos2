@@ -37,6 +37,8 @@ int countFunctions(T_List* listed);
 
 int getCommentsCount(char** dato);
 
+int straight_list_order_insert(straight_list_t *lp,const void* data);
+
 int slistCopy(void* dst, const void* src);
 
 void sListDestroy(void* elem);
