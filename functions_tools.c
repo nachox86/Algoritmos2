@@ -104,26 +104,6 @@ int getCommentsCount(char** dato)
     return count;
 }
 
-/*
-@funcion straight_list_order_insert
-@descr Esta función realiza la inserción ordenada de un dato, en la posición correcta en una lista. Realiza la comparación entre nombres de funciones para ordernar.
-@autor Ignacio
-@fecha 14/10/2015
-@version "1.0"
-@param lp referencia a la lista
-@param data referencia al dato a guardar en la lista
-@pre la lista debe estar creada
-@pos se guardará en la posición que deba de acuerda al criterio de ordenamiento.
-*/
-int straight_list_order_insert(straight_list_t *lp,const void* data)
-{
-    straight_list_movement_t mov = straight_list_first;
-	int search = search_site(lp,data,&mov);
-	int insert = straight_list_insert(lp,mov,data);
-	return insert;
-}
-
-
 int search_site(straight_list_t *lp, const void* data, straight_list_movement_t* mov)
 {
 	void *current_data; /*referencia de donde se va a guardar el dato/elemento del corriente de la lista*/
@@ -156,6 +136,26 @@ int search_site(straight_list_t *lp, const void* data, straight_list_movement_t*
 		*mov = straight_list_next;
 
 	return TRUE;
+}
+
+/*
+@funcion straight_list_order_insert
+@descr Esta función realiza la inserción ordenada de un dato, en la posición correcta en una lista. Realiza la comparación entre nombres de funciones para ordernar.
+@autor Ignacio
+@fecha 14/10/2015
+@version "1.0"
+@param lp referencia a la lista
+@param data referencia al dato a guardar en la lista
+@pre la lista debe estar creada
+@pos se guardará en la posición que deba de acuerda al criterio de ordenamiento.
+*/
+int straight_list_order_insert(straight_list_t *lp,const void* data)
+{
+    int insert;
+    straight_list_movement_t mov = straight_list_first;
+	search_site(lp,data,&mov);
+	insert = straight_list_insert(lp,mov,data);
+	return insert;
 }
 
 int slistCopy(void* dst, const void* src)
