@@ -47,6 +47,7 @@ int createDoc(TDA_Doc **docu, Logger *log)
     (*docu)->outputFile = NULL;
     (*docu)->logFile = log;
     (*docu)->listado = NULL;
+    (*docu)->slist = malloc(sizeof(straight_list_t));;
     return RES_OK;
 }
 
@@ -79,6 +80,8 @@ int extractDocumentation(TDA_Doc *docu, char *inputDir, char *outputFile) {
     }
 
     if ( n >= 0) {
+        straight_list_create(docu->slist,sizeof(char**), &slistCopy, &sListDestroy);
+        straight_list_move(docu->slist,straight_list_first);
         createHtmlFile(&html, outputFile);
         for (i = 0; i < n; i++) {
             extractDocumentationFromFile(docu, html, buffer[i]);
@@ -300,7 +303,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
 /*    MoveCIndex(indexList,M_First);*/
 
     do{
-        GetC(docu->listado,dato);
+        GetC(docu->listado, dato);
         cantElem = getCommentsCount(dato); /*veo cuanto elementos tiene*/
         for(i=0;i<cantElem;i++) /*para cada subelemento*/
         {
