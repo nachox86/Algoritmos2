@@ -328,6 +328,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
 int destroyDoc(TDA_Doc **docu)
 {
 	ClearList(&((*docu)->listado));
+	straight_list_delete(&((*docu)->slist));
 	free(*docu);
 	return RES_OK;
 }
