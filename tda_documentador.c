@@ -290,60 +290,8 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
 int createIndex(TDA_Doc *docu, char *indexFile)
 {
     FILE* index;
-    char** dato;
-    char* token;
-    char** sorted;
-    char sorted_aux[MAX_LINE];
     char htmlLine[MAX_LINE];
-    int cantElem = 0; /*revisar cómo se asigna*/
-    int i = 0;
-    int j = 0;
-    int k = 0;
-    int countNames = 0;
-    int countFunc = 0;
-    straight_list_t* indexList;
-    /*char* param1;
-    char* param2;*/
     char** parm;
-
-    countFunc = countFunctions(docu->listado);
-
-    MoveC(&(docu->listado),M_First); /*muevo el corriente al primero*/
-
-    indexList = (straight_list_t*)malloc(sizeof(straight_list_t));
-    if(!indexList)
-    {
-        loge(docu->logFile,MSG_ERROR_MEMORY);
-        return RES_MEM_ERROR;
-    }
-    straight_list_create(indexList,sizeof(char**), &slistCopy, &sListDestroy);
-/*    CreateListIndex(indexList,sizeof(TDA_Nodo_Simple));*/
-    straight_list_move(indexList,straight_list_first);
-/*    MoveCIndex(indexList,M_First);*/
-
-    do{
-        GetC(docu->listado, dato);
-        cantElem = getCommentsCount(dato); /*veo cuanto elementos tiene*/
-        for(i=0;i<cantElem;i++) /*para cada subelemento*/
-        {
-            token = strtok(dato[i], KW_FUNCTION); /*busco referencias de la keyword @function*/
-            while(token != NULL)
-            {
-                if(strlen(token)>0) /*si no está vacío el token es que encontró el nombre o más*/
-                {
-                    straight_list_order_insert(indexList,token);
-                    /*if(EmptyListIndex(*indexList)==FALSE)
-                        InsertEIndex(indexList,M_First,token);
-                    else
-                    {
-                        InsertEIndex(indexList,M_Next,token);
-                        MoveCIndex(indexList,M_Next);
-                    }*/
-                }
-                token = strtok(dato[i],KW_FUNCTION);
-            }
-        }
-    }while(MoveC(&(docu->listado),M_Next)!=FALSE); /*muevo el corriente y empiezo de vuelta*/
 
     /*doy formato y agrego al archivo de indices*/
     index = fopen(indexFile,"wa");
@@ -356,46 +304,23 @@ int createIndex(TDA_Doc *docu, char *indexFile)
     fwrite(HTML_INDEX_HEADER,sizeof(char),strlen(HTML_INDEX_HEADER),index); /*agrego header del indice*/
 
     /*Me muevo por la lista del indice desde el principio*/
-/*    MoveCIndex(indexList,M_First);*/
-    straight_list_move(indexList,straight_list_first);
+    straight_list_move(docu->slist,straight_list_first);
 
     do{
-        /*param1 = (char*)malloc(sizeof(char)*MAX_LINE);
-        if(!param1)
-        {
-            loge(docu->logFile,MSG_ERROR_MEMORY);
-            return RES_MEM_ERROR;
-        }
-        param2 = (char*)malloc(sizeof(char)*MAX_LINE);
-        if(!param2)
-        {
-            free(param1);
-            loge(docu->logFile,MSG_ERROR_MEMORY);
-            return RES_MEM_ERROR;
-        }
-        GetC1Index(*indexList,&param1);
-        GetC2Index(*indexList,&param2);*/
+        straight_list_get(docu->slist,parm);
 
-        straight_list_get(indexList,parm);
-
-        sprintf(htmlLine,"<li><a href=doc.html#%s>%s</a></li>",parm[0],parm[0]);
+        sprintf(htmlLine,"<li><a href=doc.html#%s>%s</a></li>",parm[0],parm[0]);
         fwrite(htmlLine,sizeof(char),strlen(htmlLine),index);
 
         free(parm[1]);
         free(parm[0]);
-        free(parm);
 
-    }while(straight_list_move(indexList,straight_list_next)!=FALSE);
- /*   }while(MoveCIndex(indexList,M_Next)!=FALSE);*/
+    }while(straight_list_move(docu->slist,straight_list_next)!=FALSE);
 
     fwrite(HTML_INDEX_FOOTER,sizeof(char),strlen(HTML_INDEX_FOOTER),index);/*agrego footer del indice*/
 
+    free(parm);
     fclose(index);
-
-    /*libero recursos usados*/
-    /*DeleteCIndex(indexList);*/
-    straight_list_destroy(indexList);
-    free(indexList);
 
     return RES_OK;
 }
