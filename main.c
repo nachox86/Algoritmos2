@@ -7,7 +7,6 @@
 #include "list_tda.h"
 #include "htmlParser.h"
 #include "functions_tools.h"
-#include "functions_tools.c"
 #include "logger.h"
 
 #define ARGS_HELP1 "-h"
