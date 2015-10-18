@@ -37,7 +37,7 @@
 	 * estructura, de manera que se admita la posibilidad de almacenar copias
 	 * profundas de los elementos en la lista.
 	 */
-	typedef int (*straight_list_copy_t) (const void* src,void* dst);
+	typedef int (*straight_list_copy_t) (void* dst, const void* src);
 
 	/**
 	 * Tipo puntero a funcion de destruccion de los elementos de la lista. Esta

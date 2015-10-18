@@ -37,4 +37,8 @@ int countFunctions(T_List* listed);
 
 int getCommentsCount(char** dato);
 
+int slistCopy(void* dst, const void* src);
+
+void sListDestroy(void* elem);
+
 #endif

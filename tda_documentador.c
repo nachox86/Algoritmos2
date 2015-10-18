@@ -4,7 +4,6 @@
 #include "tda_nodo.h"
 #include "htmlParser.h"
 #include "functions_tools.h"
-#include "tda_indice.h"
 #include <string.h>
 #include "straight_list.h"
 
@@ -287,7 +286,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
 
     countFunc = countFunctions(docu->listado);
 
-    MoveC(docu->listado,M_First); /*muevo el corriente al primero*/
+    MoveC(&(docu->listado),M_First); /*muevo el corriente al primero*/
 
     indexList = (straight_list_t*)malloc(sizeof(straight_list_t));
     if(!indexList)
@@ -295,13 +294,13 @@ int createIndex(TDA_Doc *docu, char *indexFile)
         loge(docu->logFile,MSG_ERROR_MEMORY);
         return RES_MEM_ERROR;
     }
-    straight_list_create(indexList,sizeof(char**), straight_list_copy_t, straight_list_destroy_t);
+    straight_list_create(indexList,sizeof(char**), &slistCopy, &sListDestroy);
 /*    CreateListIndex(indexList,sizeof(TDA_Nodo_Simple));*/
     straight_list_move(indexList,straight_list_first);
 /*    MoveCIndex(indexList,M_First);*/
 
     do{
-        GetC(*(docu->listado),dato);
+        GetC(docu->listado,dato);
         cantElem = getCommentsCount(dato); /*veo cuanto elementos tiene*/
         for(i=0;i<cantElem;i++) /*para cada subelemento*/
         {
@@ -322,7 +321,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
                 token = strtok(dato[i],KW_FUNCTION);
             }
         }
-    }while(MoveC(docu->listado,M_Next)!=FALSE); /*muevo el corriente y empiezo de vuelta*/
+    }while(MoveC(&(docu->listado),M_Next)!=FALSE); /*muevo el corriente y empiezo de vuelta*/
 
     /*doy formato y agrego al archivo de indices*/
     index = fopen(indexFile,"wa");

@@ -1,51 +1,5 @@
 #include "straight_list.h"
 
-int slistCopy(const void* src,void* dst)
-{
-    /*copia data en dst*/
-    /*a priori dst va a ser un char***/
-    char **buffer, **csrc;
-
-    buffer = (char**)malloc(sizeof(char*)*2);
-    csrc = ((char**)src);
-
-    if(!buffer)
-        return FALSE;
-    buffer[0] = (char*)malloc((sizeof(char)*strlen(csrc[0]))+1);
-    if(!buffer[0])
-    {
-        free(buffer);
-        return FALSE;
-    }
-    buffer[1] = (char*)malloc((sizeof(char)*strlen(csrc[1]))+1);
-    if(!buffer[1])
-    {
-        free(buffer[0]);
-        free(buffer);
-        return FALSE;
-    }
-    /*
-    Original:
-    memcpy(dst[0],src[0],strlen(src[0])+1);
-    memcpy(dst[1],src[1],strlen(src[1])+1);
-
-    Modified:
-    memcpy(&dst, buffer, sizeof(buffer));
-    */
-    dst = &buffer; /* if this sigfaults, use the modified definition above */
-    return RES_OK;
-}
-
-void sListDestroy(void* elem)
-{
-  char **buffer = malloc(sizeof(char*) * 2);
-  buffer = ((char**)elem);
-  free(buffer[0]);
-  free(buffer[1]);
-  free(buffer);
-  free(elem);
-}
-
 int straight_list_create(straight_list_t* lp, size_t size, straight_list_copy_t copy, straight_list_destroy_t destroy)
 {
 	lp->current = NULL;
