@@ -100,18 +100,105 @@ int extractDocumentation(TDA_Doc *docu, char *inputDir, char *outputFile) {
     }
 }
 
+int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
+    FILE *inputFile;
+    char **comms = NULL;
+    int i = 0, j = 0;
+    int n = 0;
+    int count = 0;
+    int cinit = 0;
+    int cend = 0;
+    int cfound = 0;
+    int lenElem = 0;
 
-int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
+    char linea[MAX_LINE];
+    char *stoken, *etoken;
+
+    inputFile = fopen(iFile, "r");
+    if (!inputFile) return -1;
+
+
+    comms = malloc((sizeof(char*)*MAX_LINE));
+    if (!comms) return -2;
+
+
+    CreateList(&(docu->listado), sizeof(char**));
+
+    while (!feof(inputFile)) {
+        if (fgets(linea, MAX_LINE-1, inputFile) != NULL) {
+            stoken = strstr(linea, KW_INIT);
+            etoken = strstr(linea, KW_END);
+
+            if ((stoken) && (!etoken)) {
+                cinit = 1;
+                n++;
+            } else if ((!stoken) && (etoken)) {
+                cend = 1;
+                if (cinit)
+                    cfound = 1;
+            }
+
+            if ((cinit) && (!cend)) {
+                if (checkForKW(linea) == 0) {
+                    comms[count] = malloc(strlen(linea) + 1);
+                    strncpy(comms[count], linea, strlen(linea) + 1);
+                    count++;
+                }
+            } else if (cend) {
+                if (count > 0) {
+                    if (EmptyList(docu->listado))
+                        InsertE(&(docu->listado), M_First, comms);
+                    else
+                        InsertE(&(docu->listado), M_Next, comms);
+
+                    /*count = 0;*/
+                    cinit = 0;
+                    cend = 0;
+                    stoken = NULL;
+                    etoken = NULL;
+                }
+            }
+        }
+    }
+
+    fclose(inputFile);
+
+    MoveC(&(docu->listado), M_First);
+
+    do {
+        GetC((docu->listado), comms);
+
+        for (i = 0; i < count; i++) {
+            if ((comms[i] == NULL) || (!parseStringToHtml(html, comms[i])))
+                return -3;
+        }
+    } while (MoveC(&(docu->listado), M_Next) != 0);
+
+    for (i = 0; i < count; i++)
+        free(comms[i]);
+
+    free(comms);
+
+    ClearList(&(docu->listado));
+
+    return 1;
+}
+
+
+
+int extractDocumentationFromFile2(TDA_Doc *docu, htmlFile *html, char *iFile)
 {
     FILE* inputFile;
     int commentsInit = 0;
     int commentsEnd = 0;
     int commentsFound = 0; /* 0 significa que no encontró, 1 que si*/
     int count = 0;
-    int i,j;
+    int i = 0, j = 0;
     int lenElem = 0;
     char **comms;
     char **temp = NULL;
+
+    printf("%s\n", iFile);
 
     inputFile = fopen(iFile,"r");
     if(!inputFile)
@@ -121,7 +208,8 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
     }
 
     /* asigno recursos para la variable auxiliar */
-    comms = (char **) malloc(sizeof(char*)*MAX_KW);
+    if (!comms)
+        comms = (char **) malloc(sizeof(char*)*MAX_KW);
     if(!comms)
     {
         loge(docu->logFile,MSG_ERROR_MEMORY);
@@ -161,7 +249,9 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
             {
                 if(count==0)
                 {
+                    /*
                     free(comms);
+                    */
                 }
                 else
                 {
@@ -184,15 +274,17 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
                     {
                         free(comms[j]);
                     }
-                    */
+
                     free(comms);
+                    */
                 }
                 commentsInit = 0;
                 commentsEnd = 0;
                 commentsFound = 0;
                 count = 0;
                 /* asigno recursos para la variable auxiliar */
-                comms = (char **) malloc(sizeof(char*)*MAX_KW);
+                if (!comms)
+                    comms = (char **) malloc(sizeof(char*)*MAX_KW);
                 if(!comms)
                 {
                     loge(docu->logFile,MSG_ERROR_MEMORY);
@@ -203,23 +295,12 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
             {
             	if (checkForKW(linea) == 0) {
             		/* Found new KeyWord */
-		            comms[count] = (char *) malloc(sizeof(char)*strlen(linea)+1);
+            		if (!(comms[count]))
+                    comms[count] = malloc(sizeof(char)*strlen(linea)+1);
+
 		            if(!comms[count])
 		            {
 		                loge(docu->logFile,MSG_ERROR_MEMORY);
-		                /*tengo que liberar los recursos*/
-		                if(count==0)
-		                {
-		                    free(comms);
-		                }
-		                else
-		                {
-		                    for(j=count;j>=0;--j)
-		                    {
-		                        free(comms[j]);
-		                    }
-		                    free(comms);
-		                }
 		                return RES_MEM_ERROR;
 		            }
 		            strcpy(comms[count], linea);
@@ -228,7 +309,9 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
            			/* Assume it's part of the last keyword, separated by \n */
            			if (count > 0) {
 		       			count--;
+		       			/*
 		       			comms[count] = realloc(comms[count], strlen(comms[count]) + strlen(linea) + 1);
+		       			*/
 		       			strcat(comms[count], linea);
 		       			count++;
 		       		}
@@ -237,8 +320,9 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
         }
 
     }
-
+    /*
     free(comms);
+    */
     fclose(inputFile);
 
     /*Ahora lo pasamos al archivo en formato HTML*/
@@ -280,7 +364,7 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
     } while(MoveC(&(docu->listado),M_Next)!=FALSE);
 
     /* Now we free every element of comms */
-	for(j = (sizeof(comms)/sizeof(comms[0])); j >= 0; j--) {
+	for(j = lenElem; j >= 0; j--) {
         free(comms[j]);
     }
     free(comms);

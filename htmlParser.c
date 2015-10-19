@@ -134,11 +134,15 @@ int writeHtmlPostconditions(htmlFile *output, char *conditions) {
 }
 
 int parseStringToHtml(htmlFile *output, char *line) {
+
     char *keyword = strtok(line, " ");
     char *param = strtok(NULL, "");
-    
+
     char *paramName;
     char *paramInfo;
+
+    if ((!keyword) || (!param))
+        return ERROR;
 
     if (strcmp(KW_TITLE, keyword) == 0) {
         writeHtmlTitle(output, param);
