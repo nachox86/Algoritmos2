@@ -258,10 +258,10 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
                 if (!temp)
                     temp = malloc(sizeof(char**)*2);
 
-                temp[0] = realloc(temp[0], strlen(comms[i]));
-                temp[1] = realloc(temp[1], strlen(iFile));
+                temp[0] = malloc(strlen(comms[i]));
+                temp[1] = malloc(strlen(iFile));
 
-                strcpy(temp[0], strtok(NULL, ""));
+                strcpy(temp[0], comms[i]);
                 strcpy(temp[1], iFile);
 
                 straight_list_order_insert(docu->slist, temp);
@@ -291,7 +291,8 @@ int createIndex(TDA_Doc *docu, char *indexFile)
 {
     FILE* index;
     char htmlLine[MAX_LINE];
-    char** parm;
+    void *data;
+    char **buffer;
 
     /*doy formato y agrego al archivo de indices*/
     index = fopen(indexFile,"wa");
@@ -306,20 +307,21 @@ int createIndex(TDA_Doc *docu, char *indexFile)
     /*Me muevo por la lista del indice desde el principio*/
     straight_list_move(docu->slist,straight_list_first);
 
+    data = malloc(sizeof(char**)*2);
+
     do{
-        straight_list_get(docu->slist,parm);
+        straight_list_get(docu->slist,data);
 
-        sprintf(htmlLine,"<li><a href=doc.html#%s>%s</a></li>",parm[0],parm[0]);
+        buffer = malloc(sizeof(char*)*2);
+        buffer = ((char**)data);
+
+        sprintf(htmlLine,"<li><a href=doc.html#%s>%s</a></li>",buffer[1],buffer[0]);
         fwrite(htmlLine,sizeof(char),strlen(htmlLine),index);
-
-        free(parm[1]);
-        free(parm[0]);
 
     }while(straight_list_move(docu->slist,straight_list_next)!=FALSE);
 
     fwrite(HTML_INDEX_FOOTER,sizeof(char),strlen(HTML_INDEX_FOOTER),index);/*agrego footer del indice*/
 
-    free(parm);
     fclose(index);
 
     return RES_OK;
