@@ -193,8 +193,7 @@ int slistCopy(void* dst, const void* src)
     memcpy(&dst, buffer, sizeof(buffer));
     */
 
-    dst = malloc(sizeof(char**));
-    dst = &buffer; /* if this sigfaults, use the modified definition above */
+    memcpy(&dst, &buffer, sizeof(char**)*2);
     return RES_OK;
 }
 
