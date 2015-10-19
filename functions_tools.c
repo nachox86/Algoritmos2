@@ -163,12 +163,16 @@ int slistCopy(void* dst, const void* src)
     /*a priori dst va a ser un char***/
     char **buffer, **csrc;
 
-    buffer = (char**)malloc(sizeof(char*)*2);
+    buffer = malloc((sizeof(char*)*2));
     csrc = ((char**)src);
+
+    if(!csrc)
+        return RES_ERROR;
 
     if(!buffer)
         return FALSE;
-    buffer[0] = (char*)malloc((sizeof(char)*strlen(csrc[0]))+1);
+    /*
+    buffer[0] = malloc((sizeof(char)*strlen(csrc[0]))+1);
     if(!buffer[0])
     {
         free(buffer);
@@ -181,6 +185,7 @@ int slistCopy(void* dst, const void* src)
         free(buffer);
         return FALSE;
     }
+    */
     strcpy(buffer[0], csrc[0]);
     strcpy(buffer[1], csrc[1]);
     /*
@@ -192,7 +197,7 @@ int slistCopy(void* dst, const void* src)
     memcpy(&dst, buffer, sizeof(buffer));
     */
 
-    memcpy(&dst, &buffer, sizeof(char**)*2);
+    memcpy(&dst, &buffer, (sizeof(char*)*2));
     return RES_OK;
 }
 

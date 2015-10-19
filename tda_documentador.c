@@ -47,7 +47,7 @@ int createDoc(TDA_Doc **docu, Logger *log)
     (*docu)->outputFile = NULL;
     (*docu)->logFile = log;
     (*docu)->listado = NULL;
-    (*docu)->ilist = NULL;
+    (*docu)->slist = malloc(sizeof(straight_list_t));
     return RES_OK;
 }
 
@@ -80,12 +80,8 @@ int extractDocumentation(TDA_Doc *docu, char *inputDir, char *outputFile) {
     }
 
     if ( n >= 0) {
-        /*
         straight_list_create(docu->slist,sizeof(char**), &slistCopy, &sListDestroy);
         straight_list_move(docu->slist,straight_list_first);
-        */
-        CreateList(&(docu->ilist), sizeof(char**)*2);
-        MoveC(&(docu->ilist), M_First);
 
         createHtmlFile(&html, outputFile);
         for (i = 0; i < n; i++) {
@@ -114,13 +110,16 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
     char linea[MAX_LINE];
     char *stoken, *etoken;
 
-    inputFile = fopen(iFile, "r");
-    if (!inputFile) return -1;
+    char **index;
 
+    inputFile = fopen(iFile, "r");
+    if (!inputFile) return RES_ERROR;
 
     comms = malloc((sizeof(char*)*MAX_LINE));
-    if (!comms) return -2;
+    if (!comms) return RES_ERROR;
 
+    index = malloc(sizeof(char*));
+    if (!index) return RES_ERROR;
 
     CreateList(&(docu->listado), sizeof(char**));
 
@@ -131,7 +130,6 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
 
             if ((stoken) && (!etoken)) {
                 cinit = 1;
-                n++;
             } else if ((!stoken) && (etoken)) {
                 cend = 1;
                 if (cinit)
@@ -151,11 +149,8 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
                     else
                         InsertE(&(docu->listado), M_Next, comms);
 
-                    /*count = 0;*/
                     cinit = 0;
                     cend = 0;
-                    stoken = NULL;
-                    etoken = NULL;
                 }
             }
         }
@@ -169,8 +164,23 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
         GetC((docu->listado), comms);
 
         for (i = 0; i < count; i++) {
-            if ((comms[i] == NULL) || (!parseStringToHtml(html, comms[i])))
-                return -3;
+            if (comms[i] == NULL) {
+                return -4;
+            } else {
+                parseStringToHtml(html, comms[i]);
+
+                index[0] = malloc(strlen(comms[i]) + 1);
+                index[1] = malloc(strlen(iFile) + 1);
+                strcpy(index[0], comms[i]);
+                strcpy(index[1], iFile);
+
+                if(straight_list_is_empty(docu->slist))
+                    straight_list_insert(docu->slist, straight_list_first, index);
+                else
+                    straight_list_insert(docu->slist, straight_list_next, index);
+                free(index[0]);
+                free(index[1]);
+            }
         }
     } while (MoveC(&(docu->listado), M_Next) != 0);
 
@@ -179,217 +189,22 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
 
     free(comms);
 
+    free(index);
+
     ClearList(&(docu->listado));
-
-    return 1;
-}
-
-
-
-int extractDocumentationFromFile2(TDA_Doc *docu, htmlFile *html, char *iFile)
-{
-    FILE* inputFile;
-    int commentsInit = 0;
-    int commentsEnd = 0;
-    int commentsFound = 0; /* 0 significa que no encontró, 1 que si*/
-    int count = 0;
-    int i = 0, j = 0;
-    int lenElem = 0;
-    char **comms;
-    char **temp = NULL;
-
-    printf("%s\n", iFile);
-
-    inputFile = fopen(iFile,"r");
-    if(!inputFile)
-    {
-        loge(docu->logFile,MSG_ERROR_IN_FILE);
-        return RES_ERROR;
-    }
-
-    /* asigno recursos para la variable auxiliar */
-    if (!comms)
-        comms = (char **) malloc(sizeof(char*)*MAX_KW);
-    if(!comms)
-    {
-        loge(docu->logFile,MSG_ERROR_MEMORY);
-        return RES_MEM_ERROR;
-    }
-
-    CreateList(&(docu->listado),sizeof(char**));
-
-    /*El archivo se abrió correctamente por lo que ahora paso a recopilar la información*/
-    /*Recorro línea por línea*/
-
-    while(!feof(inputFile))
-    {
-        char linea[MAX_LINE];
-        char *token;
-        char *token2;
-
-        if(fgets(linea,MAX_LINE,inputFile)!=NULL)
-        {
-            token = strstr(linea,KW_INIT);
-            token2 = strstr(linea,KW_END);
-            if(token && !token2)
-            {
-                /*Encontramos el inicio de los comentarios de la función*/
-                commentsInit = 1;
-            }
-            else if(!token && token2)
-            {
-                commentsEnd = 1;
-                if(commentsInit == 1)
-                    commentsFound = 1;
-            }
-                /* else es un comentario trivial */
-
-            if(commentsFound==1)
-            /* a esta altura ya se cerraron los comentarios para una función y los guardé en comms */
-            {
-                if(count==0)
-                {
-                    /*
-                    free(comms);
-                    */
-                }
-                else
-                {
-                    /*inserto los comentarios en la lista*/
-                    if(EmptyList(docu->listado))
-                    {
-                        /* está vacía la lista, entonces debe ser el primero*/
-                        InsertE(&(docu->listado),M_First,comms);
-                    }
-                    else
-                    {
-                        InsertE(&(docu->listado),M_Next,comms);
-                    }
-
-                    /* reinicializo las variabls auxiliares locales */
-                    /* libero los recursos de comms */
-                    /* Not the time, not the place.. */
-                    /*
-                    for(j=count;j>=0;--j)
-                    {
-                        free(comms[j]);
-                    }
-
-                    free(comms);
-                    */
-                }
-                commentsInit = 0;
-                commentsEnd = 0;
-                commentsFound = 0;
-                count = 0;
-                /* asigno recursos para la variable auxiliar */
-                if (!comms)
-                    comms = (char **) malloc(sizeof(char*)*MAX_KW);
-                if(!comms)
-                {
-                    loge(docu->logFile,MSG_ERROR_MEMORY);
-                    return RES_MEM_ERROR;
-                }
-            }
-            else if((commentsInit == 1) && (commentsEnd == 0))
-            {
-            	if (checkForKW(linea) == 0) {
-            		/* Found new KeyWord */
-            		if (!(comms[count]))
-                    comms[count] = malloc(sizeof(char)*strlen(linea)+1);
-
-		            if(!comms[count])
-		            {
-		                loge(docu->logFile,MSG_ERROR_MEMORY);
-		                return RES_MEM_ERROR;
-		            }
-		            strcpy(comms[count], linea);
-		            count++;
-           		} else {
-           			/* Assume it's part of the last keyword, separated by \n */
-           			if (count > 0) {
-		       			count--;
-		       			/*
-		       			comms[count] = realloc(comms[count], strlen(comms[count]) + strlen(linea) + 1);
-		       			*/
-		       			strcat(comms[count], linea);
-		       			count++;
-		       		}
-           		}
-            }
-        }
-
-    }
-    /*
-    free(comms);
-    */
-    fclose(inputFile);
-
-    /*Ahora lo pasamos al archivo en formato HTML*/
-    /*vamos a recorrer la lista, nodo por nodo, tomando cada uno de los comentarios e insertándolos en el archivo de salida*/
-
-    /*Muevo al primero el corriente*/
-    MoveC(&(docu->listado),M_First);
-
-    do
-    {
-        GetC(docu->listado,comms);
-        lenElem = strlen(*comms);
-        for( i = 0; i < lenElem; i++)
-        {
-            if((comms[i] == NULL) || (!parseStringToHtml(html,comms[i])))
-            {
-                loge(docu->logFile,MSG_ERROR_OUT_FILE);
-                return RES_ERROR;
-            }
-
-            if (strcmp(strtok(comms[i], " "), KW_FUNCTION) == 0) {
-                if (!temp)
-                    temp = malloc(sizeof(char**)*2);
-
-                temp[0] = malloc(strlen(comms[i]));
-                temp[1] = malloc(strlen(iFile));
-
-                strcpy(temp[0], comms[i]);
-                strcpy(temp[1], iFile);
-                /*
-                straight_list_order_insert(docu->slist, temp);
-                */
-                if (EmptyList(docu->ilist))
-                    InsertE(&(docu->ilist), M_First, temp);
-                else
-                    InsertE(&(docu->ilist), M_Next, temp);
-            }
-        }
-    } while(MoveC(&(docu->listado),M_Next)!=FALSE);
-
-    /* Now we free every element of comms */
-	for(j = lenElem; j >= 0; j--) {
-        free(comms[j]);
-    }
-    free(comms);
-
-    if (temp) {
-        free(temp[0]);
-        free(temp[1]);
-        free(temp);
-    }
-
-    ClearList((&docu->listado));
 
     return RES_OK;
 }
-
 
 int createIndex(TDA_Doc *docu, char *indexFile)
 {
     FILE* index;
     char htmlLine[MAX_LINE];
-    void *data;
+    void **data;
     char **buffer;
 
     /*doy formato y agrego al archivo de indices*/
-    index = fopen(indexFile,"wa");
+    index = fopen(indexFile,"w");
     if(!index)
     {
         loge(docu->logFile,MSG_ERROR_INDEX_FILE);
@@ -399,26 +214,23 @@ int createIndex(TDA_Doc *docu, char *indexFile)
     fwrite(HTML_INDEX_HEADER,sizeof(char),strlen(HTML_INDEX_HEADER),index); /*agrego header del indice*/
 
     /*Me muevo por la lista del indice desde el principio*/
-    /*
-    straight_list_move(docu->slist,straight_list_first);
-    */
-    MoveC(&(docu->ilist), M_First);
 
-    data = malloc(sizeof(char**)*2);
+    straight_list_move(docu->slist,straight_list_first);
+
+    data = malloc((sizeof(char**)*2));
+    data[0] = malloc((sizeof(char*)*20));
+    data[1] = malloc((sizeof(char*)*20));
 
     do{
-        /*
         straight_list_get(docu->slist,data);
-        */
-        GetC(docu->ilist, data);
 
-        buffer = malloc(sizeof(char*)*2);
+        buffer = malloc((sizeof(char*)*2));
         buffer = ((char**)data);
 
         sprintf(htmlLine,"<li><a href=doc.html#%s>%s</a></li>",buffer[1],buffer[0]);
         fwrite(htmlLine,sizeof(char),strlen(htmlLine),index);
 
-    }while(MoveC(&(docu->ilist),M_Next)!=FALSE);
+    }while(straight_list_move(docu->slist,straight_list_next)!=FALSE);
 
     fwrite(HTML_INDEX_FOOTER,sizeof(char),strlen(HTML_INDEX_FOOTER),index);/*agrego footer del indice*/
 
