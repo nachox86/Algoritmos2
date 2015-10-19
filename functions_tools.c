@@ -3,7 +3,6 @@
 #include "tda_documentador.h"
 #include <string.h>
 #include "functions_tools.h"
-#include "straight_list.h"
 
 /*
 @funcion showHelp
@@ -104,15 +103,15 @@ int getCommentsCount(char** dato)
     return count;
 }
 
-int search_site(straight_list_t *lp, const void* data, straight_list_movement_t* mov)
+int search_site(T_List *lp, const void* data, T_Move *mov)
 {
 	void *current_data; /*referencia de donde se va a guardar el dato/elemento del corriente de la lista*/
 	char **cdata, **rdata;
 
-	if(straight_list_is_empty(lp))
+	if(EmptyList(lp))
 		return FALSE;
 
-	straight_list_get(lp,current_data);
+	GetC(lp,current_data);
 
 	cdata = ((char**)current_data);
 	rdata = ((char**)data);
@@ -121,19 +120,19 @@ int search_site(straight_list_t *lp, const void* data, straight_list_movement_t*
 
    	if (strcmp( cdata[0], rdata[0]) > 0)
 	{
-		straight_list_move(lp,straight_list_first);
-		straight_list_get(lp,current_data);
+		MoveC(&lp,M_First);
+		GetC(lp,current_data);
 	}
-    while(strcmp(data,cdata[0])>0 && straight_list_move(lp,straight_list_next))
+    while(strcmp(data,cdata[0])>0 && MoveC(&lp,M_Next))
 	{
-		straight_list_get(lp,current_data);
+		GetC(lp,current_data);
 	}
 	if(strcmp(rdata[0],cdata[0])<0)
 	{
-		*mov = straight_list_previous;
+		*mov = M_Prev;
 	}
 	else
-		*mov = straight_list_next;
+		*mov = M_Next;
 
 	return TRUE;
 }
@@ -149,12 +148,12 @@ int search_site(straight_list_t *lp, const void* data, straight_list_movement_t*
 @pre la lista debe estar creada
 @pos se guardará en la posición que deba de acuerda al criterio de ordenamiento.
 */
-int straight_list_order_insert(straight_list_t *lp,const void* data)
+int iListOrderInsert(T_List *lp, void* data)
 {
     int insert;
-    straight_list_movement_t mov = straight_list_first;
+    T_Move mov = straight_list_first;
 	search_site(lp,data,&mov);
-	insert = straight_list_insert(lp,mov,data);
+	insert = InsertE(&lp,mov,data);
 	return insert;
 }
 

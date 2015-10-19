@@ -13,7 +13,7 @@ typedef struct {
     char *outputFile;
     Logger *logFile;
     T_List *listado;
-    straight_list_t *slist;
+    T_List *ilist;
 } TDA_Doc;
 
     /*

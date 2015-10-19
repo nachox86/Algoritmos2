@@ -47,7 +47,7 @@ int createDoc(TDA_Doc **docu, Logger *log)
     (*docu)->outputFile = NULL;
     (*docu)->logFile = log;
     (*docu)->listado = NULL;
-    (*docu)->slist = malloc(sizeof(straight_list_t));;
+    (*docu)->ilist = NULL;
     return RES_OK;
 }
 
@@ -80,8 +80,13 @@ int extractDocumentation(TDA_Doc *docu, char *inputDir, char *outputFile) {
     }
 
     if ( n >= 0) {
+        /*
         straight_list_create(docu->slist,sizeof(char**), &slistCopy, &sListDestroy);
         straight_list_move(docu->slist,straight_list_first);
+        */
+        CreateList(&(docu->ilist), sizeof(char**)*2);
+        MoveC(&(docu->ilist), M_First);
+
         createHtmlFile(&html, outputFile);
         for (i = 0; i < n; i++) {
             extractDocumentationFromFile(docu, html, buffer[i]);
@@ -263,8 +268,13 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile)
 
                 strcpy(temp[0], comms[i]);
                 strcpy(temp[1], iFile);
-
+                /*
                 straight_list_order_insert(docu->slist, temp);
+                */
+                if (EmptyList(docu->ilist))
+                    InsertE(&(docu->ilist), M_First, temp);
+                else
+                    InsertE(&(docu->ilist), M_Next, temp);
             }
         }
     } while(MoveC(&(docu->listado),M_Next)!=FALSE);
@@ -305,12 +315,18 @@ int createIndex(TDA_Doc *docu, char *indexFile)
     fwrite(HTML_INDEX_HEADER,sizeof(char),strlen(HTML_INDEX_HEADER),index); /*agrego header del indice*/
 
     /*Me muevo por la lista del indice desde el principio*/
+    /*
     straight_list_move(docu->slist,straight_list_first);
+    */
+    MoveC(&(docu->ilist), M_First);
 
     data = malloc(sizeof(char**)*2);
 
     do{
+        /*
         straight_list_get(docu->slist,data);
+        */
+        GetC(docu->ilist, data);
 
         buffer = malloc(sizeof(char*)*2);
         buffer = ((char**)data);
@@ -318,7 +334,7 @@ int createIndex(TDA_Doc *docu, char *indexFile)
         sprintf(htmlLine,"<li><a href=doc.html#%s>%s</a></li>",buffer[1],buffer[0]);
         fwrite(htmlLine,sizeof(char),strlen(htmlLine),index);
 
-    }while(straight_list_move(docu->slist,straight_list_next)!=FALSE);
+    }while(MoveC(&(docu->ilist),M_Next)!=FALSE);
 
     fwrite(HTML_INDEX_FOOTER,sizeof(char),strlen(HTML_INDEX_FOOTER),index);/*agrego footer del indice*/
 
@@ -330,7 +346,6 @@ int createIndex(TDA_Doc *docu, char *indexFile)
 int destroyDoc(TDA_Doc **docu)
 {
 	ClearList(&((*docu)->listado));
-	straight_list_delete((*docu)->slist);
 	free(*docu);
 	return RES_OK;
 }
