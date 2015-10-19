@@ -182,6 +182,8 @@ int slistCopy(void* dst, const void* src)
         free(buffer);
         return FALSE;
     }
+    strcpy(buffer[0], csrc[0]);
+    strcpy(buffer[1], csrc[1]);
     /*
     Original:
     memcpy(dst[0],src[0],strlen(src[0])+1);
@@ -190,6 +192,8 @@ int slistCopy(void* dst, const void* src)
     Modified:
     memcpy(&dst, buffer, sizeof(buffer));
     */
+
+    dst = malloc(sizeof(char**));
     dst = &buffer; /* if this sigfaults, use the modified definition above */
     return RES_OK;
 }
