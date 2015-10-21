@@ -87,6 +87,9 @@ int main(int argc, char *argv[]) {
     else
     {
         showHelp();
+        /*free(inputDir);
+    	free(outputFile);
+    	free(logFile);*/              /*ver aca tambien si hay que liberar memoria*/
         return RES_WRONG_ARGS;
     }
 
