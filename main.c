@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "tda_documentador.h"
-#include "tda_nodo_simple.h"
 #include "tda_nodo.h"
 #include "list_tda.h"
 #include "htmlParser.h"
@@ -20,13 +19,13 @@
 
 /*
 @funcion main
-@descr FunciÛn principal del programa. Dado los argumentos de entrada toma los comentarios de funciones de un archivo de entrada y los vuelca en un archivo de salida en formato html. TambiÈn genera un Ìndice en html y un Log de eventos.
+@descr Funci√≥n principal del programa. Dado los argumentos de entrada toma los comentarios de funciones de un archivo de entrada y los vuelca en un archivo de salida en formato html. Tambi√©n genera un √≠ndice en html y un Log de eventos.
 @fecha 03/10/2015
 @version "2.0"
 @param argc cantidad de argumentos de entrada
 @param argv[] array de argumentos de entrada
-@pre Se debe ejecutar el modo de ayuda antes de usarlo para saber quÈ argumentos pasarle: tp2.exe -h o tp2.exe --help
-@pos Devolver· en un archivo de salida, el Ìndice con todas las funciones documentadas, en otro la documentaciÛn de esas funciones.
+@pre Se debe ejecutar el modo de ayuda antes de usarlo para saber qu√© argumentos pasarle: tp2.exe -h o tp2.exe --help
+@pos Devolver√° en un archivo de salida, el √≠ndice con todas las funciones documentadas, en otro la documentaci√≥n de esas funciones.
 */
 int main(int argc, char *argv[]) {
 	int i, nargs = 0;
@@ -39,13 +38,16 @@ int main(int argc, char *argv[]) {
     if( (argc != ARGS_TWO) && (argc != ARGS_SEVEN))
     {
         showHelp();
-        return RES_NOT_ENOUGH_ARGS;
+        return RES_WRONG_ARGS;
     }
 
     for (i = 1; i < argc; i=i+2) {
         if ((strcmp(argv[i], ARGS_HELP1) == 0) || (strcmp(argv[i], ARGS_HELP2) == 0)) {
             showHelp();
-            return RES_HELP;
+            /*free (InputDir);
+            free (logFile);
+            free (outputFile);*/   /*ver si esto es asi*/
+            return RES_OK;
         } else if (strcmp(argv[i], ARGS_INPUT_FILE) == 0) {
             inputDir = malloc(sizeof(char) * strlen(argv[i+1]) + 1);
             strcpy(inputDir, argv[i+1]);
