@@ -12,8 +12,8 @@ typedef struct {
     char *inputFile;
     char *outputFile;
     Logger *logFile;
-    T_List *listado;
-    straight_list_t *slist;
+    straight_list_t* listado;
+    straight_list_t* indice;
 } TDA_Doc;
 
     /*

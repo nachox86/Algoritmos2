@@ -33,21 +33,43 @@
 #define MSG_ERROR_INDEX_FILE "Ocurrió un error al abrir el archivo de índices."
 #define MSG_ERROR_MEMORY "Error al pedir recursos para variable auxiliar."
 #define MSG_ERROR_OUT_FILE "Ocurrió un error al abrir el archivo de salida de datos."
-
+#define MSG_ERROR_CREATE_LIST "Ocurrió un error al crear una lista."
+#define MSG_ERROR_BAD_COMMENT "Se detectó un comentario mal escrito."
 /* TODO: Check this declaration (done in situ for debug purposes */
 #define RES_MEM_ERROR   -1
+
+typedef struct {
+    char* tag;
+    char* name;
+    char* value;
+} t_keyword;
 
 int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile);
 
 int createDoc(TDA_Doc **docu, Logger *log)
 {
 	(*docu) = malloc(sizeof(TDA_Doc));
-
+	if(!(*docu))
+    {
+        return RES_MEM_ERROR;
+    }
+    (*docu)->indice = (straight_list_t*)malloc(sizeof(straight_list_t));
+    if(!((*docu)->indice))
+    {
+        free(*docu);
+        return RES_MEM_ERROR;
+    }
+    (*docu)->listado = (straight_list_t*)malloc(sizeof(straight_list_t));
+    if(!((*docu)->listado))
+    {
+        free((*docu)->indice);
+        free((*docu));
+        return RES_MEM_ERROR;
+    }
     (*docu)->inputFile = NULL;
     (*docu)->outputFile = NULL;
     (*docu)->logFile = log;
-    (*docu)->listado = NULL;
-    (*docu)->slist = malloc(sizeof(straight_list_t));
+
     return RES_OK;
 }
 
@@ -96,15 +118,116 @@ int extractDocumentation(TDA_Doc *docu, char *inputDir, char *outputFile) {
     }
 }
 
+
+int set_keyword(t_keyword* kw,char* data)
+{
+    /* tengo que parsear */
+    int ldata = strlen(data);
+    int ltag;
+    int lname;
+    int lvalue;
+    int i;
+    char* token;
+    char* switched;
+    char* switched2;
+/* TODO solo llenar name si es el key de function*/
+    token = (char*)malloc(ldata*sizeof(char)+1);
+    if(!token)
+        return RES_MEM_ERROR;
+
+    strcpy(token,data);
+    ltag = strlen(strstr(token," ")); /*el tag es la primer palabra*/
+    lvalue = ldata - ltag; /* lvalue abarca lo que hay después del tag*/
+    kw->tag = (char*)malloc(sizeof(char)*ltag+1);
+    if(!kw->tag)
+    {
+        free(token);
+        return RES_MEM_ERROR;
+    }
+    memcpy(kw->tag,token,ltag);
+    kw->tag[ltag] = '\0';
+
+    switched = (char*)malloc(ldata*sizeof(char)+1);
+    if(!switched)
+    {
+        free(kw->tag);
+        free(token);
+        return RES_MEM_ERROR;
+    }
+
+    for(i=0;i<ldata;i++)
+        switched[i] = token[ldata-i-1];
+
+    switched[ldata] = '\0'
+
+    switched2 = (char*)malloc(ldata*sizeof(char)+1);
+    if(!switched2)
+    {
+        free(switched);
+        free(kw->tag);
+        free(token);
+        return RES_MEM_ERROR;
+    }
+
+    memcpy(switched2,switched,lvalue);
+    kw->tag[lvalue] = '\0';
+
+    free(token);
+    token = (char*)malloc(lvalue*sizeof(char)+1);
+    if(!token)
+    {
+        free(switched2);
+        free(switched);
+        free(kw->tag);
+        return RES_MEM_ERROR;
+    }
+
+    ldata = strlen(switched2);
+    for(i=0;i<ldata;i++)
+        token[i] = switched2[ldata-i-1];
+
+    token[ldata] = '\0';
+
+    lname = strlen(strstr(token," "));
+    lvalue = ldata - lname;
+    kw->name = (char*)malloc(sizeof(char)*lname+1);
+    if(!kw->name)
+    {
+        free(token);
+        free(switched2);
+        free(switched);
+        free(kw->tag);
+        return RES_MEM_ERROR;
+    }
+    memcpy(kw->name,token,lname);
+    kw->name[lname] = '\0';
+
+    kw->value = (char*)malloc(sizeof(char)*lvalue+1);
+    if(!kw->value)
+    {
+        free(token);
+        free(switched2);
+        free(switched);
+        free(kw->name);
+        free(kw->tag);
+        return RES_MEM_ERROR;
+    }
+    for(i=0;i<lvalue;i++)
+        kw->value[i] = token[lname+i];
+    kw->value[lvalue] = '\0';
+
+    free(token);
+    free(switched2);
+    free(switched);
+}
+
 int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
     FILE *inputFile;
-    char **comms = NULL;
     int i = 0, j = 0;
     int n = 0;
     int count = 0;
     int cinit = 0;
     int cend = 0;
-    int cfound = 0;
     int lenElem = 0;
 
     char linea[MAX_LINE];
@@ -112,86 +235,271 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
 
     char **index;
 
+    straight_list_t* listado_aux;
+    t_keyword* keyword;
+
+    docu = (TDA_Doc*)malloc(sizeof(TDA_Doc));
+    if(!docu)
+    {
+        loge(docu,MSG_ERROR_MEMORY);
+        fclose(inputFile);
+        return RES_MEM_ERROR;
+    }
+
+    logi(docu,"Abro archivo de entrada.");
     inputFile = fopen(iFile, "r");
-    if (!inputFile) return RES_ERROR;
+    if (!inputFile)
+    {
+        loge(docu,MSG_ERROR_IN_FILE);
+        return RES_ERROR;
+    }
 
-    comms = malloc((sizeof(char*)*MAX_LINE));
-    if (!comms) return RES_ERROR;
+    logi(docu,"Creo (pido recursos) las listas listado e indice del documentador.");
+    if(straight_list_create(docu->listado, sizeof(straight_list_t), copy_elem_listado, destroy_elem_listado)!=RES_OK)
+    {
+        loge(docu,MSG_ERROR_CREATE_LIST);
+        free(docu);
+        fclose(inputFile);
+        return RES_ERROR;
+    }
+    if(straight_list_create(docu->indice, sizeof(t_keyword), copy_elem_indice, destroy_elem_indice)!=RES_OK)
+    {
+        loge(docu,MSG_ERROR_CREATE_LIST);
+        straight_list_delete(docu->listado);
+        free(docu);
+        fclose(inputFile);
+        return RES_ERROR;
+    }
 
-    index = malloc(sizeof(char*));
-    if (!index) return RES_ERROR;
+    logi(docu,"Pido recursos para lista auxiliar.");
+    listado_aux = (straight_list_t*)malloc(sizeof(straight_list_t));
+    if(!listado_aux)
+    {
+        loge(docu,MSG_ERROR_CREATE_LIST);
+        straight_list_delete(docu->indice);
+        straight_list_delete(docu->listado);
+        free(docu);
+        fclose(inputFile);
+        return RES_ERROR;
+    }
 
-    CreateList(&(docu->listado), sizeof(char**));
+    logi(docu,"Pido recursos para t_keyword auxiliar.");
+    keyword = (t_keyword*)malloc(sizeof(t_keyword));
+    if(!keyword)
+    {
+        loge(docu,MSG_ERROR_CREATE_LIST);
+        straight_list_delete(listado_aux);
+        straight_list_delete(docu->indice);
+        straight_list_delete(docu->listado);
+        free(listado_aux);
+        free(docu);
+        fclose(inputFile);
+        return RES_ERROR;
+    }
 
+    logi(docu,"Empiezo a recorrer el archivo.");
     while (!feof(inputFile)) {
+        /* TODO: get line dinamico */
         if (fgets(linea, MAX_LINE-1, inputFile) != NULL) {
             stoken = strstr(linea, KW_INIT);
             etoken = strstr(linea, KW_END);
 
             if ((stoken) && (!etoken)) {
+            /* empieza un comentario */
                 cinit = 1;
             } else if ((!stoken) && (etoken)) {
+            /* termina un comentario */
                 cend = 1;
-                if (cinit)
-                    cfound = 1;
+                logi(docu,"Terminó un comentario.");
             }
 
-            if ((cinit) && (!cend)) {
-                if (checkForKW(linea) == 0) {
-                    comms[count] = malloc(strlen(linea) + 1);
-                    strncpy(comms[count], linea, strlen(linea) + 1);
-                    count++;
-                }
-            } else if (cend) {
-                if (count > 0) {
-                    if (EmptyList(docu->listado))
-                        InsertE(&(docu->listado), M_First, comms);
+            if (cinit && !cend)
+            {
+                /* mientras que esté dentro del comentario */
+                if (checkForKW(linea) == 0)
+                {
+                /* encontramos una keyword */
+                    /* TODO set keyword <- linea */
+                /* guardo en la lista auxiliar */
+                    if(!straight_list_is_empty(listado_aux))
+                    {
+                        if(!straight_list_insert(listado_aux, straight_list_next,keyword))
+                        {
+                            loge(docu,MSG_ERROR_MEMORY);
+                            straight_list_destroy(listado_aux);
+                            free(listado_aux);
+                            straight_list_destroy(docu->listado);
+                            straight_list_destroy(docu->indice);
+                            free(docu);
+                            free(keyword->name);
+                            free(keyword->tag);
+                            free(keyword->value);
+                            free(keyword);
+                            fclose(inputFile);
+                            return RES_ERROR;
+                        }
+                    }
                     else
-                        InsertE(&(docu->listado), M_Next, comms);
-
-                    cinit = 0;
-                    cend = 0;
+                    {
+                        if(!straight_list_insert(listado_aux, straight_list_first,keyword))
+                        {
+                            loge(docu,MSG_ERROR_MEMORY);
+                            straight_list_destroy(listado_aux);
+                            free(listado_aux);
+                            straight_list_destroy(docu->listado);
+                            straight_list_destroy(docu->indice);
+                            free(docu);
+                            free(keyword->name);
+                            free(keyword->tag);
+                            free(keyword->value);
+                            free(keyword);
+                            fclose(inputFile);
+                            return RES_ERROR;
+                        }
+                    }
                 }
+            }
+            else if (cinit && cend)
+            {
+                logi(docu,"Termino el comentario de la función, ahora inserto en la lista docu->listado de manera ordenada las funciones.");
+                /* en la función de búsqueda habrá que tener en cuenta qué tomar para la comparación */
+                if(!iListOrderInsert(docu->listado,listado_aux))
+                {
+                    /* tuvo problemas de memoria para insertar */
+                    loge(docu,MSG_ERROR_MEMORY);
+                    straight_list_destroy(listado_aux);
+                    straight_list_destroy(docu->listado);
+                    straight_list_destroy(docu->indice);
+                    free(docu);
+                    free(keyword->name);
+                    free(keyword->tag);
+                    free(keyword->value);
+                    free(keyword);
+                    fclose(inputFile);
+                    return RES_ERROR;
+                }
+                /* reinicializo las variables auxiliares*/
+                logi(docu,"Reinicializo las variables auxiliares.");
+                cinit = 0;
+                cend = 0;
+                cfound = 0;
+                /* como ya inserté los tags/keywords de una funcion, destruto la lista auxiliar */
+                straight_list_destroy(listado_aux);
+                /* y pido recursos nuevamente para los comentarios de la siguiente función */
+                logi(docu,"Recupero recursos de la lista auxiliar y del keyword auxiliar, y los solicito para la próxima.");
+                listado_aux = (straight_list_t*)malloc(sizeof(straight_list_t));
+                if(!listado_aux)
+                {
+                    loge(docu,MSG_ERROR_CREATE_LIST);
+                    straight_list_delete(docu->indice);
+                    straight_list_delete(docu->listado);
+                    free(docu);
+                    free(keyword->name);
+                    free(keyword->tag);
+                    free(keyword->value);
+                    free(keyword);
+                    fclose(inputFile);
+                    return RES_ERROR;
+                }
+                keyword = (t_keyword*)malloc(sizeof(t_keyword));
+                if(!keyword)
+                {
+                    loge(docu,MSG_ERROR_CREATE_LIST);
+                    free(listado_aux);
+                    straight_list_delete(docu->indice);
+                    straight_list_delete(docu->listado);
+                    free(docu);
+                    fclose(inputFile);
+                    return RES_ERROR;
+                }
+            }
+            else if (!cinit && cend)
+            {
+                /* está mal hecho algún comentario, libero los recursos y salgo */
+                loge(docu,MSG_ERROR_BAD_COMMENT);
+                straight_list_delete(listado_aux);
+                free(listado_aux);
+                straight_list_delete(docu->indice);
+                straight_list_delete(docu->listado);
+                free(docu);
+                free(keyword->name);
+                free(keyword->tag);
+                free(keyword->value);
+                free(keyword);
+                fclose(inputFile);
+                return RES_ERROR;
             }
         }
     }
 
+    /* libero los recursos de listado_aux y cierro el archivo de entra ya que no lo necesito más */
+    logi(docu,"Libero los recursos de listado_aux y cierro el archivo de entra ya que no lo necesito más.");
+    straight_list_delete(listado_aux);
     fclose(inputFile);
 
-    MoveC(&(docu->listado), M_First);
+    /* ahora armo la lista del indice ordenada*/
+    logi(docu,"Empiezo a armar la lista del indice pero ordenada.");
+    straight_list_move(docu->listado,straight_list_first);
 
     do {
-        GetC((docu->listado), comms);
-
-        for (i = 0; i < count; i++) {
-            if (comms[i] == NULL) {
-                return -4;
-            } else {
-                parseStringToHtml(html, comms[i]);
-
-                index[0] = malloc(strlen(comms[i]) + 1);
-                index[1] = malloc(strlen(iFile) + 1);
-                strcpy(index[0], comms[i]);
-                strcpy(index[1], iFile);
-
-                if(straight_list_is_empty(docu->slist))
-                    straight_list_insert(docu->slist, straight_list_first, index);
-                else
-                    straight_list_insert(docu->slist, straight_list_next, index);
-                free(index[0]);
-                free(index[1]);
-            }
+        logi(docu,"Tomo un elemento lista del documentador y lo guardo en listado_aux.");
+        listado_aux = (straight_list_t*)malloc(sizeof(straight_list_t));
+        if(!listado_aux)
+        {
+            loge(docu,MSG_ERROR_MEMORY);
+            straight_list_destroy(docu->listado);
+            straight_list_destroy(docu->indice);
+            free(docu);
+            return RES_MEM_ERROR;
         }
-    } while (MoveC(&(docu->listado), M_Next) != 0);
+        straight_list_get(docu->listado,listado_aux);
 
-    for (i = 0; i < count; i++)
-        free(comms[i]);
+        /* recorro el elemento lista*/
+        straight_list_move(listado_aux,straight_list_first);
+        do{
+            keyword = (t_keyword*)malloc(sizeof(t_keyword));
+            if(!keyword)
+            {
+                loge(docu,MSG_ERROR_MEMORY);
+                straight_list_destroy(listado_aux);
+                straight_list_destroy(docu->listado);
+                straight_list_destroy(docu->indice);
+                free(docu);
+                free(listado_aux);
+                return RES_MEM_ERROR;
+            }
+            straight_list_get(listado_aux,keyword);
+            if(strcmp(keyword->tag,KW_FUNCTION)==0)
+            {
+                /* encontré el tag de function */
+                /* inserto en la lista del indice de docu */
+                logi(docu,"Encontré un tag de función y lo inserto en el docu->indice.");
+                if(!iListOrderInsert(docu->indice,keyword))
+                {
+                    /* tuvo problemas de memoria para insertar */
+                    loge(docu,MSG_ERROR_MEMORY);
+                    straight_list_destroy(listado_aux);
+                    straight_list_destroy(docu->listado);
+                    straight_list_destroy(docu->indice);
+                    free(docu);
+                    free(listado_aux);
+                    free(keyword->name);
+                    free(keyword->tag);
+                    free(keyword->value);
+                    free(keyword);
+                    fclose(inputFile);
+                    return RES_MEM_ERROR;
+                }
+                /* TODO destroy t_keyword */
+                free(keyword->name);
+                free(keyword->tag);
+                free(keyword->value);
+                free(keyword);
+            }
+        } while (straight_list_move(listado_aux,straight_list_next)!=FALSE);
+        straight_list_destroy(listado_aux);
+    } while (straight_list_move(docu->listado,straight_list_next)!=FALSE);
 
-    free(comms);
-
-    free(index);
-
-    ClearList(&(docu->listado));
 
     return RES_OK;
 }
