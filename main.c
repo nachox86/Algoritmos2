@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
     if (nargs == ARGS_REQ) {
     	/* We got enough arguments to proceed */
 
-    	createLog(&log, logFile);
+    	logLightInit(log, logFile, fatal);
     	createDoc(&docu, log);
     	extractDocumentation(docu, inputDir, outputFile);
 
@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
             sprintf(indexFile, "%s%s",token,INDEX_PREFFIX);
         }
         createIndex(docu, indexFile);
-		closeLog(&log);
+		logClose(log);
     	destroyDoc(&docu);
     }
     else
