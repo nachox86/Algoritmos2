@@ -6,7 +6,7 @@
 #include "list_tda.h"
 #include "htmlParser.h"
 #include "functions_tools.h"
-#include "logger.h"
+#include "logger_tda.h"
 
 #define ARGS_HELP1 "-h"
 #define ARGS_HELP2 "--help"

@@ -1,6 +1,6 @@
 #include <string.h>
 #include "tda_documentador.h"
-#include "logger.h"
+#include "logger-tda.h"
 #include "list_tda.h"
 #include "tda_nodo.h"
 #include "htmlParser.h"
