@@ -1,7 +1,6 @@
 #include <string.h>
 #include "tda_documentador.h"
 #include "logger.h"
-/*#include "list_tda.h"       CREO Q YA NO VA*/
 #include "tda_nodo.h"
 #include "htmlParser.h"
 #include "straight_list.h"
