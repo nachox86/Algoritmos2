@@ -1,10 +1,9 @@
 #include <string.h>
 #include "tda_documentador.h"
 #include "logger.h"
-#include "list_tda.h"
+/*#include "list_tda.h"       CREO Q YA NO VA*/
 #include "tda_nodo.h"
 #include "htmlParser.h"
-#include "functions_tools.h"
 #include "straight_list.h"
 
 #include <sys/types.h>
@@ -13,7 +12,7 @@
 #define MAX_LINE 300
 #define MAX_KW 11
 #define KW_INIT        "/*"
-#define KW_END         "*/"
+#define KW_END         "*/
 #define KW_TITLE       "@titulo"
 #define KW_SUBTITLE    "@subtitulo"
 #define KW_FUNCTION    "@funcion"
@@ -43,6 +42,38 @@ typedef struct {
     char* name;
     char* value;
 } t_keyword;
+
+
+/*
+@funcion checkForKW
+@descr Dado un string de caracteres se fija si se encuentra alguna de las palabras claves definidas.
+@autor Ignacio
+@fecha 01/10/2015
+@version "1.0"
+@param linea array de caracteres
+@pre ninguna condición necesaria
+@pos Devolverá RES_OK si encontró alguna palabra clave o RES_ERROR si no.
+*/
+int checkForKW(char* linea)
+{
+    if(strstr(linea,KW_TITLE)||
+       strstr(linea,KW_SUBTITLE)||
+       strstr(linea,KW_FUNCTION)||
+       strstr(linea,KW_DESCRIPTION)||
+       strstr(linea,KW_AUTHOR)||
+       strstr(linea,KW_DATE)||
+       strstr(linea,KW_VERSION)||
+       strstr(linea,KW_PARAM)||
+       strstr(linea,KW_RETURN)||
+       strstr(linea,KW_PRE)||
+       strstr(linea,KW_POST))
+        /*encontró un parametro*/
+    {
+        return RES_OK;
+    }
+    return RES_ERROR;
+}
+
 
 int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile);
 
