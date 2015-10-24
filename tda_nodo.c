@@ -2,11 +2,29 @@
 #include <string.h>
 #include <stdlib.h>
 #include "tda_nodo.h"
-#include "functions_tools.h"
 #define MAX_STR 200
 #define RES_MEM_ERROR 2
 #define RES_OK 0
 
+/*
+@funcion getCommentsCount
+@descr Esta es una función que devuelve la cantidad de comentarios almacenados en un dato/elemento que se le pasa (se usa para el elemento del nodo).
+@autor Ignacio
+@fecha 04/10/2015
+@version "1.0"
+@param Node nodo
+@pre Node debe estar creado
+@pos Devolverá la cantidad de comentarios almacenados.
+*/
+int getCommentsCount(char** dato)
+{
+    int count = 0;
+
+    while(dato[count]!='\0')
+        count++;
+
+    return count;
+}
 
 int createNode(TDA_Nodo* Node,int commentCount)
 {
