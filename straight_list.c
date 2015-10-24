@@ -134,3 +134,46 @@ void sListDestroy(void* elem)                           /*ver q hay otro destroy
   free(buffer);
   free(elem);
 }
+
+int slistCopy(void* dst, const void* src)
+{
+    /*copia data en dst*/
+    /*a priori dst va a ser un char***/
+    char **buffer, **csrc;
+
+    buffer = malloc((sizeof(char*)*2));
+    csrc = ((char**)src);
+
+    if(!csrc)
+        return RES_ERROR;
+
+    if(!buffer)
+        return FALSE;
+    /*
+    buffer[0] = malloc((sizeof(char)*strlen(csrc[0]))+1);
+    if(!buffer[0])
+    {
+        free(buffer);
+        return FALSE;
+    }
+    buffer[1] = (char*)malloc((sizeof(char)*strlen(csrc[1]))+1);
+    if(!buffer[1])
+    {
+        free(buffer[0]);
+        free(buffer);
+        return FALSE;
+    }
+    */
+    strcpy(buffer[0], csrc[0]);
+    strcpy(buffer[1], csrc[1]);
+    /*
+    Original:
+    memcpy(dst[0],src[0],strlen(src[0])+1);
+    memcpy(dst[1],src[1],strlen(src[1])+1);
+    Modified:
+    memcpy(&dst, buffer, sizeof(buffer));
+    */
+
+    memcpy(&dst, &buffer, (sizeof(char*)*2));
+    return RES_OK;
+}
