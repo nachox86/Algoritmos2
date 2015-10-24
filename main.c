@@ -149,9 +149,9 @@ int main(int argc, char *argv[]) {
     for (i = 1; i < argc; i=i+2) {
         if ((strcmp(argv[i], ARGS_HELP1) == 0) || (strcmp(argv[i], ARGS_HELP2) == 0)) {
             showHelp();
-            /*free (InputDir);
+            free (InputDir);
             free (logFile);
-            free (outputFile);*/   /*ver si esto es asi*/
+            free (outputFile);  
             return RES_OK;
         } else if (strcmp(argv[i], ARGS_INPUT_FILE) == 0) {
             inputDir = malloc(sizeof(char) * strlen(argv[i+1]) + 1);
@@ -192,9 +192,9 @@ int main(int argc, char *argv[]) {
     else
     {
         showHelp();
-        /*free(inputDir);
+        free(inputDir);
     	free(outputFile);
-    	free(logFile);*/              /*ver aca tambien si hay que liberar memoria*/
+    	free(logFile);
         return RES_WRONG_ARGS;
     }
 
