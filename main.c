@@ -3,9 +3,8 @@
 #include <string.h>
 #include "tda_documentador.h"
 #include "tda_nodo.h"
-#include "list_tda.h"
+/*#include "list_tda.h"          CREO Q YA NO VA */
 #include "htmlParser.h"
-#include "functions_tools.h"
 #include "logger_tda.h"
 
 #define ARGS_HELP1 "-h"
@@ -16,6 +15,113 @@
 #define ARGS_TWO 2
 #define ARGS_SEVEN 7
 #define ARGS_REQ 3
+
+
+/*
+@funcion showHelp
+@descr Muestra la ayuda del programa.
+@autor Ignacio
+@fecha 03/10/2015
+@version "1.0"
+@param ninguno
+@pre ninguna condición necesaria
+@pos devuelve en pantalla la ayuda del programa.
+*/
+void showHelp()
+{
+    printf("Este programa permite obtener en formato html, la documentación provista de un archivo de texto.\n");
+    printf("Uso:\n");
+    printf("Documentador.exe -i archivo_a_documentar.c -l archivo_log.txt -o archivo_documentado.html\n");
+    printf("Documentador.exe -h\n");
+    printf("Documentador.exe --help\n");
+    printf("Descripcion de los parámetros:\n");
+    printf("-i: indica el nombre del archivo de entrada del que se toma la documentación.\n");
+    printf("-l: indica el nombre del archivo de loggeo de eventos.\n");
+    printf("-o: indica el nombre del archivo de salida de la documentación en formato html.\n");
+    printf("-h o --help: muestra esta ayuda.\n");
+}
+
+
+/*
+@funcion straight_list_order_insert
+@descr Esta función realiza la inserción ordenada de un dato, en la posición correcta en una lista. Realiza la comparación entre nombres de funciones para ordernar.
+@autor Ignacio
+@fecha 14/10/2015
+@version "1.0"
+@param lp referencia a la lista
+@param data referencia al dato a guardar en la lista
+@pre la lista debe estar creada
+@pos se guardará en la posición que deba de acuerda al criterio de ordenamiento.
+*/
+int iListOrderInsert(T_List *lp, void* data)
+{
+    int insert;
+    T_Move mov = straight_list_first;
+	search_site(lp,data,&mov);
+	insert = InsertE(&lp,mov,data);
+	return insert;
+}
+
+
+int search_site(T_List *lp, const void* data, T_Move *mov)
+{
+	void *current_data; /*referencia de donde se va a guardar el dato/elemento del corriente de la lista*/
+	char **cdata, **rdata;
+
+	if(EmptyList(lp))
+		return FALSE;
+
+	GetC(lp,current_data);
+
+	cdata = ((char**)current_data);
+	rdata = ((char**)data);
+	/*validar que pudo hacer el get porque usa la función de copy*/
+    /*data: sería un char**, con data[0]="nombre de la funcion", data[1]="nombre del archivo"*/
+
+   	if (strcmp( cdata[0], rdata[0]) > 0)
+	{
+		MoveC(&lp,M_First);
+		GetC(lp,current_data);
+	}
+    while(strcmp(data,cdata[0])>0 && MoveC(&lp,M_Next))
+	{
+		GetC(lp,current_data);
+	}
+	if(strcmp(rdata[0],cdata[0])<0)
+	{
+		*mov = M_Prev;
+	}
+	else
+		*mov = M_Next;
+
+	return TRUE;
+}
+
+
+/*
+@funcion countFunctions
+@descr Cuenta la cantidad de nodos en un lista. El corriente de la lista puede estar en cualquier lado de la lista.
+@autor Ignacio
+@fecha 01/10/2015
+@version "1.0"
+@param listed referencia a la lista
+@pre la lista debe estar creada
+@pos Devolverá la cantidad de nodos que encontró en la lista.
+*/
+int countFunctions(T_List* listed)
+{
+    int i = 0;
+
+    if(EmptyList(listed)!=FALSE)
+    {
+        MoveC(&listed,M_First);
+        do{
+            i++;
+        }while(MoveC(&listed,M_Next)!=FALSE);
+    }
+    MoveC(&listed,M_First);
+    return i;
+}
 
 /*
 @funcion main
