@@ -124,3 +124,13 @@ int straight_list_insert(straight_list_t *lp, straight_list_movement_t m, const 
 	lp->current=new_node;
 	return TRUE;
 }
+
+void sListDestroy(void* elem)                           /*ver q hay otro destroy*/
+{
+  char **buffer = malloc(sizeof(char*) * 2);
+  buffer = ((char**)elem);
+  free(buffer[0]);
+  free(buffer[1]);
+  free(buffer);
+  free(elem);
+}
