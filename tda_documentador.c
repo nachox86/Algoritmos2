@@ -118,108 +118,71 @@ int extractDocumentation(TDA_Doc *docu, char *inputDir, char *outputFile) {
     }
 }
 
-
 int set_keyword(t_keyword* kw,char* data)
 {
-    /* tengo que parsear */
-    int ldata = strlen(data);
-    int ltag;
-    int lname;
-    int lvalue;
-    int i;
-    char* token;
-    char* switched;
-    char* switched2;
-/* TODO solo llenar name si es el key de function*/
-    token = (char*)malloc(ldata*sizeof(char)+1);
-    if(!token)
-        return RES_MEM_ERROR;
+    char* tag;
+    char* name_or_value;
+    char* name;
+    char* value;
+    int size_nov = 2; /*size of name_or_value*/
 
-    strcpy(token,data);
-    ltag = strlen(strstr(token," ")); /*el tag es la primer palabra*/
-    lvalue = ldata - ltag; /* lvalue abarca lo que hay después del tag*/
-    kw->tag = (char*)malloc(sizeof(char)*ltag+1);
+    tag = strtok(data," ");
+    name_or_value = strtok(NULL,"");
+    if(name_or_value!=NULL)
+    {
+        name = strtok(name_or_value," ");
+        if(name!=NULL)
+            value = strtok(NULL,"");
+    }
+
+    kw->tag = (char*)malloc(sizeof(char)*strlen(tag)+1); /*pido memoria para el tag*/
     if(!kw->tag)
-    {
-        free(token);
         return RES_MEM_ERROR;
-    }
-    memcpy(kw->tag,token,ltag);
-    kw->tag[ltag] = '\0';
 
-    switched = (char*)malloc(ldata*sizeof(char)+1);
-    if(!switched)
+    if((strcmp(tag,KW_FUNCTION)==0||strcmp(tag,KW_PARAM)==0||strcmp(tag,KW_RETURN)==0))
     {
-        free(kw->tag);
-        free(token);
-        return RES_MEM_ERROR;
+        kw->name = (char*)malloc(sizeof(char)*strlen(name)+1);
+        if(!kw->name)
+        {
+            free(kw->tag);
+            return RES_MEM_ERROR;
+        }
+        kw->value = (char*)malloc(sizeof(char)*strlen(value)+1);
+        if(!kw->value)
+        {
+            free(kw->name);
+            free(kw->tag);
+            return RES_MEM_ERROR;
+        }
+        strcpy(kw->name,name);
+        strcpy(kw->value,value);
     }
-
-    for(i=0;i<ldata;i++)
-        switched[i] = token[ldata-i-1];
-
-    switched[ldata] = '\0'
-
-    switched2 = (char*)malloc(ldata*sizeof(char)+1);
-    if(!switched2)
+    else
     {
-        free(switched);
-        free(kw->tag);
-        free(token);
-        return RES_MEM_ERROR;
+        kw->name = (char*)malloc(sizeof(char)*2);
+        if(!kw->name)
+        {
+            free(kw->tag);
+            return RES_MEM_ERROR;
+        }
+        if(name_or_value!=NULL)
+            size_nov = strlen(name_or_value)+1;
+        kw->value = (char*)malloc(sizeof(char)*size_nov);
+        if(!kw->value)
+        {
+            free(kw->name);
+            free(kw->tag);
+            return RES_MEM_ERROR;
+        }
+        strcpy(kw->name,'\0\0');
+        if(name_or_value!=NULL)
+            strcpy(kw->value,name_or_value);
+        else
+            strcpy(lw->value,'\0\0');
     }
-
-    memcpy(switched2,switched,lvalue);
-    kw->tag[lvalue] = '\0';
-
-    free(token);
-    token = (char*)malloc(lvalue*sizeof(char)+1);
-    if(!token)
-    {
-        free(switched2);
-        free(switched);
-        free(kw->tag);
-        return RES_MEM_ERROR;
-    }
-
-    ldata = strlen(switched2);
-    for(i=0;i<ldata;i++)
-        token[i] = switched2[ldata-i-1];
-
-    token[ldata] = '\0';
-
-    lname = strlen(strstr(token," "));
-    lvalue = ldata - lname;
-    kw->name = (char*)malloc(sizeof(char)*lname+1);
-    if(!kw->name)
-    {
-        free(token);
-        free(switched2);
-        free(switched);
-        free(kw->tag);
-        return RES_MEM_ERROR;
-    }
-    memcpy(kw->name,token,lname);
-    kw->name[lname] = '\0';
-
-    kw->value = (char*)malloc(sizeof(char)*lvalue+1);
-    if(!kw->value)
-    {
-        free(token);
-        free(switched2);
-        free(switched);
-        free(kw->name);
-        free(kw->tag);
-        return RES_MEM_ERROR;
-    }
-    for(i=0;i<lvalue;i++)
-        kw->value[i] = token[lname+i];
-    kw->value[lvalue] = '\0';
-
-    free(token);
-    free(switched2);
-    free(switched);
+    return RES_OK;
 }
+
 
 int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
     FILE *inputFile;
@@ -319,7 +282,7 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
                 if (checkForKW(linea) == 0)
                 {
                 /* encontramos una keyword */
-                    /* TODO set keyword <- linea */
+                    set_keyword(keyword,linea);
                 /* guardo en la lista auxiliar */
                     if(!straight_list_is_empty(listado_aux))
                     {
@@ -378,6 +341,8 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
                     fclose(inputFile);
                     return RES_ERROR;
                 }
+                logInfo(docu->log,"Mando a insertar en el archivo html de salida.");
+                parseStringToHtml(html,keyword); /*lo mando al html*/
                 /* reinicializo las variables auxiliares*/
                 logInfo(docu->log,"Reinicializo las variables auxiliares.");
                 cinit = 0;
@@ -510,11 +475,20 @@ int createIndex(TDA_Doc *docu, char *indexFile)
     char htmlLine[MAX_LINE];
     void **data;
     char **buffer;
+    t_keyword* keyword;
+
+    keyword = (t_keyword*)malloc(sizeof(t_keyword*));
+    if(!keyword)
+    {
+        logError(docu->logFile,RES_MEM_ERROR);
+        return RES_ERROR;
+    }
 
     /*doy formato y agrego al archivo de indices*/
     index = fopen(indexFile,"w");
     if(!index)
     {
+        free(keyword);
         logError(docu->logFile,MSG_ERROR_INDEX_FILE);
         return RES_ERROR;
     }
@@ -523,22 +497,24 @@ int createIndex(TDA_Doc *docu, char *indexFile)
 
     /*Me muevo por la lista del indice desde el principio*/
 
-    straight_list_move(docu->slist,straight_list_first);
-
-    data = malloc((sizeof(char**)*2));
-    data[0] = malloc((sizeof(char*)*20));
-    data[1] = malloc((sizeof(char*)*20));
+    straight_list_move(docu->indice,straight_list_first);
 
     do{
-        straight_list_get(docu->slist,data);
+        straight_list_get(docu->indice,keyword);
 
-        buffer = malloc((sizeof(char*)*2));
-        buffer = ((char**)data);
-
-        sprintf(htmlLine,"<li><a href=doc.html#%s>%s</a></li>",buffer[1],buffer[0]);
+        sprintf(htmlLine,"<li><a href=doc.html#%s>%s</a></li>",keyword->name,keyword->name);
         fwrite(htmlLine,sizeof(char),strlen(htmlLine),index);
 
-    }while(straight_list_move(docu->slist,straight_list_next)!=FALSE);
+        free(keyword);
+        keyword = (t_keyword*)malloc(sizeof(t_keyword));
+        if(!keyword)
+        {
+            logError(docu->logFile,RES_MEM_ERROR);
+            fclose(index);
+            return RES_ERROR;
+        }
+
+    }while(straight_list_move(docu->indice,straight_list_next)!=FALSE);
 
     fwrite(HTML_INDEX_FOOTER,sizeof(char),strlen(HTML_INDEX_FOOTER),index);/*agrego footer del indice*/
 
