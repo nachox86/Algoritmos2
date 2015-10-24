@@ -3,7 +3,6 @@
 #include <string.h>
 #include "tda_documentador.h"
 #include "tda_nodo.h"
-/*#include "list_tda.h"          CREO Q YA NO VA */
 #include "htmlParser.h"
 #include "logger_tda.h"
 
