@@ -38,12 +38,6 @@
 /* TODO: Check this declaration (done in situ for debug purposes */
 #define RES_MEM_ERROR   -1
 
-typedef struct {
-    char* tag;
-    char* name;
-    char* value;
-} t_keyword;
-
 int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile);
 
 int createDoc(TDA_Doc **docu, Logger *log)

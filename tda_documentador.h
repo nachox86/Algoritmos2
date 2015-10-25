@@ -9,6 +9,12 @@
 #define RES_ERROR   1
 
 typedef struct {
+    char* tag;
+    char* name;
+    char* value;
+} t_keyword;
+
+typedef struct {
     char *inputFile;
     char *outputFile;
     Logger *logFile;
