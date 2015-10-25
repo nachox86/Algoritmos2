@@ -21,24 +21,24 @@ int initHtmlFile(char *path) {
     return SUCCESS;
 }
 
-int createHtmlFile(htmlFile **output, char *path) {
+int createHtmlFile(htmlFile *output, char *path) {
 
-    (*output) = malloc(sizeof(htmlFile));
-    (*output)->init = initHtmlFile(path);
-    (*output)->file = fopen(path, "a+");
+    output = malloc(sizeof(htmlFile));
+    output->init = initHtmlFile(path);
+    output->file = fopen(path, "a+");
 
-    if ((*output)->init && (*output)->file)
+    if (output->init && output->file)
         return SUCCESS;
 
     return ERROR;
 }
 
-int closeHtmlFile(htmlFile **output) {
+int closeHtmlFile(htmlFile *output) {
 	/* Before closing the file, we need to add some more code.. closing tags */
-	if ((*output)->init) {
-		fprintf((*output)->file, "</div>\n</body>\n</html>");
-		fclose((*output)->file);
-	    free(*output);
+	if (output->init) {
+		fprintf(output->file, "</div>\n</body>\n</html>");
+		fclose(output->file);
+	    free(output);
 	    return SUCCESS;
    	}
 
@@ -133,41 +133,30 @@ int writeHtmlPostconditions(htmlFile *output, char *conditions) {
     return ERROR;
 }
 
-int parseStringToHtml(htmlFile *output, char *line) {
+int parseStringToHtml(htmlFile *output, t_keyword comment) {
 
-    char *keyword = strtok(line, " ");
-    char *param = strtok(NULL, "");
-
-    char *paramName;
-    char *paramInfo;
-
-    if ((!keyword) || (!param))
-        return ERROR;
-
-    if (strcmp(KW_TITLE, keyword) == 0) {
-        writeHtmlTitle(output, param);
-    } else if (strcmp(KW_SUBTITLE, keyword) == 0) {
-        writeHtmlSubtitle(output, param);
-    } else if (strcmp(KW_FUNCTION, keyword) == 0) {
-        writeHtmlFunction(output, param);
-    } else if (strcmp(KW_DESCRIPTION, keyword) == 0) {
-        writeHtmlDescription(output, param);
-    } else if (strcmp(KW_AUTHOR, keyword) == 0) {
-        writeHtmlAuthor(output, param);
-    } else if (strcmp(KW_DATE, keyword) == 0) {
-        writeHtmlDate(output, param);
-    } else if (strcmp(KW_VERSION, keyword) == 0) {
-        writeHtmlVersion(output, param);
-    } else if (strcmp(KW_PARAM, keyword) == 0) {
-    	paramName = strtok(param, " ");
-    	paramInfo = strtok(NULL, "");
-        writeHtmlParam(output, paramName, paramInfo);
-    } else if (strcmp(KW_RETURN, keyword) == 0) {
-        writeHtmlReturn(output, param);
-    } else if (strcmp(KW_PRE, keyword) == 0) {
-        writeHtmlPreconditions(output, param);
-    } else if (strcmp(KW_POST, keyword) == 0) {
-        writeHtmlPostconditions(output, param);
+    if (strcmp(KW_TITLE, comment.tag) == 0) {
+        writeHtmlTitle(output, comment.value);
+    } else if (strcmp(KW_SUBTITLE, comment.tag) == 0) {
+        writeHtmlSubtitle(output, comment.value);
+    } else if (strcmp(KW_FUNCTION, comment.tag) == 0) {
+        writeHtmlFunction(output, comment.value);
+    } else if (strcmp(KW_DESCRIPTION, comment.tag) == 0) {
+        writeHtmlDescription(output, comment.value);
+    } else if (strcmp(KW_AUTHOR, comment.tag) == 0) {
+        writeHtmlAuthor(output, comment.value);
+    } else if (strcmp(KW_DATE, comment.tag) == 0) {
+        writeHtmlDate(output, comment.value);
+    } else if (strcmp(KW_VERSION, comment.tag) == 0) {
+        writeHtmlVersion(output, comment.value);
+    } else if (strcmp(KW_comment.value, comment.tag) == 0) {
+        writeHtmlcomment.value(output, comment.name, comment.value);
+    } else if (strcmp(KW_RETURN, comment.tag) == 0) {
+        writeHtmlReturn(output, comment.value);
+    } else if (strcmp(KW_PRE, comment.tag) == 0) {
+        writeHtmlPreconditions(output, comment.value);
+    } else if (strcmp(KW_POST, comment.tag) == 0) {
+        writeHtmlPostconditions(output, comment.value);
     } else {
         return ERROR;
     }

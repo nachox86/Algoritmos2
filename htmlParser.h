@@ -2,6 +2,7 @@
 #define HTMLPARSER_H_INCLUDED
 
 #include <stdio.h>
+#include "tda_documentador.h"
 
 #define SUCCESS     1
 #define ERROR       0
@@ -30,7 +31,7 @@ typedef struct {
     En caso de error devuelve ERROR (0), SUCCESS (1) en caso contrario
 */
 
-int createHtmlFile(htmlFile **output, char *path);
+int createHtmlFile(htmlFile *output, char *path);
 
 /*
     parseStringToHtml: Convierte el string del comentario a formato HTML y lo guarda en el archivo previamente creado
@@ -41,7 +42,7 @@ int createHtmlFile(htmlFile **output, char *path);
     En caso de error devuelve ERROR (0), SUCCESS (1) en caso contrario
 */
 
-int parseStringToHtml(htmlFile *output, char *line);
+int parseStringToHtml(htmlFile *output, t_keyword comment;
 
 /*
     closeHtmlFile: Cierra y finaliza la escritura del archivo HTML donde se guardaron los comentarios
@@ -50,7 +51,7 @@ int parseStringToHtml(htmlFile *output, char *line);
     En caso de error devuelve ERROR (0), SUCCESS (1) en caso contrario
 */
 
-int closeHtmlFile(htmlFile **output);
+int closeHtmlFile(htmlFile *output);
 
 
 #endif
