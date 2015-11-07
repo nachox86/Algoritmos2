@@ -32,7 +32,6 @@
 #define MSG_ERROR_OUT_FILE "Ocurrió un error al abrir el archivo de salida de datos."
 #define MSG_ERROR_CREATE_LIST "Ocurrió un error al crear una lista."
 #define MSG_ERROR_BAD_COMMENT "Se detectó un comentario mal escrito."
-/* TODO: Check this declaration (done in situ for debug purposes */
 #define RES_MEM_ERROR   -1
 
 typedef struct {
@@ -256,12 +255,12 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
     }
 
     logInfo(docu->log,"Creo (pido recursos) las listas listado e indice del documentador.");
-    if(straight_list_create(docu->listado, sizeof(straight_list_t), copy_elem_listado, destroy_elem_listado)!=RES_OK) {
+    if(straight_list_create(docu->listado, sizeof(straight_list_t), straight_list_copy_listado, straight_list_delete_listado)!=RES_OK) {
         logError(docu->log,MSG_ERROR_CREATE_LIST);
         fclose(inputFile);
         return RES_ERROR;
     }
-    if(straight_list_create(docu->indice, sizeof(t_keyword), copy_elem_indice, destroy_elem_indice)!=RES_OK) {
+    if(straight_list_create(docu->indice, sizeof(t_keyword), straight_list_copy_keyword, straight_list_delete_keyword)!=RES_OK) {
         logError(docu->log,MSG_ERROR_CREATE_LIST);
         straight_list_delete(docu->listado);
         fclose(inputFile);
