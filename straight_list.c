@@ -1,5 +1,63 @@
 #include "straight_list.h"
 
+int straight_list_copy_keyword(void* dst, const void* src)
+{
+    dst = malloc(sizeof(t_keyword));
+    if(!dst)
+        return RES_MEM_ERROR;
+    dst->tag = (char*)malloc(sizeof(char)*strlen(src->tag)+1;
+    if(!dst->tag)
+    {
+        free(dst);
+        return RES_MEM_ERROR;
+    }
+    dst->name = (char*)malloc(sizeof(char)*strlen(src->name)+1);
+    if(!dst->name)
+    {
+        free(dst->tag);
+        free(dst);
+        return RES_MEM_ERROR;
+    }
+    dst->value = (char*)malloc(sizeof(char)*strlen(src->value)+1);
+    if(!dst->value)
+    {
+        free(dst->name);
+        free(dst->tag);
+        free(dst);
+        return RES_MEM_ERROR;
+    }
+    memcpy(dst->tag,src->tag);
+    memcpy(dst->name,src->name);
+    memcpy(dst->value,src->value);
+    return RES_OK;
+}
+
+void straight_list_delete_keyword(void* data)
+{
+    free(data->tag);
+    free(data->name);
+    free(data->value);
+    free(data);
+    return RES_OK;
+}
+
+void straight_list_delete_listado(void* data)
+{
+    straight_list_destroy((straight_list_t*)data);
+    free(data);
+}
+
+int straight_list_copy_listado(void* dst, const void* src)
+{
+    straight_list_t* aux;
+
+    aux = (straight_list_t*)malloc(sizeof(src));
+    if(!aux)
+        return RES_MEM_ERROR;
+
+
+}
+
 int straight_list_create(straight_list_t* lp, size_t size, straight_list_copy_t copy, straight_list_destroy_t destroy)
 {
 	lp->current = NULL;
@@ -123,57 +181,4 @@ int straight_list_insert(straight_list_t *lp, straight_list_movement_t m, const 
 	}
 	lp->current=new_node;
 	return TRUE;
-}
-
-void sListDestroy(void* elem)                           /*ver q hay otro destroy*/
-{
-  char **buffer = malloc(sizeof(char*) * 2);
-  buffer = ((char**)elem);
-  free(buffer[0]);
-  free(buffer[1]);
-  free(buffer);
-  free(elem);
-}
-
-int slistCopy(void* dst, const void* src)
-{
-    /*copia data en dst*/
-    /*a priori dst va a ser un char***/
-    char **buffer, **csrc;
-
-    buffer = malloc((sizeof(char*)*2));
-    csrc = ((char**)src);
-
-    if(!csrc)
-        return RES_ERROR;
-
-    if(!buffer)
-        return FALSE;
-    /*
-    buffer[0] = malloc((sizeof(char)*strlen(csrc[0]))+1);
-    if(!buffer[0])
-    {
-        free(buffer);
-        return FALSE;
-    }
-    buffer[1] = (char*)malloc((sizeof(char)*strlen(csrc[1]))+1);
-    if(!buffer[1])
-    {
-        free(buffer[0]);
-        free(buffer);
-        return FALSE;
-    }
-    */
-    strcpy(buffer[0], csrc[0]);
-    strcpy(buffer[1], csrc[1]);
-    /*
-    Original:
-    memcpy(dst[0],src[0],strlen(src[0])+1);
-    memcpy(dst[1],src[1],strlen(src[1])+1);
-    Modified:
-    memcpy(&dst, buffer, sizeof(buffer));
-    */
-
-    memcpy(&dst, &buffer, (sizeof(char*)*2));
-    return RES_OK;
 }
