@@ -5,7 +5,7 @@
  *      Author: anibal
  */
 
-#include "log.h"
+#include "logger_tda.h"
 
 int logLightInit(Logger* logger, char* filepath, LoggerLevel level) {
 	logger->path = (char*) malloc(sizeof(char) * (strlen(filepath) + 1));
@@ -45,7 +45,7 @@ void setFilesToKeep(Logger* logger, unsigned char files) {
 }
 
 void checkFileSize(Logger* logger) {
-	// TODO verify the file size and chop it in case it grew too large.
+	/* TODO verify the file size and chop it in case it grew too large. */
 }
 
 void printMsg(FILE* output, LoggerLevel logLevel, LoggerLevel msgLevel, char* label, char* msg) {

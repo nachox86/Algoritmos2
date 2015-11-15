@@ -43,62 +43,6 @@ void showHelp()
 }
 
 
-int search_site(straight_list_t *lp, const void* data, straight_list_movement_t *mov)
-{
-	void *current_data; /*referencia de donde se va a guardar el dato/elemento del corriente de la lista*/
-	char **cdata, **rdata;
-
-	if(straight_list_is_empty(lp))
-		return FALSE;
-
-	straight_list_get(lp,current_data);
-
-	cdata = ((char**)current_data);
-	rdata = ((char**)data);
-	/*validar que pudo hacer el get porque usa la función de copy*/
-    /*data: sería un char**, con data[0]="nombre de la funcion", data[1]="nombre del archivo"*/
-
-   	if (strcmp( cdata[0], rdata[0]) > 0)
-	{
-		straight_list_move(&lp,straight_list_first);
-		straight_list_get(lp,current_data);
-	}
-    while(strcmp(data,cdata[0])>0 && straight_list_move(&lp,straight_list_next))
-	{
-		straight_list_get(lp,current_data);
-	}
-	if(strcmp(rdata[0],cdata[0])<0)
-	{
-		*mov = straight_list_first;
-	}
-	else
-		*mov = straight_list_next;
-
-	return TRUE;
-}
-
-
-/*
-@funcion straight_list_order_insert
-@descr Esta función realiza la inserción ordenada de un dato, en la posición correcta en una lista. Realiza la comparación entre nombres de funciones para ordernar.
-@autor Ignacio
-@fecha 14/10/2015
-@version "1.0"
-@param lp referencia a la lista
-@param data referencia al dato a guardar en la lista
-@pre la lista debe estar creada
-@pos se guardará en la posición que deba de acuerda al criterio de ordenamiento.
-*/
-int iListOrderInsert(straight_list_t *lp, void* data)
-{
-    int insert;
-    straight_list_movement_t mov = straight_list_first;
-	search_site(lp,data,&mov);
-	insert = straight_list_insert(&lp,mov,data);
-	return insert;
-}
-
-
 
 /*
 @funcion countFunctions
@@ -116,12 +60,12 @@ int countFunctions(straight_list_t* listed)
 
     if(straight_list_is_empty(listed)!=FALSE)
     {
-        straight_list_move(&listed,straight_list_first);
+        straight_list_move(listed,straight_list_first);
         do{
             i++;
-        }while(straight_list_move(&listed,straight_list_first)!=FALSE);
+        }while(straight_list_move(listed,straight_list_first)!=FALSE);
     }
-    straight_list_move(&listed,straight_list_first);
+    straight_list_move(listed,straight_list_first);
     return i;
 }
 
@@ -179,7 +123,7 @@ int main(int argc, char *argv[]) {
     	extractDocumentation(docu, inputDir, outputFile);
 
     	/*armo el nombre del archivo de indice*/
-        token = strtok(outputFile,HTML_EXT);
+        token = strtok(outputFile,"html");
 
         if(!token) {
             indexFile = malloc(strlen(INDEX_PREFFIX_NO_EXT) + strlen(token));

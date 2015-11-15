@@ -42,7 +42,7 @@ int createHtmlFile(htmlFile *output, char *path);
     En caso de error devuelve ERROR (0), SUCCESS (1) en caso contrario
 */
 
-int parseStringToHtml(htmlFile *output, t_keyword comment;
+int parseStringToHtml(htmlFile *output, t_keyword comment);
 
 /*
     closeHtmlFile: Cierra y finaliza la escritura del archivo HTML donde se guardaron los comentarios

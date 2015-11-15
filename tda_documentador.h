@@ -1,7 +1,7 @@
 #ifndef DOCU_TDA_H_INCLUDED
 #define DOCU_TDA_H_INCLUDED
 
-#include "logger.h"
+#include "logger_tda.h"
 #include "list_tda.h"
 #include "straight_list.h"
 

@@ -149,8 +149,6 @@ int parseStringToHtml(htmlFile *output, t_keyword comment) {
         writeHtmlDate(output, comment.value);
     } else if (strcmp(KW_VERSION, comment.tag) == 0) {
         writeHtmlVersion(output, comment.value);
-    } else if (strcmp(KW_comment.value, comment.tag) == 0) {
-        writeHtmlcomment.value(output, comment.name, comment.value);
     } else if (strcmp(KW_RETURN, comment.tag) == 0) {
         writeHtmlReturn(output, comment.value);
     } else if (strcmp(KW_PRE, comment.tag) == 0) {
