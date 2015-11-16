@@ -200,7 +200,7 @@ int extractDocumentation(TDA_Doc *docu, char *inputDir, char *outputFile) {
     }
 
     if ( n >= 0) {
-        straight_list_create(docu->listado,sizeof(char**), &slistCopy, &sListDestroy);
+        straight_list_create(docu->listado,sizeof(char**), straight_list_copy_listado, straight_list_delete_listado);
         straight_list_move(docu->listado,straight_list_first);
 
         createHtmlFile(html, outputFile);
@@ -245,6 +245,7 @@ int set_keyword(t_keyword* kw,char* data)
             free(kw->tag);
             return RES_MEM_ERROR;
         }
+        if (value)
         kw->value = (char*)malloc(sizeof(char)*strlen(value)+1);
         if(!kw->value)
         {

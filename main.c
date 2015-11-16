@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
     if (nargs == ARGS_REQ) {
     	/* We got enough arguments to proceed */
 
-    	logLightInit(log, logFile, fatal);
+    	/*logLightInit(log, logFile, fatal);*/
     	createDoc(&docu, log);
     	extractDocumentation(docu, inputDir, outputFile);
 
