@@ -200,7 +200,7 @@ int extractDocumentation(TDA_Doc *docu, char *inputDir, char *outputFile) {
     }
 
     if ( n >= 0) {
-/*        straight_list_create(docu->listado,sizeof(char**), &slistCopy, &sListDestroy);*/
+        straight_list_create(docu->listado,sizeof(char**), &slistCopy, &sListDestroy);
         straight_list_move(docu->listado,straight_list_first);
 
         createHtmlFile(html, outputFile);
