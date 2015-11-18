@@ -34,6 +34,7 @@
 #define MSG_ERROR_BAD_COMMENT "Se detectó un comentario mal escrito."
 #define RES_MEM_ERROR  -1
 
+/*******************************************************************************************************************/
 int checkForKW(char* linea)
 {
     if(strstr(linea,KW_TITLE)||
@@ -54,16 +55,49 @@ int checkForKW(char* linea)
     return RES_ERROR;
 }
 
-
 int straight_list_copy_keyword(void* dst, const void* src)
 {
+    t_keyword* dst_aux;
+    t_keyword* src_aux = (t_keyword*) src;
 
-    memcpy(dst, src, sizeof(t_keyword*));
+    dst_aux = (t_keyword*)malloc(sizeof(t_keyword));
+    if(!dst_aux)
+        return RES_MEM_ERROR;
+
+    dst_aux->name = (char*)malloc(sizeof(char)*strlen(src_aux->name)+1);
+    if(!dst_aux->name)
+    {
+        free(dst_aux);
+        return RES_MEM_ERROR;
+    }
+    dst_aux->tag = (char*)malloc(sizeof(char)*strlen(src_aux->tag)+1);
+    if(!dst_aux->tag)
+    {
+        free(dst_aux->name);
+        free(dst_aux);
+        return RES_MEM_ERROR;
+    }
+    dst_aux->value = (char*)malloc(sizeof(char)*strlen(src_aux->value)+1);
+    if(!dst_aux->value)
+    {
+        free(dst_aux->name);
+        free(dst_aux->tag);
+        free(dst_aux);
+        return RES_MEM_ERROR;
+    }
+    strcpy(dst_aux->name, src_aux->name);
+    strcpy(dst_aux->tag, src_aux->tag);
+    strcpy(dst_aux->value, src_aux->value);
+    (t_keyword*)dst = dst_aux;
     return RES_OK;
 }
 
 void straight_list_delete_keyword(void* data)
 {
+    t_keyword* data_aux = (t_keyword*) data;
+    free(data_aux->name);
+    free(data_aux->tag);
+    free(data_aux->value);
     free(data);
 }
 
@@ -76,17 +110,43 @@ void straight_list_delete_listado(void* data)
 int straight_list_copy_listado(void* dst, const void* src)
 {
     straight_list_t* aux;
+    straight_list_t* src_aux = (straight_list_t*) src;
+    void* data_aux;
 
-    aux = (straight_list_t*)malloc(sizeof(src));
+    if(!straight_list_is_empty(src))
+        return RES_OK;
+
+    aux = (straight_list_t*)malloc(sizeof(straight_list_t));
     if(!aux)
         return RES_MEM_ERROR;
 
+    if(straight_list_create(aux, sizeof(t_keyword), straight_list_copy_listado, straight_list_delete_listado)!=RES_OK)
+    {
+        free(aux);
+        return RES_ERROR;
+    }
 
+    straight_list_move(src_aux,straight_list_first);
+    straight_list_get(src_aux,data_aux);
+    straight_list_insert(aux,straight_list_first,data_aux);
+
+    while(!straight_list_move(src_aux,straight_list_next))
+    {
+        straight_list_get(src_aux,data_aux);
+        straight_list_insert(aux,straight_list_next,data_aux);
+    }
+
+    (straight_list_t*)dst = aux;
+
+    return RES_OK;
 }
 
 /******************************************************************************************************************/
 int search_site(straight_list_t *lp, const void* data, straight_list_movement_t *mov) {
-	void *current_data; /*referencia de donde se va a guardar el dato/elemento del corriente de la lista*/
+	void *current_data;
+	t_keyword* cdata;
+	t_keyword* rdata;
+
 	char **cdata, **rdata;
 
 	if(straight_list_is_empty(lp))
@@ -94,21 +154,20 @@ int search_site(straight_list_t *lp, const void* data, straight_list_movement_t 
 
 	straight_list_get(lp,current_data);
 
-	cdata = ((char**)current_data);
-	rdata = ((char**)data);
-	/*validar que pudo hacer el get porque usa la función de copy*/
-    /*data: sería un char**, con data[0]="nombre de la funcion", data[1]="nombre del archivo"*/
+	cdata = (t_keyword*)current_data;
+	rdata = (t_keyword*)data;
 
-   	if (strcmp( cdata[0], rdata[0]) > 0)
+   	if (strcmp( cdata->name, rdata->name) > 0)
 	{
 		straight_list_move(lp,straight_list_first);
 		straight_list_get(lp,current_data);
 	}
-    while(strcmp(data,cdata[0])>0 && straight_list_move(lp,straight_list_next))
+    while(strcmp(rdata->name,cdata->name)>0 && straight_list_move(lp,straight_list_next))
 	{
 		straight_list_get(lp,current_data);
+		cdata = (t_keyword*)current_data;
 	}
-	if(strcmp(rdata[0],cdata[0])<0)
+	if(strcmp(rdata->name,cdata->name)<0)
 	{
 		*mov = straight_list_first;
 	}
