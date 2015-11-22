@@ -57,12 +57,8 @@ int checkForKW(char* linea)
 
 int straight_list_copy_keyword(void* dst, const void* src)
 {
-    t_keyword* dst_aux;
+    t_keyword* dst_aux = (t_keyword*) dst;
     t_keyword* src_aux = (t_keyword*) src;
-
-    dst_aux = (t_keyword*)malloc(sizeof(t_keyword));
-    if(!dst_aux)
-        return RES_MEM_ERROR;
 
     dst_aux->name = (char*)malloc(sizeof(char)*strlen(src_aux->name)+1);
     if(!dst_aux->name)
@@ -88,10 +84,9 @@ int straight_list_copy_keyword(void* dst, const void* src)
     strcpy(dst_aux->name, src_aux->name);
     strcpy(dst_aux->tag, src_aux->tag);
     strcpy(dst_aux->value, src_aux->value);
-    dst = (void*)dst_aux;
+    dst = (void*) dst_aux;
     return RES_OK;
 }
-
 void straight_list_delete_keyword(void* data)
 {
     t_keyword* data_aux = (t_keyword*) data;
@@ -162,6 +157,7 @@ int set_keyword(t_keyword* kw,char* data)
     if(!kw->tag)
         return RES_MEM_ERROR;
 
+    strcpy(kw->tag,tag);
     if((strcmp(tag,KW_FUNCTION)==0||strcmp(tag,KW_PARAM)==0||strcmp(tag,KW_RETURN)==0))
     {
         kw->name = (char*)malloc(sizeof(char)*strlen(name)+1);
