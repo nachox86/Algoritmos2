@@ -620,6 +620,9 @@ int createIndex(TDA_Doc *docu, char *indexFile)
         sprintf(htmlLine,"<li><a href=doc.html#%s>%s</a></li>",keyword->name,keyword->name);
         fwrite(htmlLine,sizeof(char),strlen(htmlLine),index);
 
+        free(keyword->name);
+        free(keyword->tag);
+        free(keyword->value);
         free(keyword);
         /*keyword = (t_keyword*)malloc(sizeof(t_keyword));
         if(!keyword)
