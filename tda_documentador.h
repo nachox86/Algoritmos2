@@ -2,7 +2,6 @@
 #define DOCU_TDA_H_INCLUDED
 
 #include "logger_tda.h"
-#include "list_tda.h"
 #include "straight_list.h"
 
 #define RES_OK      0
