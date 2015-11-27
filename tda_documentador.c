@@ -54,38 +54,56 @@ int checkForKW(char* linea)
     }
     return RES_ERROR;
 }
-
 int straight_list_copy_keyword(void* dst, const void* src)
 {
     t_keyword* dst_aux = (t_keyword*) dst;
     t_keyword* src_aux = (t_keyword*) src;
 
-    dst_aux->name = (char*)malloc(sizeof(char)*strlen(src_aux->name)+1);
-    if(!dst_aux->name)
+    if(src_aux->name)
     {
-        free(dst_aux);
-        return RES_MEM_ERROR;
+        dst_aux->name = (char*)malloc(sizeof(char)*strlen(src_aux->name)+1);
+        if(!dst_aux->name)
+        {
+            return RES_MEM_ERROR;
+        }
     }
+
     dst_aux->tag = (char*)malloc(sizeof(char)*strlen(src_aux->tag)+1);
     if(!dst_aux->tag)
     {
         free(dst_aux->name);
-        free(dst_aux);
         return RES_MEM_ERROR;
     }
-    dst_aux->value = (char*)malloc(sizeof(char)*strlen(src_aux->value)+1);
-    if(!dst_aux->value)
+
+    if(src_aux->value)
     {
-        free(dst_aux->name);
-        free(dst_aux->tag);
-        free(dst_aux);
-        return RES_MEM_ERROR;
+        dst_aux->value = (char*)malloc(sizeof(char)*strlen(src_aux->value)+1);
+        if(!dst_aux->value)
+        {
+            free(dst_aux->name);
+            free(dst_aux->tag);
+            return RES_MEM_ERROR;
+        }
     }
-    strcpy(dst_aux->name, src_aux->name);
+
+    if(src_aux->name) strcpy(dst_aux->name, src_aux->name);
+    else dst_aux->name = NULL;
+
     strcpy(dst_aux->tag, src_aux->tag);
-    strcpy(dst_aux->value, src_aux->value);
+
+    if(src_aux->value) strcpy(dst_aux->value, src_aux->value);
+    else dst_aux->value = NULL;
+
     dst = (void*) dst_aux;
     return RES_OK;
+}
+
+void straight_list_delete_keyword(void* data)
+{
+    t_keyword* data_aux = (t_keyword*) data;
+    free(data_aux->name);
+    free(data_aux->tag);
+    free(data_aux->value);
 }
 
 void straight_list_delete_keyword(void* data)
@@ -109,6 +127,8 @@ int straight_list_copy_listado(void* dst, const void* src)
     straight_list_t* src_aux = (straight_list_t*)src;
     void* data_aux;
 
+    printf("                   entre a la funcion de copia de lista\n");
+
     if(straight_list_is_empty(src_aux))
         return RES_ERROR;
 
@@ -117,15 +137,18 @@ int straight_list_copy_listado(void* dst, const void* src)
 
     aux = (straight_list_t*)dst;
 
-    straight_list_move(src_aux,straight_list_first);
+    if(straight_list_move(src_aux,straight_list_first)==TRUE) printf("movi el corriente al principio.\n");
 
     straight_list_get(src_aux,data_aux);
+    printf("keyaux data aux tag: %s\n",(((t_keyword*)data_aux)->tag));
     straight_list_insert(aux,straight_list_first,data_aux);
+
     straight_list_delete_keyword(data_aux);
 
     while(straight_list_move(src_aux,straight_list_next)!=FALSE)
     {
         straight_list_get(src_aux,data_aux);
+        printf("keyaux data aux tag: %s\n",(((t_keyword*)data_aux)->tag));
         straight_list_insert(aux,straight_list_next,data_aux);
         straight_list_delete_keyword(data_aux);
     }
@@ -135,31 +158,64 @@ int straight_list_copy_listado(void* dst, const void* src)
     return RES_OK;
 }
 
-
 int set_keyword(t_keyword* kw,char* data)
 {
     char* tag;
-    char* name_or_value;
     char* name;
     char* value;
-    int size_nov = 2; /*size of name_or_value*/
+    char* token;
+    int i = 0;
 
-    tag = strtok(data," ");
-    printf("%s\n",tag);
-    name_or_value = strtok(NULL,"");
-    if(name_or_value!=NULL)
+    if(checkForKW(data)==RES_OK)
     {
-        name = strtok(name_or_value," ");
-        if(name!=NULL)
-            value = strtok(NULL,"");
-    }
+        token = strtok(data," ");
+        tag = token;
 
-    kw->tag = (char*)malloc(sizeof(char)*strlen(tag)+1); /*pido memoria para el tag*/
+        while(token!=NULL)
+        {
+            if(strcmp(tag,KW_FUNCTION)==0)
+            {
+                token = strtok(NULL,"");
+                name = token;
+                value = '\0';
+                break;
+            }
+            else if(strcmp(tag,KW_RETURN)==0||strcmp(tag,KW_PARAM)==0)
+            {
+                if(i==0)
+                {
+                    token = strtok(NULL," ");
+                    name = token;
+                    i++;
+                }
+                if(i==1)
+                {
+                    token = strtok(NULL,"");
+                    value = token;
+                    break;
+                }
+            }
+            else
+            {
+                token = strtok(NULL,"");
+                value = token;
+                name = '\0';
+                break;
+            }
+        }
+    }
+    else
+        return RES_ERROR;
+
+    kw->tag = (char*)malloc(sizeof(char)*strlen(tag)+1);
     if(!kw->tag)
         return RES_MEM_ERROR;
     strcpy(kw->tag,tag);
+    kw->tag[strlen(kw->tag)] = '\0';
 
-    if((strcmp(tag,KW_FUNCTION)==0||strcmp(tag,KW_PARAM)==0||strcmp(tag,KW_RETURN)==0))
+    printf("tag %s\n",kw->tag);
+
+    if(name)
     {
         kw->name = (char*)malloc(sizeof(char)*strlen(name)+1);
         if(!kw->name)
@@ -167,7 +223,15 @@ int set_keyword(t_keyword* kw,char* data)
             free(kw->tag);
             return RES_MEM_ERROR;
         }
-        if (value)
+        strcpy(kw->name,name);
+        name[strlen(name)] = '\0';
+        printf("name %s\n",kw->name);
+    }
+    else
+        kw->name = NULL;
+
+    if(value)
+    {
         kw->value = (char*)malloc(sizeof(char)*strlen(value)+1);
         if(!kw->value)
         {
@@ -175,43 +239,28 @@ int set_keyword(t_keyword* kw,char* data)
             free(kw->tag);
             return RES_MEM_ERROR;
         }
-        strcpy(kw->name,name);
         strcpy(kw->value,value);
+        value[strlen(value)] = '\0';
+        printf("value %s\n",kw->value);
     }
     else
-    {
-        kw->name = (char*)malloc(sizeof(char)*size_nov);
-        if(!kw->name)
-        {
-            free(kw->tag);
-            return RES_MEM_ERROR;
-        }
-        strcpy(kw->name,"\0\0");
-        if(name_or_value!=NULL)
-            size_nov = strlen(name_or_value)+1;
-        kw->value = (char*)malloc(sizeof(char)*size_nov);
-        if(!kw->value)
-        {
-            free(kw->name);
-            free(kw->tag);
-            return RES_MEM_ERROR;
-        }
-        if(name_or_value!=NULL)
-            strcpy(kw->value,name_or_value);
-        else
-            strcpy(kw->value,"\0\0");
-    }
+        kw->value = NULL;
+
     return RES_OK;
 }
-
 /******************************************************************************************************************/
 int search_site(straight_list_t *lp, const void* data, straight_list_movement_t *mov) {
+
 	void *current_data;
 	t_keyword* cdata;
 	t_keyword* rdata;
-
 	if(straight_list_is_empty(lp))
-		return FALSE;
+    {
+        *mov = straight_list_first;
+        return RES_OK;
+    }
+    current_data = malloc(sizeof(t_keyword));
+    if(!current_data) return RES_MEM_ERROR;
 
 	straight_list_get(lp,current_data);
 
@@ -221,21 +270,24 @@ int search_site(straight_list_t *lp, const void* data, straight_list_movement_t 
    	if (strcmp( cdata->name, rdata->name) > 0)
 	{
 		straight_list_move(lp,straight_list_first);
+		straight_list_delete_keyword(current_data);
 		straight_list_get(lp,current_data);
 	}
     while(strcmp(rdata->name,cdata->name)>0 && straight_list_move(lp,straight_list_next))
 	{
+  		straight_list_delete_keyword(current_data);
 		straight_list_get(lp,current_data);
 		cdata = (t_keyword*)current_data;
 	}
 	if(strcmp(rdata->name,cdata->name)<0)
-	{
-		*mov = straight_list_first;
-	}
+    {
+        *mov = straight_list_previous;
+    }
 	else
+    {
 		*mov = straight_list_next;
-
-	return TRUE;
+	}
+	return RES_OK;
 }
 
 
@@ -254,10 +306,11 @@ int straight_list_order_insert(straight_list_t *lp, void* data)
 {
     straight_list_movement_t mov = straight_list_first;
     int insert;
-	int search = search_site(lp,data,&mov);
+	int search;
+
+    search = search_site(lp,data,&mov);
     if(search!=RES_OK) return RES_ERROR;
 	insert = straight_list_insert(lp,mov,data);
-    if(insert!=RES_OK) return RES_ERROR;
 	return insert;
 }
 /***************************************************************************************************************/
@@ -451,7 +504,7 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
             {
                 logInfo(docu->logFile,"Termino el comentario de la función, ahora inserto en la lista docu->listado de manera ordenada las funciones.");
                 /* en la función de búsqueda habrá que tener en cuenta qué tomar para la comparación */
-                if(!straight_list_order_insert(docu->listado,listado_aux)) {
+                if(!straight_list_insert(docu->listado,listado_aux)) {
                     /* tuvo problemas de memoria para insertar */
                     logError(docu->logFile,MSG_ERROR_MEMORY);
                     straight_list_destroy(listado_aux);
