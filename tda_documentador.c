@@ -35,6 +35,16 @@
 #define RES_MEM_ERROR  -1
 
 /*******************************************************************************************************************/
+/*
+@funcion checkForKW
+@descr Esta funcion valida si en una cadena de texto existe uno de los tags que identifican a los keywords.
+@autor Ignacio
+@fecha 14/10/2015
+@version "1.0"
+@param linea cadena de texto a validar
+@pre ninguna
+@pos devuelve RES_OK si encuentra uno de los keywords en la cadena
+*/
 int checkForKW(char* linea)
 {
     if(strstr(linea,KW_TITLE)||
@@ -54,10 +64,23 @@ int checkForKW(char* linea)
     }
     return RES_ERROR;
 }
+/*
+@funcion straight_list_copy_keyword
+@descr Hace la copia de una estructura de tipo t_keyword.
+@autor Ignacio
+@fecha 14/11/2015
+@version "1.0"
+@param src referencia del dato que se quiere copiar
+@param dst referencia en dónde se quiere hacer la copia
+@pre src debe estar inicializado y dst debe tener recursos asignados
+@pos realiza la copia del dato en src en la memoria asosciada a dst. Devuelve RES_OK si pudo hacer la copia; RES_ERROR si src es NULL y RES_MEM_ERROR si no pudo alocar memoria para la copia.
+*/
 int straight_list_copy_keyword(void* dst, const void* src)
 {
     t_keyword* dst_aux = (t_keyword*) dst;
     t_keyword* src_aux = (t_keyword*) src;
+
+    if(!src_aux) return RES_ERROR;
 
     if(src_aux->name)
     {
@@ -97,7 +120,16 @@ int straight_list_copy_keyword(void* dst, const void* src)
     dst = (void*) dst_aux;
     return RES_OK;
 }
-
+/*
+@funcion straight_list_delete_keyword
+@descr Libera los recursos de un dato de tipo t_keyword.
+@autor Ignacio
+@fecha 14/11/2015
+@version "1.0"
+@param data referencia al dato alocado
+@pre data no debe ser NULL y debe estar inicializado.
+@pos libera la memoria asociada al name, tag y value de la estructura.
+*/
 void straight_list_delete_keyword(void* data)
 {
     t_keyword* data_aux = (t_keyword*) data;
@@ -105,22 +137,32 @@ void straight_list_delete_keyword(void* data)
     free(data_aux->tag);
     free(data_aux->value);
 }
-
-void straight_list_delete_keyword(void* data)
-{
-    t_keyword* data_aux = (t_keyword*) data;
-    free(data_aux->name);
-    free(data_aux->tag);
-    free(data_aux->value);
-    /*free(data);*/
-}
-
+/*
+@funcion straight_list_delete_listado
+@descr Libera los recursos de un dato straight_list.
+@autor Ignacio
+@fecha 14/11/2015
+@version "1.0"
+@param data referencia a la lista
+@pre data debe estar creada.
+@pos libera los recursos de la lista y esta queda destruida.
+*/
 void straight_list_delete_listado(void* data)
 {
     straight_list_t* aux = (straight_list_t*)data;
     straight_list_destroy(aux);
 }
-
+/*
+@funcion straight_list_copy_listado
+@descr Copia una lista.
+@autor Ignacio
+@fecha 14/11/2015
+@version "1.0"
+@param dst referencia de en dónde se quiere la copia de la lista
+@param src lista original a copiar
+@pre la lista src debe existir y dst debe tener recursos asignados.
+@pos copia toda lista src a dst.
+*/
 int straight_list_copy_listado(void* dst, const void* src)
 {
     straight_list_t* aux;
@@ -157,7 +199,17 @@ int straight_list_copy_listado(void* dst, const void* src)
 
     return RES_OK;
 }
-
+/*
+@funcion set_keyword
+@descr Iniciliza un dato de tipo t_keyword.
+@autor Ignacio
+@fecha 14/11/2015
+@version "1.0"
+@param kw referencia a una estructura t_keyword
+@param data cadena de texto con los datos para cargar la estructura
+@pre kw creada.
+@pos inicializa los campos de laestructura con la información en data.
+*/
 int set_keyword(t_keyword* kw,char* data)
 {
     char* tag;
@@ -249,6 +301,18 @@ int set_keyword(t_keyword* kw,char* data)
     return RES_OK;
 }
 /******************************************************************************************************************/
+/*
+@funcion search_site
+@descr Busca dentro de una lista el lugar en dónde debería ir el dato data.
+@autor Ignacio
+@fecha 14/11/2015
+@version "1.0"
+@param lp referencia a la lista en donde se busca.
+@param data dato de búsqueda
+@param *mov movimiento dentro de una lista
+@pre lp creada y data creada.
+@pos devuelve en *mov el movimiento que tiene que hacer lp.
+*/
 int search_site(straight_list_t *lp, const void* data, straight_list_movement_t *mov) {
 
 	void *current_data;
@@ -289,8 +353,6 @@ int search_site(straight_list_t *lp, const void* data, straight_list_movement_t 
 	}
 	return RES_OK;
 }
-
-
 /*
 @funcion straight_list_order_insert
 @descr Esta función realiza la inserción ordenada de un dato, en la posición correcta en una lista. Realiza la comparación entre nombres de funciones para ordernar.
@@ -390,15 +452,29 @@ int extractDocumentation(TDA_Doc *docu, char *inputDir, char *outputFile) {
 }
 
 
-
+/*
+@funcion extractDocumentationFromFile
+@descr Lee el archivo de entrada y va almacenando en la estructura la información de los comentarios puestos en este. Agrega en el archivo de salida la información.
+@autor Ignacio
+@fecha 14/11/2015
+@version "1.0"
+@param docu referencia al documentador
+@param html archivo de salida de datos
+@param iFile archivo de entrada de datos
+@pre docu creado.
+@pos Recorre iFile linea por linea. Cuando identifica que encontró un comentario, agrega en el archivo de salida la información de cada comentario. Crea dos listas, una con la información y otra de indice. Devuelve RES_OK si pudo operar sin problemas y RES_MEM_ERROR si tuvo problemas de memoria. RES_ERROR en el caso de que no pudo abrir alguno de los archivos.
+*/
 int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
     FILE *inputFile;
     straight_list_t* listado_aux;
     t_keyword* keyword;
     int cinit = 0;
     int cend = 0;
+    int got_key = 0;
     char linea[MAX_LINE];
     char *stoken, *etoken;
+    straight_list_movement_t mov = straight_list_first;
+    straight_list_movement_t mov_aux = straight_list_first;
 
     logInfo(docu->logFile,"Abro archivo de entrada.");
     inputFile = fopen(iFile, "r");
@@ -434,7 +510,6 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
     keyword = (t_keyword*)malloc(sizeof(t_keyword));
     if(!keyword) {
         logError(docu->logFile,MSG_ERROR_CREATE_LIST);
-        /*straight_list_delete(listado_aux);*/
         straight_list_delete(docu->indice);
         straight_list_delete(docu->listado);
         free(listado_aux);
@@ -461,106 +536,72 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
             if (cinit && !cend)
             {
                 /* mientras que esté dentro del comentario */
+                /* armo el listado auxiliar*/
                 if (checkForKW(linea) == 0)
                 {
                 /* encontramos una keyword */
                     set_keyword(keyword,linea);
                 /* guardo en la lista auxiliar */
                     if(!straight_list_is_empty(listado_aux))
-                    {
-                        if(!straight_list_insert(listado_aux, straight_list_next,keyword)) {
-                            logError(docu->logFile,MSG_ERROR_MEMORY);
-                            straight_list_destroy(listado_aux);
-                            free(listado_aux);
-                            straight_list_destroy(docu->listado);
-                            straight_list_destroy(docu->indice);
-                            free(keyword->name);
-                            free(keyword->tag);
-                            free(keyword->value);
-                            free(keyword);
-                            fclose(inputFile);
-                            return RES_ERROR;
-                        }
-                    }
+                        mov_aux = straight_list_next;
                     else
-                    {
-                        if(!straight_list_insert(listado_aux, straight_list_first,keyword)) {
-                            logError(docu->logFile,MSG_ERROR_MEMORY);
-                            straight_list_destroy(listado_aux);
-                            free(listado_aux);
-                            straight_list_destroy(docu->listado);
-                            straight_list_destroy(docu->indice);
-                            free(keyword->name);
-                            free(keyword->tag);
-                            free(keyword->value);
-                            free(keyword);
-                            fclose(inputFile);
-                            return RES_ERROR;
-                        }
+                        mov_aux = straight_list_first;
+
+                    if(!straight_list_insert(listado_aux, mov_aux,keyword)) {
+                        logError(docu->logFile,MSG_ERROR_MEMORY);
+                        straight_list_destroy(listado_aux);
+                        straight_list_destroy(docu->listado);
+                        straight_list_destroy(docu->indice);
+                        straight_list_delete_keyword(keyword);
+                        free(listado_aux);
+                        free(keyword);
+                        fclose(inputFile);
+                        return RES_ERROR;
                     }
+                    straight_list_delete_keyword(keyword);
+
                 }
             }
             else if (cinit && cend)
             {
                 logInfo(docu->logFile,"Termino el comentario de la función, ahora inserto en la lista docu->listado de manera ordenada las funciones.");
                 /* en la función de búsqueda habrá que tener en cuenta qué tomar para la comparación */
-                if(!straight_list_insert(docu->listado,listado_aux)) {
+                if(!straight_list_is_empty(docu->listado))
+                    mov = straight_list_next;
+                else
+                    mov = straight_list_first;
+                if(!straight_list_insert(docu->listado,mov,listado_aux)) {
                     /* tuvo problemas de memoria para insertar */
                     logError(docu->logFile,MSG_ERROR_MEMORY);
                     straight_list_destroy(listado_aux);
-                    free(listado_aux);
                     straight_list_destroy(docu->listado);
                     straight_list_destroy(docu->indice);
-                    free(keyword->name);
-                    free(keyword->tag);
-                    free(keyword->value);
+                    straight_list_delete_keyword(keyword);
+                    free(listado_aux);
                     free(keyword);
                     fclose(inputFile);
                     return RES_ERROR;
                 }
                 logInfo(docu->logFile,"Mando a insertar en el archivo html de salida.");
+
+                /*TODO un get del struct con el nombre para pasar al parser*/
+
                 parseStringToHtml(html,*keyword); /*lo mando al html*/
                 /* reinicializo las variables auxiliares*/
                 logInfo(docu->logFile,"Reinicializo las variables auxiliares.");
                 cinit = 0; cend = 0;
                 /* como ya inserté los tags/keywords de una funcion, destruto la lista auxiliar */
                 straight_list_destroy(listado_aux);
-                free(listado_aux);
-                /* y pido recursos nuevamente para los comentarios de la siguiente función */
-                logInfo(docu->logFile,"Recupero recursos de la lista auxiliar y del keyword auxiliar, y los solicito para la próxima.");
-                listado_aux = (straight_list_t*)malloc(sizeof(straight_list_t));
-                if(!listado_aux) {
-                    logError(docu->logFile,MSG_ERROR_CREATE_LIST);
-                    straight_list_delete(docu->indice);
-                    straight_list_delete(docu->listado);
-                    free(keyword->name);
-                    free(keyword->tag);
-                    free(keyword->value);
-                    free(keyword);
-                    fclose(inputFile);
-                    return RES_ERROR;
-                }
-                keyword = (t_keyword*)malloc(sizeof(t_keyword));
-                if(!keyword) {
-                    logError(docu->logFile,MSG_ERROR_CREATE_LIST);
-                    free(listado_aux);
-                    straight_list_delete(docu->indice);
-                    straight_list_delete(docu->listado);
-                    fclose(inputFile);
-                    return RES_ERROR;
-                }
             }
-            else if (!cinit && cend)
-            {
+            else if ((!cinit && cend)||(cinit && stoken)) {
                 /* está mal hecho algún comentario, libero los recursos y salgo */
                 logError(docu->logFile,MSG_ERROR_BAD_COMMENT);
+                logError(docu->logFile,stoken);
                 straight_list_delete(listado_aux);
-                free(listado_aux);
                 straight_list_delete(docu->indice);
                 straight_list_delete(docu->listado);
-                free(keyword->name);
-                free(keyword->tag);
-                free(keyword->value);
+                straight_list_delete_keyword(keyword);
+                free(listado_aux);
                 free(keyword);
                 fclose(inputFile);
                 return RES_ERROR;
@@ -571,7 +612,7 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
     /* libero los recursos de listado_aux y cierro el archivo de entrada ya que no lo necesito más */
     logInfo(docu->logFile,"Libero los recursos de listado_aux y cierro el archivo de entra ya que no lo necesito más.");
     straight_list_delete(listado_aux);
-    free(listado_aux);
+    straight_list_delete_keyword(keyword);
     fclose(inputFile);
 
     /* ahora armo la lista del indice ordenada*/
@@ -580,32 +621,14 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
 
     do {
         logInfo(docu->logFile,"Tomo un elemento lista del documentador y lo guardo en listado_aux.");
-        listado_aux = (straight_list_t*)malloc(sizeof(straight_list_t));
-        if(!listado_aux)
-        {
-            logError(docu->logFile,MSG_ERROR_MEMORY);
-            straight_list_destroy(docu->listado);
-            straight_list_destroy(docu->indice);
-            return RES_MEM_ERROR;
-        }
         straight_list_get(docu->listado,listado_aux);
-
         /* recorro el elemento lista*/
         straight_list_move(listado_aux,straight_list_first);
         do{
-            keyword = (t_keyword*)malloc(sizeof(t_keyword));
-            if(!keyword) {
-                logError(docu->logFile,MSG_ERROR_MEMORY);
-                straight_list_destroy(listado_aux);
-                straight_list_destroy(docu->listado);
-                straight_list_destroy(docu->indice);
-                free(listado_aux);
-                return RES_MEM_ERROR;
-            }
             straight_list_get(listado_aux,keyword);
             if(strcmp(keyword->tag,KW_FUNCTION)==0)
             {
-                /* encontré el tag de function */
+                /* encontré el tag de funcion */
                 /* inserto en la lista del indice de docu */
                 logInfo(docu->logFile,"Encontré un tag de función y lo inserto en el docu->indice.");
                 if(!straight_list_order_insert(docu->indice,keyword)) {
@@ -614,24 +637,22 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
                     straight_list_destroy(listado_aux);
                     straight_list_destroy(docu->listado);
                     straight_list_destroy(docu->indice);
+                    straight_list_delete_keyword(keyword);
                     free(listado_aux);
-                    free(keyword->name);
-                    free(keyword->tag);
-                    free(keyword->value);
                     free(keyword);
                     fclose(inputFile);
                     return RES_MEM_ERROR;
                 }
-                /* TODO destroy t_keyword */
-                free(keyword->name);
-                free(keyword->tag);
-                free(keyword->value);
-                free(keyword);
+                got_key = 1;
             }
-        } while (straight_list_move(listado_aux,straight_list_next)!=FALSE);
+            straight_list_delete_keyword(keyword);
+        } while (straight_list_move(listado_aux,straight_list_next)!=FALSE||got_key==0);
+        got_key = 0;
         straight_list_destroy(listado_aux);
     } while (straight_list_move(docu->listado,straight_list_next)!=FALSE);
 
+    free(keyword);
+    free(listado_aux);
 
     return RES_OK;
 }
@@ -642,50 +663,35 @@ int createIndex(TDA_Doc *docu, char *indexFile)
     char htmlLine[MAX_LINE];
     t_keyword* keyword;
 
-    /*keyword = (t_keyword*)malloc(sizeof(t_keyword*));
+    keyword = (t_keyword*)malloc(sizeof(t_keyword));
     if(!keyword)
     {
         logError(docu->logFile,MSG_ERROR_MEMORY);
         return RES_ERROR;
-    }*/
-
-    /*doy formato y agrego al archivo de indices*/
+    }
     index = fopen(indexFile,"w");
     if(!index)
     {
-        /*free(keyword);*/
+        free(keyword);
         logError(docu->logFile,MSG_ERROR_INDEX_FILE);
         return RES_ERROR;
     }
-
-    fwrite(HTML_INDEX_HEADER,sizeof(char),strlen(HTML_INDEX_HEADER),index); /*agrego header del indice*/
-
-    /*Me muevo por la lista del indice desde el principio*/
+    logInfo(docu->logFile,"Abro el archivo indice.");
+    fwrite(HTML_INDEX_HEADER,sizeof(char),strlen(HTML_INDEX_HEADER),index);
+    logInfo(docu->logFile,"Agrego header del indice.");
+    logInfo(docu->logFile,"Empiezo a recorrer la lista de indice.");
 
     straight_list_move(docu->indice,straight_list_first);
-
     do{
         straight_list_get(docu->indice,keyword);
-
         sprintf(htmlLine,"<li><a href=doc.html#%s>%s</a></li>",keyword->name,keyword->name);
         fwrite(htmlLine,sizeof(char),strlen(htmlLine),index);
-
-        free(keyword->name);
-        free(keyword->tag);
-        free(keyword->value);
-        free(keyword);
-        /*keyword = (t_keyword*)malloc(sizeof(t_keyword));
-        if(!keyword)
-        {
-            logError(docu->logFile,MSG_ERROR_MEMORY);
-            fclose(index);
-            return RES_ERROR;
-        }*/
-
+        straight_list_delete_keyword(keyword);
     }while(straight_list_move(docu->indice,straight_list_next)!=FALSE);
-
-    fwrite(HTML_INDEX_FOOTER,sizeof(char),strlen(HTML_INDEX_FOOTER),index);/*agrego footer del indice*/
-
+    logInfo(docu->logFile,"Termino de recorrer la lista indice.");
+    fwrite(HTML_INDEX_FOOTER,sizeof(char),strlen(HTML_INDEX_FOOTER),index);
+    logInfo(docu->logFile,"Agrego el footer al archivo indice.");
+    free(keyword);
     fclose(index);
 
     return RES_OK;
