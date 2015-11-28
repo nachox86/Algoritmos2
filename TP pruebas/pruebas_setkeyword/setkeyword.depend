@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1448662213 source:c:\fiuba\ing informatica\2do cuatrimestre 2015\algoritmos y programacion 2\tp2\pruebas tp2\setkeyword\pruebas.c
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+	<sys/types.h>
+	<dirent.h>
+

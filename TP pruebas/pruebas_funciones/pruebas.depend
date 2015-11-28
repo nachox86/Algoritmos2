@@ -1,0 +1,15 @@
+# depslib dependency file v1.0
+1448663723 source:c:\fiuba\ing informatica\2do cuatrimestre 2015\algoritmos y programacion 2\tp2\pruebas tp2\pruebas\pruebas.c
+	<stdio.h>
+	<string.h>
+	"straight_list.h"
+	<sys/types.h>
+	<dirent.h>
+
+1445190019 c:\fiuba\ing informatica\2do cuatrimestre 2015\algoritmos y programacion 2\tp2\pruebas tp2\pruebas\straight_list.h
+	<stdlib.h>
+	<memory.h>
+
+1448664065 source:c:\fiuba\ing informatica\2do cuatrimestre 2015\algoritmos y programacion 2\tp2\pruebas tp2\pruebas\straight_list.c
+	"straight_list.h"
+

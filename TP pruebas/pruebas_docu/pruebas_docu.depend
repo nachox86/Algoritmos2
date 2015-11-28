@@ -1,0 +1,49 @@
+# depslib dependency file v1.0
+1447686831 source:c:\fiuba\ing informatica\2do cuatrimestre 2015\algoritmos y programacion 2\tp2\pruebas tp2\pruebas_docu\logger_tda.c
+	"logger_tda.h"
+
+1445647921 c:\fiuba\ing informatica\2do cuatrimestre 2015\algoritmos y programacion 2\tp2\pruebas tp2\pruebas_docu\logger_tda.h
+	<stdio.h>
+	<string.h>
+	<malloc.h>
+
+1448742455 source:c:\fiuba\ing informatica\2do cuatrimestre 2015\algoritmos y programacion 2\tp2\pruebas tp2\pruebas_docu\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"tda_documentador.h"
+	"logger_tda.h"
+
+1448741527 c:\fiuba\ing informatica\2do cuatrimestre 2015\algoritmos y programacion 2\tp2\pruebas tp2\pruebas_docu\tda_documentador.h
+	"logger_tda.h"
+	"straight_list.h"
+
+1445190019 c:\fiuba\ing informatica\2do cuatrimestre 2015\algoritmos y programacion 2\tp2\pruebas tp2\pruebas_docu\straight_list.h
+	<stdlib.h>
+	<memory.h>
+
+1448750824 c:\fiuba\ing informatica\2do cuatrimestre 2015\algoritmos y programacion 2\tp2\pruebas tp2\pruebas_docu\htmlparser.h
+	<stdio.h>
+	"tda_documentador.h"
+	"straight_list.h"
+
+1448750118 source:c:\fiuba\ing informatica\2do cuatrimestre 2015\algoritmos y programacion 2\tp2\pruebas tp2\pruebas_docu\straight_list.c
+	"straight_list.h"
+
+1448752003 source:c:\fiuba\ing informatica\2do cuatrimestre 2015\algoritmos y programacion 2\tp2\pruebas tp2\pruebas_docu\tda_documentador.c
+	<string.h>
+	"tda_documentador.h"
+	"logger_tda.h"
+	"htmlParser.h"
+	"straight_list.h"
+	<sys/types.h>
+	<dirent.h>
+
+1448751124 source:c:\fiuba\ing informatica\2do cuatrimestre 2015\algoritmos y programacion 2\tp2\pruebas tp2\pruebas_docu\htmlparser.c
+	"htmlParser.h"
+	"straight_list.h"
+	"tda_documentador.h"
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
