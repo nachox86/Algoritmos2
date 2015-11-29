@@ -160,12 +160,15 @@ int index_insert(straight_list_t *l, t_index *data) {
     straight_list_get(l, temp);
     res = strcasecmp(temp->kw->name, data->kw->name);
 
-    if (res > 0) {
-        straight_list_move(l, straight_list_first);
-        straight_list_get(l, temp);
-    } else if (res == 0) {
+    if (res == 0) {
         straight_list_insert(l, straight_list_next, data);
     } else {
+
+        if (res > 0) {
+            straight_list_move(l, straight_list_first);
+            straight_list_get(l, temp);
+        }
+
         while ((strcasecmp(temp->kw->name, data->kw->name) < 0) && (res = straight_list_move(l, straight_list_next))) {
             straight_list_get(l, temp);
         }
@@ -173,6 +176,7 @@ int index_insert(straight_list_t *l, t_index *data) {
             straight_list_insert(l, straight_list_next, data);
         else
             straight_list_insert(l, straight_list_previous, data);
+
     }
     return 1;
 }
@@ -216,13 +220,13 @@ int extractDocumentation(TDA_Doc *docu, char *inputDir, char *outputFile) {
     htmlFile *html = malloc(sizeof(htmlFile));
     int i, n = 0;
 
-    #ifdef __unix__
-        if (inputDir[strlen(inputDir)] != '/')
-            strcat(inputDir, "/");
-    #elif
+    if (inputDir[strlen(inputDir)] != '/')
+        strcat(inputDir, "/");
+
+    /*
         if (inputDir[strlen(inputDir)] != '\\')
             strcat(inputDir, "\\");
-    #endif
+    */
 
     dir = opendir(inputDir);
 
