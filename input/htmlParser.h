@@ -26,12 +26,12 @@ typedef struct {
 } htmlFile;
 
 /*
-	@funcion createHtmlFile
-	@descr Inicializa y crea el archivo html donde guardara la documentacion
-	@param output htmlFile a inicializar
+    @funcion createHtmlFile
+    @descr Inicializa y crea el archivo html donde guardara la documentacion
+    @param output htmlFile a inicializar
     @param path direccion del archivo donde guardar la documentacion
-	@author mike
-	@return SUCCESS o ERROR, dependiendo del caso
+    @author mike
+    @return SUCCESS o ERROR, dependiendo del caso
 */
 
 int createHtmlFile(htmlFile *output, char *path);
