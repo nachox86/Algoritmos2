@@ -62,16 +62,60 @@ int checkForKW(char* linea)
 
 int straight_list_copy_keyword(void* dst, const void* src)
 {
-    memcpy(dst, src, (sizeof(t_keyword) * MAX_KW));
+
+    t_keyword *dst_aux = (t_keyword*) dst;
+    t_keyword *src_aux = (t_keyword*) src;
+
+    int i = 0;
+
+    while (src_aux[i].tag) {
+        dst_aux[i].tag = malloc(strlen(src_aux[i].tag) + 1);
+        if (dst_aux[i].tag)
+            strcpy(dst_aux[i].tag, src_aux[i].tag);
+        else
+            return RES_MEM_ERROR;
+
+        if (src_aux[i].name) {
+            dst_aux[i].name = malloc(strlen(src_aux[i].name) + 1);
+            if (dst_aux[i].name)
+                strcpy(dst_aux[i].name, src_aux[i].name);
+            else {
+                free(dst_aux[i].tag);
+                return RES_MEM_ERROR;
+            }
+        } else {
+            dst_aux[i].name = NULL;
+        }
+
+        if (src_aux[i].value) {
+            dst_aux[i].value = malloc(strlen(src_aux[i].value) + 1);
+            if (dst_aux[i].value)
+                strcpy(dst_aux[i].value, src_aux[i].value);
+            else {
+                free(dst_aux[i].tag);
+                free(dst_aux[i].name);
+                return RES_MEM_ERROR;
+            }
+        } else {
+            dst_aux[i].value = NULL;
+        }
+
+        i++;
+    }
 
     return RES_OK;
 }
-void straight_list_delete_keyword(void* data)
-{
+void straight_list_delete_keyword(void* data) {
+
     t_keyword* data_aux = (t_keyword*) data;
-    free(data_aux->name);
-    free(data_aux->tag);
-    free(data_aux->value);
+    int i = 0;
+
+    while (data_aux[i].tag) {
+        free(data_aux[i].name);
+        free(data_aux[i].tag);
+        free(data_aux[i].value);
+        i++;
+    }
 }
 
 int slist_cp_index(void *dst, const void *src) {
@@ -93,13 +137,15 @@ int slist_cp_index(void *dst, const void *src) {
     } else {
         dst_aux->kw->tag = NULL;
     }
-
+    /*
     if (src_aux->kw->value) {
         dst_aux->kw->value = malloc(sizeof(char) * strlen(src_aux->kw->value));
         strcpy(dst_aux->kw->value, src_aux->kw->value);
     } else {
         dst_aux->kw->value = NULL;
     }
+    */
+    dst_aux->kw->value = NULL;
 
     if (src_aux->filename)
         strncpy(dst_aux->filename, src_aux->filename, sizeof(char) * 20);
