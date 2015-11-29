@@ -59,32 +59,35 @@ int straight_list_move(straight_list_t *lp, straight_list_movement_t m)
 void straight_list_delete(straight_list_t *lp)
 {
 	straight_list_node_t *current = lp->current;
-	if (lp->current==lp->first)
-	{
-		lp->first = lp->current->next;
-		lp->current = lp->first;
+	if (lp->first) {
+        if (lp->current==lp->first)
+        {
+            lp->first = lp->current->next;
+            lp->current = lp->first;
+        }
+        else
+        {
+            if(lp->current->next){
+                /* En este caso en que el corriente no es el ultimo, puedo evitarme
+                 * recorrer toda la lista buscando el anterior */
+                current=lp->current->next;
+                memcpy(lp->current->data, current->data, lp->size);
+                lp->current->next = current->next;
+            }else {
+                straight_list_node_t *aux = lp->first;
+                while (aux->next != lp->current) {
+                    aux = aux->next;
+                }
+                aux->next=lp->current->next;
+                lp->current = aux; /*Si es el ultimo queda en el Anterior al borrado */
+            }
+        }
 	}
-	else
-	{
-		if(lp->current->next){
-			/* En este caso en que el corriente no es el ultimo, puedo evitarme
-			 * recorrer toda la lista buscando el anterior */
-			current=lp->current->next;
-			memcpy(lp->current->data, current->data, lp->size);
-			lp->current->next = current->next;
-		}else {
-			straight_list_node_t *aux = lp->first;
-			while (aux->next != lp->current) {
-				aux = aux->next;
-			}
-			aux->next=lp->current->next;
-			lp->current = aux; /*Si es el ultimo queda en el Anterior al borrado */
-		}
-	}
-
-	lp->destroy(current->data);
-	free(current->data);
-	free(current);
+    if (current) {
+        lp->destroy(current->data);
+        free(current->data);
+        free(current);
+    }
 }
 
 int straight_list_insert(straight_list_t *lp, straight_list_movement_t m, const void* data)

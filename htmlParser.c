@@ -23,7 +23,6 @@ int initHtmlFile(char *path) {
 
 int createHtmlFile(htmlFile *output, char *path) {
 
-    output = malloc(sizeof(htmlFile));
     output->init = initHtmlFile(path);
     output->file = fopen(path, "a+");
 
@@ -136,25 +135,25 @@ int writeHtmlPostconditions(htmlFile *output, char *conditions) {
 int parseStringToHtml(htmlFile *output, t_keyword comment) {
 
     if (strcmp(KW_TITLE, comment.tag) == 0) {
-        writeHtmlTitle(output, comment.value);
+        writeHtmlTitle(output, comment.name);
     } else if (strcmp(KW_SUBTITLE, comment.tag) == 0) {
-        writeHtmlSubtitle(output, comment.value);
+        writeHtmlSubtitle(output, comment.name);
     } else if (strcmp(KW_FUNCTION, comment.tag) == 0) {
-        writeHtmlFunction(output, comment.value);
+        writeHtmlFunction(output, comment.name);
     } else if (strcmp(KW_DESCRIPTION, comment.tag) == 0) {
-        writeHtmlDescription(output, comment.value);
+        writeHtmlDescription(output, comment.name);
     } else if (strcmp(KW_AUTHOR, comment.tag) == 0) {
-        writeHtmlAuthor(output, comment.value);
+        writeHtmlAuthor(output, comment.name);
     } else if (strcmp(KW_DATE, comment.tag) == 0) {
-        writeHtmlDate(output, comment.value);
+        writeHtmlDate(output, comment.name);
     } else if (strcmp(KW_VERSION, comment.tag) == 0) {
-        writeHtmlVersion(output, comment.value);
+        writeHtmlVersion(output, comment.name);
     } else if (strcmp(KW_RETURN, comment.tag) == 0) {
-        writeHtmlReturn(output, comment.value);
+        writeHtmlReturn(output, comment.name);
     } else if (strcmp(KW_PRE, comment.tag) == 0) {
-        writeHtmlPreconditions(output, comment.value);
+        writeHtmlPreconditions(output, comment.name);
     } else if (strcmp(KW_POST, comment.tag) == 0) {
-        writeHtmlPostconditions(output, comment.value);
+        writeHtmlPostconditions(output, comment.name);
     } else {
         return ERROR;
     }

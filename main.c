@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
     char *inputDir, *outputFile, *logFile, *indexFile;
     char* token;
 
-    Logger *log;
+    Logger *log = malloc(sizeof(Logger));
     TDA_Doc *docu;
 
     if( (argc != ARGS_TWO) && (argc != ARGS_SEVEN))
@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
     if (nargs == ARGS_REQ) {
     	/* We got enough arguments to proceed */
 
-    	/*logLightInit(log, logFile, fatal);*/
+    	logLightInit(log, logFile, trace);
     	createDoc(&docu, log);
     	extractDocumentation(docu, inputDir, outputFile);
 
@@ -132,7 +132,9 @@ int main(int argc, char *argv[]) {
             indexFile = malloc(strlen(INDEX_PREFFIX) + strlen(token));
             sprintf(indexFile, "%s%s",token,INDEX_PREFFIX);
         }
+        /*
         createIndex(docu, indexFile);
+        */
 		logClose(log);
     	destroyDoc(&docu);
     }
