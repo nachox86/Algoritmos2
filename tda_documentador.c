@@ -185,17 +185,22 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile);
 int createDoc(TDA_Doc *docu, Logger *log)
 {
 
-	if(!docu)
+	if(!docu) {
+        logError(log, "Error al alocar memoria para el documentador");
         return RES_MEM_ERROR;
+	}
 
     docu->indice = (straight_list_t*)malloc(sizeof(straight_list_t));
-    if(!(docu->indice))
+    if(!(docu->indice)) {
+        logError(log, "Error al alocar memoria para el indice");
         return RES_MEM_ERROR;
+    }
 
     docu->listado = (straight_list_t*)malloc(sizeof(straight_list_t));
     if(!(docu->listado))
     {
         free(docu->indice);
+        logError(log, "Error al alocar memoria para el listado");
         return RES_MEM_ERROR;
     }
 
@@ -211,8 +216,13 @@ int extractDocumentation(TDA_Doc *docu, char *inputDir, char *outputFile) {
     htmlFile *html = malloc(sizeof(htmlFile));
     int i, n = 0;
 
-    if (inputDir[strlen(inputDir)] != '/')
-    	strcat(inputDir, "/");
+    #ifdef __unix__
+        if (inputDir[strlen(inputDir)] != '/')
+            strcat(inputDir, "/");
+    #elif
+        if (inputDir[strlen(inputDir)] != '\\')
+            strcat(inputDir, "\\");
+    #endif
 
     dir = opendir(inputDir);
 
@@ -245,6 +255,7 @@ int extractDocumentation(TDA_Doc *docu, char *inputDir, char *outputFile) {
         closeHtmlFile(html);
         return RES_OK;
     } else {
+        logError(docu->logFile, "Error al obtener archivos a documentar");
         return RES_ERROR;
     }
 }
@@ -262,8 +273,14 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
     char linea[MAX_LINE], linea_cpy[MAX_LINE];
     char *stoken = NULL, *etoken = NULL;
     t_keyword temp[MAX_KW];
+
     t_index *temp_index = malloc(sizeof(t_index));
     temp_index->kw = malloc(sizeof(t_keyword));
+
+    if ((!temp_index) || (!temp_index->kw)) {
+        logError(docu->logFile, "Error al alocar memoria");
+        return RES_MEM_ERROR;
+    }
 
     for (i = 0; i < MAX_KW; i++) {
         kw[i].name = NULL;
@@ -334,7 +351,11 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
                 i++;
             }
         } while (straight_list_move(docu->listado, straight_list_next) != 0);
+    } else {
+        logError(docu->logFile, "Listado vacio");
+        return RES_ERROR;
     }
+
     straight_list_clear(docu->listado);
 
     free(temp_index->kw);
@@ -348,11 +369,18 @@ int createIndex(TDA_Doc *docu, char *indexFile)
     FILE *ifile = fopen(indexFile, "w");
     t_index *indi = malloc(sizeof(t_index));
 
+    if (!indi) {
+        logError(docu->logFile, "Error al alocar memoria temporal para el indice");
+        return RES_MEM_ERROR;
+    }
+
     /* Initialize Index */
     fprintf(ifile, "%s", "<h1>Indice</h1>\n<ul>\n");
 
-    if (straight_list_is_empty(docu->indice))
+    if (straight_list_is_empty(docu->indice)) {
+        logError(docu->logFile, "Indice vacio");
         return RES_ERROR;
+    }
 
     straight_list_move(docu->indice, straight_list_first);
 
