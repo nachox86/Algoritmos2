@@ -57,7 +57,7 @@ typedef struct {
     @version "1.0"
     @param *docu es el documentador.
     @param *indexFile es el archivo de índices.
-    @pre Documentador creado e inicializado.
+    @pre Documentador creado e inicializado usando extractDocumentation.
     @pos El archivo de salida “arch_indice” contiene el índice construido en formato html.
          Devuelve RES_OK en caso de que todo haya funcionado correctamente.
          Decuelve RES_ERROR en otro caso.

@@ -149,64 +149,6 @@ int set_keyword(t_keyword* kw,char* data)
 
 }
 
-
-/******************************************************************************************************************/
-int search_site(straight_list_t *lp, const void* data, straight_list_movement_t *mov) {
-	void *current_data;
-	t_keyword* cdata;
-	t_keyword* rdata;
-
-	if(straight_list_is_empty(lp))
-		return FALSE;
-
-	straight_list_get(lp,current_data);
-
-	cdata = (t_keyword*)current_data;
-	rdata = (t_keyword*)data;
-
-   	if (strcmp( cdata->name, rdata->name) > 0)
-	{
-		straight_list_move(lp,straight_list_first);
-		straight_list_get(lp,current_data);
-	}
-    while(strcmp(rdata->name,cdata->name)>0 && straight_list_move(lp,straight_list_next))
-	{
-		straight_list_get(lp,current_data);
-		cdata = (t_keyword*)current_data;
-	}
-	if(strcmp(rdata->name,cdata->name)<0)
-	{
-		*mov = straight_list_first;
-	}
-	else
-		*mov = straight_list_next;
-
-	return TRUE;
-}
-
-
-/*
-@funcion straight_list_order_insert
-@descr Esta función realiza la inserción ordenada de un dato, en la posición correcta en una lista. Realiza la comparación entre nombres de funciones para ordernar.
-@autor Ignacio
-@fecha 14/10/2015
-@version "1.0"
-@param lp referencia a la lista
-@param data referencia al dato a guardar en la lista
-@pre la lista debe estar creada
-@pos se guardará en la posición que deba de acuerda al criterio de ordenamiento.
-*/
-int straight_list_order_insert(straight_list_t *lp, void* data)
-{
-    straight_list_movement_t mov = straight_list_first;
-    int insert;
-	int search = search_site(lp,data,&mov);
-    if(search!=RES_OK) return RES_ERROR;
-	insert = straight_list_insert(lp,mov,data);
-    if(insert!=RES_OK) return RES_ERROR;
-	return insert;
-}
-
 int index_insert(straight_list_t *l, t_index *data) {
     int res;
     t_index *temp = malloc(sizeof(t_index));
@@ -298,13 +240,16 @@ int extractDocumentation(TDA_Doc *docu, char *inputDir, char *outputFile) {
 
     if ( n >= 0) {
         createHtmlFile(html, outputFile);
+        straight_list_create(docu->listado, (sizeof(t_keyword) * MAX_KW), straight_list_copy_keyword, straight_list_delete_keyword);
         straight_list_create(docu->indice, sizeof(t_index), slist_cp_index, slist_destroy_index);
         for (i = 0; i < n; i++) {
             extractDocumentationFromFile(docu, html, buffer[i]);
             free(buffer[i]);
         }
         free(buffer);
+        straight_list_destroy(docu->listado);
         closeHtmlFile(html);
+        free(html);
         return RES_OK;
     } else {
         return RES_ERROR;
@@ -334,7 +279,6 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
     }
 
     inputFile = fopen(iFile, "r");
-    straight_list_create(docu->listado, (sizeof(t_keyword) * MAX_KW), straight_list_copy_keyword, straight_list_delete_keyword);
 
     while (!feof(inputFile)) {
         if (fgets(linea, MAX_LINE-1, inputFile) != NULL) {
@@ -381,6 +325,8 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
         }
     }
 
+    fclose(inputFile);
+
     if (!straight_list_is_empty(docu->listado)) {
         straight_list_move(docu->listado, straight_list_first);
 
@@ -398,12 +344,15 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
     }
     straight_list_clear(docu->listado);
 
+    /*
     straight_list_move(docu->indice, straight_list_first);
 
     do {
         straight_list_get(docu->indice, temp_index);
         logInfo(docu->logFile, temp_index->kw->name);
     } while (straight_list_move(docu->indice, straight_list_next) != 0);
+
+    */
 
     free(temp_index->kw);
     free(temp_index);
@@ -413,57 +362,7 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
 
 int createIndex(TDA_Doc *docu, char *indexFile)
 {
-    FILE* index;
-    char htmlLine[MAX_LINE];
-    t_keyword* keyword;
-
-    /*keyword = (t_keyword*)malloc(sizeof(t_keyword*));
-    if(!keyword)
-    {
-        logError(docu->logFile,MSG_ERROR_MEMORY);
-        return RES_ERROR;
-    }*/
-
-    /*doy formato y agrego al archivo de indices*/
-    index = fopen(indexFile,"w");
-    if(!index)
-    {
-        /*free(keyword);*/
-        logError(docu->logFile,MSG_ERROR_INDEX_FILE);
-        return RES_ERROR;
-    }
-
-    fwrite(HTML_INDEX_HEADER,sizeof(char),strlen(HTML_INDEX_HEADER),index); /*agrego header del indice*/
-
-    /*Me muevo por la lista del indice desde el principio*/
-
-    straight_list_move(docu->indice,straight_list_first);
-
-    do{
-        straight_list_get(docu->indice,keyword);
-
-        sprintf(htmlLine,"<li><a href=doc.html#%s>%s</a></li>",keyword->name,keyword->name);
-        fwrite(htmlLine,sizeof(char),strlen(htmlLine),index);
-
-        free(keyword->name);
-        free(keyword->tag);
-        free(keyword->value);
-        free(keyword);
-        /*keyword = (t_keyword*)malloc(sizeof(t_keyword));
-        if(!keyword)
-        {
-            logError(docu->logFile,MSG_ERROR_MEMORY);
-            fclose(index);
-            return RES_ERROR;
-        }*/
-
-    }while(straight_list_move(docu->indice,straight_list_next)!=FALSE);
-
-    fwrite(HTML_INDEX_FOOTER,sizeof(char),strlen(HTML_INDEX_FOOTER),index);/*agrego footer del indice*/
-
-    fclose(index);
-
-    return RES_OK;
+    return 1;
 }
 
 int destroyDoc(TDA_Doc **docu)
