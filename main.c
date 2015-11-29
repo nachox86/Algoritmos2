@@ -5,8 +5,9 @@
 #include "htmlParser.h"
 #include "logger_tda.h"
 
-#define INDEX_PREFFIX ".idx"        /*escribir q va en estas ctes*/
-#define INDEX_PREFFIX_NO_EXT "idx."
+#define INDEX_PREFIX ".idx"
+#define INDEX_NO_EXT "idx."
+#define HTML_EXT    ".html"
 
 #define RES_WRONG_ARGS -6
 #define ARGS_HELP1 "-h"
@@ -43,32 +44,6 @@ void showHelp()
     printf("-h o --help: muestra esta ayuda.\n");
 }
 
-
-
-/*
-@funcion countFunctions
-@descr Cuenta la cantidad de nodos en un lista. El corriente de la lista puede estar en cualquier lado de la lista.
-@autor Ignacio
-@fecha 01/10/2015
-@version "1.0"
-@param listed referencia a la lista
-@pre la lista debe estar creada
-@pos Devolverá la cantidad de nodos que encontró en la lista.
-*/
-int countFunctions(straight_list_t* listed)
-{
-    int i = 0;
-
-    if(straight_list_is_empty(listed)!=FALSE)
-    {
-        straight_list_move(listed,straight_list_first);
-        do{
-            i++;
-        }while(straight_list_move(listed,straight_list_first)!=FALSE);
-    }
-    straight_list_move(listed,straight_list_first);
-    return i;
-}
 
 /*
 @funcion main
@@ -120,19 +95,24 @@ int main(int argc, char *argv[]) {
     	extractDocumentation(docu, inputDir, outputFile);
 
     	/*armo el nombre del archivo de indice*/
-        token = strtok(outputFile,"html");
+        token = strstr(outputFile,HTML_EXT);
+        indexFile = malloc(sizeof(char) * (strlen(outputFile) + strlen(INDEX_PREFIX)));
 
-        if(!token) {
-            indexFile = malloc(strlen(INDEX_PREFFIX_NO_EXT) + strlen(token));
-            sprintf(indexFile, "%s%s",INDEX_PREFFIX_NO_EXT,token);
+       if (token) {
+            strncpy(indexFile, outputFile, strlen(outputFile) - strlen(token));
+            strcat(indexFile, INDEX_PREFIX);
+            strcat(indexFile, HTML_EXT);
         } else {
-            indexFile = malloc(strlen(INDEX_PREFFIX) + strlen(token));
-            sprintf(indexFile, "%s%s",token,INDEX_PREFFIX);
+            strcpy(indexFile, INDEX_NO_EXT);
+            strcat(indexFile, outputFile);
         }
 
         createIndex(docu, indexFile);
+
 		logClose(log);
     	destroyDoc(docu);
+
+    	free(indexFile);
     	free(log);
     	free(docu);
     }

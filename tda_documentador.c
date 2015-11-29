@@ -337,16 +337,6 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
     }
     straight_list_clear(docu->listado);
 
-    /*
-    straight_list_move(docu->indice, straight_list_first);
-
-    do {
-        straight_list_get(docu->indice, temp_index);
-        logInfo(docu->logFile, temp_index->kw->name);
-    } while (straight_list_move(docu->indice, straight_list_next) != 0);
-
-    */
-
     free(temp_index->kw);
     free(temp_index);
 
