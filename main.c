@@ -91,6 +91,7 @@ int main(int argc, char *argv[]) {
     	/* We got enough arguments to proceed */
 
     	logLightInit(log, logFile, trace);
+    	logDebug(log, "Iniciando..");
     	createDoc(docu, log);
     	extractDocumentation(docu, inputDir, outputFile);
 
@@ -108,6 +109,8 @@ int main(int argc, char *argv[]) {
         }
 
         createIndex(docu, indexFile);
+
+        logDebug(log, "Finalizado");
 
 		logClose(log);
     	destroyDoc(docu);
