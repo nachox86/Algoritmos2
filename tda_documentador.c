@@ -183,29 +183,26 @@ int index_insert(straight_list_t *l, t_index *data) {
 
 int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile);
 
-int createDoc(TDA_Doc **docu, Logger *log)
+int createDoc(TDA_Doc *docu, Logger *log)
 {
-	(*docu) = malloc(sizeof(TDA_Doc));
-	if(!(*docu))
+
+	if(!docu)
+        return RES_MEM_ERROR;
+
+    docu->indice = (straight_list_t*)malloc(sizeof(straight_list_t));
+    if(!(docu->indice))
+        return RES_MEM_ERROR;
+
+    docu->listado = (straight_list_t*)malloc(sizeof(straight_list_t));
+    if(!(docu->listado))
     {
+        free(docu->indice);
         return RES_MEM_ERROR;
     }
-    (*docu)->indice = (straight_list_t*)malloc(sizeof(straight_list_t));
-    if(!((*docu)->indice))
-    {
-        free(*docu);
-        return RES_MEM_ERROR;
-    }
-    (*docu)->listado = (straight_list_t*)malloc(sizeof(straight_list_t));
-    if(!((*docu)->listado))
-    {
-        free((*docu)->indice);
-        free((*docu));
-        return RES_MEM_ERROR;
-    }
-    (*docu)->inputFile = NULL;
-    (*docu)->outputFile = NULL;
-    (*docu)->logFile = log;
+
+    docu->inputFile = NULL;
+    docu->outputFile = NULL;
+    docu->logFile = log;
 
     return RES_OK;
 }
@@ -249,7 +246,6 @@ int extractDocumentation(TDA_Doc *docu, char *inputDir, char *outputFile) {
         free(buffer);
         straight_list_destroy(docu->listado);
         closeHtmlFile(html);
-        free(html);
         return RES_OK;
     } else {
         return RES_ERROR;
@@ -357,16 +353,17 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
     free(temp_index->kw);
     free(temp_index);
 
-    return 1;
+    return RES_OK;
 }
 
 int createIndex(TDA_Doc *docu, char *indexFile)
 {
-    return 1;
+    return RES_OK;
 }
 
-int destroyDoc(TDA_Doc **docu)
+int destroyDoc(TDA_Doc *docu)
 {
-	free(*docu);
+	free(docu->listado);
+	free(docu->indice);
 	return RES_OK;
 }

@@ -32,7 +32,7 @@ typedef struct {
     @pre ninguna condición necesaria
     @pos devolverá el código de éxito si pudo crear y solicitar los recursos necesarios para el documentador, en caso contrario devolverá el código de error.
     */
-    int createDoc(TDA_Doc **docu, Logger *log);
+    int createDoc(TDA_Doc *docu, Logger *log);
 
     /*
     @funcion extractDocumentation
@@ -75,5 +75,5 @@ typedef struct {
     @pos Devuelve RES_ERROR en otro caso, o la constante que se defina pertinentemente y lo registra en el log en modo ERROR.
          En ambos casos registra la actividad en el log según corresponda
     */
-    int destroyDoc(TDA_Doc **docu);
+    int destroyDoc(TDA_Doc *docu);
 #endif

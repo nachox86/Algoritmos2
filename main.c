@@ -85,32 +85,28 @@ int main(int argc, char *argv[]) {
     char* token;
 
     Logger *log = malloc(sizeof(Logger));
-    TDA_Doc *docu;
+    TDA_Doc *docu = malloc(sizeof(TDA_Doc));
 
     if( (argc != ARGS_TWO) && (argc != ARGS_SEVEN))
     {
         showHelp();
+        free(log);
+        free(docu);
         return RES_WRONG_ARGS;
     }
 
     for (i = 1; i < argc; i=i+2) {
         if ((strcmp(argv[i], ARGS_HELP1) == 0) || (strcmp(argv[i], ARGS_HELP2) == 0)) {
             showHelp();
-            free (inputDir);
-            free (logFile);
-            free (outputFile);
             return RES_OK;
         } else if (strcmp(argv[i], ARGS_INPUT_FILE) == 0) {
-            inputDir = malloc(sizeof(char) * strlen(argv[i+1]) + 1);
-            strcpy(inputDir, argv[i+1]);
+            inputDir = argv[i+1];
             nargs++;
         } else if (strcmp(argv[i], ARGS_LOG_FILE) == 0) {
-            logFile = malloc(sizeof(char) * strlen(argv[i+1]) + 1);
-            strcpy(logFile, argv[i+1]);
+            logFile = argv[i+1];
             nargs++;
         } else if (strcmp(argv[i], ARGS_OUTPUT_FILE) == 0) {
-            outputFile = malloc(sizeof(char) * strlen(argv[i+1]) + 1);
-            strcpy(outputFile, argv[i+1]);
+            outputFile = argv[i+1];
             nargs++;
         }
     }
@@ -119,7 +115,7 @@ int main(int argc, char *argv[]) {
     	/* We got enough arguments to proceed */
 
     	logLightInit(log, logFile, trace);
-    	createDoc(&docu, log);
+    	createDoc(docu, log);
     	extractDocumentation(docu, inputDir, outputFile);
 
     	/*armo el nombre del archivo de indice*/
@@ -136,20 +132,17 @@ int main(int argc, char *argv[]) {
         createIndex(docu, indexFile);
         */
 		logClose(log);
-    	destroyDoc(&docu);
+    	destroyDoc(docu);
+    	free(log);
+    	free(docu);
     }
     else
     {
         showHelp();
-        free(inputDir);
-    	free(outputFile);
-    	free(logFile);
+    	free(log);
+    	free(docu);
         return RES_WRONG_ARGS;
     }
-
-    free(inputDir);
-    free(outputFile);
-    free(logFile);
 
     return RES_OK;
 }
