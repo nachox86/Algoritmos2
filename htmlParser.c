@@ -25,6 +25,7 @@ int createHtmlFile(htmlFile *output, char *path) {
 
     output->init = initHtmlFile(path);
     output->file = fopen(path, "a+");
+    output->path = path;
 
     if (output->init && output->file)
         return SUCCESS;

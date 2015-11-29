@@ -14,8 +14,6 @@ typedef struct {
 } t_keyword;
 
 typedef struct {
-    char *inputFile;
-    char *outputFile;
     Logger *logFile;
     straight_list_t* listado;
     straight_list_t* indice;

@@ -21,6 +21,7 @@
 
 typedef struct {
     int init;
+    char *path;
     FILE *file;
 } htmlFile;
 

@@ -5,8 +5,9 @@
 #include "htmlParser.h"
 #include "logger_tda.h"
 
-#define INDEX_PREFFIX "index preffix"        /*escribir q va en estas ctes*/
-#define INDEX_PREFFIX_NO_EXT "no ext"
+#define INDEX_PREFFIX ".idx"        /*escribir q va en estas ctes*/
+#define INDEX_PREFFIX_NO_EXT "idx."
+
 #define RES_WRONG_ARGS -6
 #define ARGS_HELP1 "-h"
 #define ARGS_HELP2 "--help"
@@ -128,9 +129,8 @@ int main(int argc, char *argv[]) {
             indexFile = malloc(strlen(INDEX_PREFFIX) + strlen(token));
             sprintf(indexFile, "%s%s",token,INDEX_PREFFIX);
         }
-        /*
+
         createIndex(docu, indexFile);
-        */
 		logClose(log);
     	destroyDoc(docu);
     	free(log);

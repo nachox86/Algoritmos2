@@ -36,7 +36,7 @@
 
 typedef struct {
     t_keyword *kw;
-    char filename[20];
+    char filename[100];
 } t_index;
 
 /*******************************************************************************************************************/
@@ -116,7 +116,6 @@ void slist_destroy_index(void *data) {
     free(indi->kw->tag);
     free(indi->kw->value);
     free(indi->kw);
-    free(indi->filename);
 }
 
 int set_keyword(t_keyword* kw,char* data)
@@ -200,8 +199,6 @@ int createDoc(TDA_Doc *docu, Logger *log)
         return RES_MEM_ERROR;
     }
 
-    docu->inputFile = NULL;
-    docu->outputFile = NULL;
     docu->logFile = log;
 
     return RES_OK;
@@ -294,7 +291,7 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
                     strcpy(linea_cpy, linea);
                     set_keyword(&kw[kwi], linea);
                     if (checkFunction(linea)) {
-                        strncpy(temp_index->filename, iFile, 20);
+                        strncpy(temp_index->filename, html->path, 100);
                         set_keyword(temp_index->kw, linea_cpy);
                         index_insert(docu->indice, temp_index);
                         free(temp_index->kw->name);
@@ -358,6 +355,32 @@ int extractDocumentationFromFile(TDA_Doc *docu, htmlFile *html, char *iFile) {
 
 int createIndex(TDA_Doc *docu, char *indexFile)
 {
+    FILE *ifile = fopen(indexFile, "w");
+    t_index *indi = malloc(sizeof(t_index));
+
+    /* Initialize Index */
+    fprintf(ifile, "%s", "<h1>Indice</h1>\n<ul>\n");
+
+    if (straight_list_is_empty(docu->indice))
+        return RES_ERROR;
+
+    straight_list_move(docu->indice, straight_list_first);
+
+    do {
+        straight_list_get(docu->indice, indi);
+        fprintf(ifile, "<li> <a href=\"%s#%s\">%s</li>\n", indi->filename, indi->kw->name, indi->kw->name);
+    } while (straight_list_move(docu->indice, straight_list_next) != 0);
+
+    /* Close Tags */
+    fprintf(ifile, "%s", "</ul>");
+    fclose(ifile);
+
+    free(indi);
+
+    straight_list_clear(docu->indice);
+    straight_list_destroy(docu->indice);
+
+
     return RES_OK;
 }
 
