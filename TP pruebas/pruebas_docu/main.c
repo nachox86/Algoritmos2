@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
     char *inputDir, *outputFile, *logFile, *indexFile;
     char* token;
 
-    Logger *log;
+    Logger *log = (Logger*)malloc(sizeof(Logger));
     TDA_Doc *docu;
 
     if( (argc != ARGS_TWO) && (argc != ARGS_SEVEN))
@@ -90,9 +90,9 @@ int main(int argc, char *argv[]) {
     if (nargs == ARGS_REQ) {
     	/* We got enough arguments to proceed */
 
-    	/*logLightInit(log, logFile, fatal);*/
+    	logLightInit(log, logFile, fatal);
     	createDoc(&docu, log);
-    	logCreate(log,outputFile,info,DEFAULT_FILE_SIZE,DEFAULT_FILES_TO_KEEP);
+
         logInfo(docu->logFile,"Entro en extractDocumentation.");
     	extractDocumentation(docu, inputDir, outputFile);
 
